@@ -90,12 +90,12 @@ const styles = StyleSheet.create({
   b1_text: {
     color: 'white',
     fontSize: 19,
-    fontFamily: 'OpenSans-SemiBold',
+    fontFamily: 'OpenSans-Bold',
   },
   b2_text: {
     color: '#F08080',
     fontSize: 19,
-    fontFamily: 'OpenSans-SemiBold',
+    fontFamily: 'OpenSans-Bold',
   },
   textBackground: {
     backgroundColor: 'white',

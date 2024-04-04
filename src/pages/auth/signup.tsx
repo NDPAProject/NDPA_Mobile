@@ -20,15 +20,24 @@ const screenHeight = Dimensions.get('window').height;
 const Signup: React.FC<{navigation: any}> = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [cpassword, setCpassword] = useState('');
+  const [isValidEmail, setIsValidEmail] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isCpasswordVisible, setIsCpasswordVisible] = useState(false);
   const handlePress = () => {
     console.log('Apple icon clicked!');
     // You can navigate or trigger any action here
   };
   const navigation = useNavigation<any>();
 
-  const isValidEmail = (email: any) => {
+  const isValidEmailT = (email: any) => {
     return /\S+@\S+\.\S+/.test(email);
+  };
+
+  const validateEmail = (text: string) => {
+    const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+    const isValid = emailRegex.test(text);
+    setIsValidEmail(isValid);
   };
 
   return (
@@ -38,34 +47,97 @@ const Signup: React.FC<{navigation: any}> = () => {
       <View style={styles.container_in}>
         <Text style={styles.b0_text}>Email</Text>
         <TextInput
-          style={styles.input}
+          style={[
+            styles.input,
+            isValidEmail && email.length > 0 ? styles.validEmail : {},
+          ]}
           placeholder="Enter email"
+          placeholderTextColor="#969596"
           value={email}
-          onChangeText={text => setEmail(text)}
+          onChangeText={text => {
+            setEmail(text);
+            validateEmail(text); // Validate email whenever the text changes
+          }}
           keyboardType="email-address"
           autoCapitalize="none"
         />
-        {!isValidEmail(email) && email.length > 0 && (
+        {!isValidEmailT(email) && email.length > 0 && (
           <Text style={styles.errorText}>Invalid email format</Text>
         )}
         <Text style={styles.b1_text}>Password</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Create password"
-          value={password}
-          onChangeText={text => setEmail(text)}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}>
+          <TextInput
+            style={{
+              borderWidth: 1,
+              borderColor: '#F08080',
+              padding: 10,
+              paddingLeft: 30,
+              marginTop: 15,
+              marginBottom: 10,
+              borderRadius: 40,
+              fontFamily: 'OpenSans-Regular',
+              width: (screenWidth * 9) / 10,
+            }}
+            placeholder="Password"
+            placeholderTextColor="#969596"
+            value={password}
+            onChangeText={text => setPassword(text)}
+            secureTextEntry={!isPasswordVisible} // Toggle between true/false based on isPasswordVisible
+            autoCapitalize="none"
+          />
+          <TouchableOpacity
+            style={{
+              position: 'absolute',
+              marginLeft: (screenWidth * 8) / 10,
+            }}
+            onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
+            <Image
+              source={require('../../../assets/icons/eye_show.png')}
+              style={{justifyContent: 'center'}}
+            />
+          </TouchableOpacity>
+        </View>
         <Text style={styles.b1_text}>Confirm Password</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Confirm password"
-          value={email}
-          onChangeText={text => setEmail(text)}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}>
+          <TextInput
+            style={{
+              borderWidth: 1,
+              borderColor: '#F08080',
+              padding: 10,
+              paddingLeft: 30,
+              marginTop: 15,
+              marginBottom: 10,
+              borderRadius: 40,
+              fontFamily: 'OpenSans-Regular',
+              width: (screenWidth * 9) / 10,
+            }}
+            placeholder="Password"
+            placeholderTextColor="#969596"
+            value={cpassword}
+            onChangeText={text => setCpassword(text)}
+            secureTextEntry={!isCpasswordVisible} // Toggle between true/false based on isPasswordVisible
+            autoCapitalize="none"
+          />
+          <TouchableOpacity
+            style={{
+              position: 'absolute',
+              marginLeft: (screenWidth * 8) / 10,
+            }}
+            onPress={() => setIsCpasswordVisible(!isCpasswordVisible)}>
+            <Image
+              source={require('../../../assets/icons/eye_show.png')}
+              style={{justifyContent: 'center'}}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
       <Button
         style={{
@@ -76,7 +148,7 @@ const Signup: React.FC<{navigation: any}> = () => {
           borderRadius: 45,
           backgroundColor: '#F08080',
         }}
-        onPress={() => navigation.navigate('Details')}>
+        onPress={() => navigation.navigate('Cprofile')}>
         <Text style={styles.b3_text}>Sign Up</Text>
       </Button>
       <View style={styles.dividerContainer}>
@@ -156,6 +228,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 40,
   },
+  validEmail: {
+    color: '#F08080', // Change text color to red when email is valid
+  },
   b0_text: {
     marginTop: 30,
     color: '#F08080',
@@ -189,13 +264,13 @@ const styles = StyleSheet.create({
     color: '#F08080',
     fontSize: 16,
     fontFamily: 'OpenSans-Bold',
-    textDecorationLine: 'underline',
+    // textDecorationLine: 'underline',
   },
   underline: {
     height: 2, // Thickness of the underline
     backgroundColor: '#F08080', // Match the color with the text or as desired
     width: '100%', // Match the width with the text. Adjust if necessary
-    marginTop: 1, // Adjust the spacing between the text and the underline as needed
+    // marginTop: 1, // Adjust the spacing between the text and the underline as needed
   },
   passwordContainer: {
     flexDirection: 'row',

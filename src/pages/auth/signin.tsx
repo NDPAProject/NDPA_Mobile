@@ -29,6 +29,9 @@ const Signin: React.FC<{navigation: any}> = () => {
   };
   const navigation = useNavigation<any>();
 
+  const isValidEmailT = (email: any) => {
+    return /\S+@\S+\.\S+/.test(email);
+  };
   const validateEmail = (text: string) => {
     const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
     const isValid = emailRegex.test(text);
@@ -56,9 +59,16 @@ const Signin: React.FC<{navigation: any}> = () => {
           keyboardType="email-address"
           autoCapitalize="none"
         />
+        {!isValidEmailT(email) && email.length > 0 && (
+          <Text style={styles.errorText}>Invalid email format</Text>
+        )}
 
         <Text style={styles.b1_text}>Password</Text>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}>
           <TextInput
             style={{
               borderWidth: 1,
@@ -69,7 +79,7 @@ const Signin: React.FC<{navigation: any}> = () => {
               marginBottom: 10,
               borderRadius: 40,
               fontFamily: 'OpenSans-Regular',
-              position: 'absolute',
+              width: (screenWidth * 9) / 10,
             }}
             placeholder="Password"
             placeholderTextColor="#969596"
@@ -79,15 +89,27 @@ const Signin: React.FC<{navigation: any}> = () => {
             autoCapitalize="none"
           />
           <TouchableOpacity
-            style={{position: 'relative', marginLeft: 10}}
+            style={{
+              position: 'absolute',
+              marginLeft: (screenWidth * 8) / 10,
+            }}
             onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
-            <Image
-              source={require('../../../assets/icons/eye_show.png')}
-              style={{height: 20, width: 20}}
-            />
+            {isPasswordVisible ? (
+              <Image
+                source={require('../../../assets/icons/eye_show.png')}
+                style={{justifyContent: 'center'}}
+              />
+            ) : (
+              <Image
+                source={require('../../../assets/icons/eye_off.png')}
+                style={{justifyContent: 'center'}}
+              />
+            )}
           </TouchableOpacity>
         </View>
-        <Text style={styles.b2_text}>Forgot Password?</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Resetpwd')}>
+          <Text style={styles.b2_text}>Forgot Password?</Text>
+        </TouchableOpacity>
       </View>
       <Button
         style={{
@@ -98,7 +120,7 @@ const Signin: React.FC<{navigation: any}> = () => {
           borderRadius: 45,
           backgroundColor: '#F08080',
         }}
-        onPress={() => navigation.navigate('Details')}>
+        onPress={() => navigation.navigate('LearnSection')}>
         <Text style={styles.b3_text}>Sign In</Text>
       </Button>
       <View style={styles.dividerContainer}>
@@ -206,13 +228,13 @@ const styles = StyleSheet.create({
     color: '#F08080',
     fontSize: 16,
     fontFamily: 'OpenSans-Bold',
-    textDecorationLine: 'underline',
+    // textDecorationLine: 'underline',
   },
   underline: {
     height: 2, // Thickness of the underline
     backgroundColor: '#F08080', // Match the color with the text or as desired
     width: '100%', // Match the width with the text. Adjust if necessary
-    marginTop: 1, // Adjust the spacing between the text and the underline as needed
+    // marginTop: 1, // Adjust the spacing between the text and the underline as needed
   },
   passwordContainer: {
     flexDirection: 'row',
@@ -225,7 +247,7 @@ const styles = StyleSheet.create({
   },
 
   validEmail: {
-    color: 'red', // Change text color to red when email is valid
+    color: '#F08080', // Change text color to red when email is valid
   },
   dividerContainer: {
     width: (screenWidth * 9) / 10,
