@@ -25,7 +25,6 @@ ios/.xcode.env.local
 # Android/IntelliJ
 #
 build/
-src/
 .env
 .idea
 .gradle

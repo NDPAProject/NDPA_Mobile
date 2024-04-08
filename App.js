@@ -19,8 +19,6 @@ import Resetpwd from './src/pages/auth/resetPassword';
 import Verifyemail from './src/pages/auth/verifyEmail';
 import Createpwd from './src/pages/auth/createNewpass';
 import Pwddone from './src/pages/auth/pwdDone';
-import LearnSection from './src/pages/learn/index';
-import TutorSection from './src/pages/learn/tutor';
 
 import {LogBox} from 'react-native';
 
@@ -82,16 +80,6 @@ const App = () => {
           <Stack.Screen
             name="Pwddone"
             component={Pwddone}
-            options={{headerShown: false}}
-          />
-          <Stack.Screen
-            name="LearnSection"
-            component={LearnSection}
-            options={{headerShown: false}}
-          />
-          <Stack.Screen
-            name="TutorSection"
-            component={TutorSection}
             options={{headerShown: false}}
           />
         </Stack.Navigator>
