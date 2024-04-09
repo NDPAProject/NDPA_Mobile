@@ -19,6 +19,7 @@ import Resetpwd from './src/pages/auth/resetPassword';
 import Verifyemail from './src/pages/auth/verifyEmail';
 import Createpwd from './src/pages/auth/createNewpass';
 import Pwddone from './src/pages/auth/pwdDone';
+import Location from './src/pages/location/index';
 
 import {LogBox} from 'react-native';
 
@@ -80,6 +81,11 @@ const App = () => {
           <Stack.Screen
             name="Pwddone"
             component={Pwddone}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="LocationSection"
+            component={Location}
             options={{headerShown: false}}
           />
         </Stack.Navigator>

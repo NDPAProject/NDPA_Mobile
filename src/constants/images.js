@@ -1,0 +1,9 @@
+export const sb_search = require('../../assets/icons/location/search.png');
+export const sb_voice = require('../../assets/icons/location/microphone.png');
+export const cafe = require('../../assets/icons/location/cafe.png');
+export const hospital = require('../../assets/icons/location/hospital.png');
+export const park = require('../../assets/icons/location/park.png');
+export const pharamacies = require('../../assets/icons/location/pharamacies.png');
+export const back = require('../../assets/icons/location/back.png');
+export const close = require('../../assets/icons/location/close.png');
+export const img_location = require('../../assets/icons/location/location.png');
