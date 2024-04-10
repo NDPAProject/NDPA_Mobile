@@ -19,13 +19,16 @@ import Header from '../../components/header';
 import CustomStepModal from '../../components/stepModal';
 import CustomDialog from '../../components/dialogModal';
 import CustomGreatModal from '../../components/greatModal';
+import MoveDialog from '../../components/moveDialog';
 
-const phone_ico = require('../../../assets/icons/phone_ico.png');
+const speaking_ico = require('../../../assets/icons/speaking_ico.png');
 const close_ico = require('../../../assets/icons/m_close_ico.png');
 const hand_ico = require('../../../assets/icons/hand_ico.png');
 const msg_send_passive = require('../../../assets/icons/msg_send_passive.png');
 const msg_send_active = require('../../../assets/icons/msg_send_active.png');
 
+const mic_ico = require('../../../assets/icons/mic_ico.png');
+const mic_frame = require('../../../assets/icons/mic_frame.png');
 const t_icon = require('../../../assets/icons/tom_ico.png');
 const me_icon = require('../../../assets/icons/me.png');
 const turtle_ico = require('../../../assets/icons/turtle_ico.png');
@@ -33,11 +36,12 @@ const sound_ico = require('../../../assets/icons/charm_sound-up.png');
 const message = require('../../../assets/icons/message.png');
 const mechat = require('../../../assets/icons/mechat.png');
 const thumb_icon = require('../../../assets/icons/great_ico.png');
+const welcome_ico = require('../../../assets/icons/welcome_ico.png');
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-const LearnSection = () => {
+const SpeakingSection = () => {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(true);
   const [showImage, setShowImage] = useState(false);
@@ -46,6 +50,7 @@ const LearnSection = () => {
   const [step_2, setStep_2] = useState(false);
   const [step_3, setStep_3] = useState(false);
   const [step_4, setStep_4] = useState(false);
+  const [step_5, setStep_5] = useState(false);
   const [text, setText] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -56,6 +61,25 @@ const LearnSection = () => {
       setStep_2(true);
       setModalVisible(false);
       console.log('=-=-=-=-=--', step_2, modalVisible);
+    } catch (error) {
+      setErrorMsg((error && error.error) || 'Something went wrong.');
+      // setIsLoading(false);
+    }
+  };
+
+  const handleClickMove = async () => {
+    try {
+      navigation.navigate('ReviewSection');
+    } catch (error) {
+      setErrorMsg((error && error.error) || 'Something went wrong.');
+      // setIsLoading(false);
+    }
+  };
+
+  const handleContinue = async () => {
+    try {
+      console.log('--------clicked---------------');
+      setStep_5(true);
     } catch (error) {
       setErrorMsg((error && error.error) || 'Something went wrong.');
       // setIsLoading(false);
@@ -78,6 +102,7 @@ const LearnSection = () => {
   const handleInput = async () => {
     try {
       // setModalVisible(false);
+      setShowHand(false);
       setStep_3(true);
       setStep_2(false);
       setShowImage(false);
@@ -119,24 +144,25 @@ const LearnSection = () => {
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
         handleClick={handleClick}
-        phone_ico={phone_ico}
-        close_ico={close_ico}
+        title="Step 2. Speaking"
+        icon={speaking_ico}
         hand_ico={hand_ico}
         showImage={showImage}
+      />
+
+      <MoveDialog
+        modalVisible={step_5}
+        setModalVisible={setModalVisible}
+        handleClick={handleClickMove}
+        text="Great job1 Let's move NNto the review part"
+        icon={welcome_ico}
       />
 
       <CustomStepModal
         visible={step_2}
         onRequestClose={() => setStep_2(false)}
-        stepText="2/5"
-        message="Let's answer the question.NNTap on the field and enter your name."
-      />
-
-      <CustomStepModal
-        visible={step_3}
-        onRequestClose={() => setStep_3(false)}
-        stepText="3/5"
-        message="Use the keyboard to write your name.NNYou can also select from the options."
+        stepText="4/5"
+        message="Let's answer the question.Tap on theNN microphone and tell your name."
       />
 
       <Header />
@@ -195,51 +221,64 @@ const LearnSection = () => {
         </View>
       </Modal>
 
-      <Modal visible={!modalVisible && !step_4} transparent={true}>
-        <View style={styles.chatBackground}>
-          <TouchableOpacity
-            style={styles.input}
-            onPress={handleInput}
-            activeOpacity={1} // Keeps the overlay visible
-          >
-            <Text style={styles.text_m}>Write here...</Text>
-            <Image
-              source={messageIcon}
-              style={{position: 'absolute', top: 3, right: 3}}
-            />
-            {showHand && (
-              <Image
-                animationType="slide"
-                source={hand_ico}
-                style={{
-                  position: 'absolute',
-                  bottom: -50,
-                  right: screenWidth / 3,
-                }}
-              />
-            )}
-          </TouchableOpacity>
-        </View>
+      <Modal visible={!modalVisible} transparent={true}>
+        {!sendClick && (
+          <Image
+            source={mic_frame}
+            style={{
+              position: 'absolute',
+              bottom: 150,
+              width: (screenWidth * 9) / 10,
+              marginLeft: screenWidth / 20,
+              marginRight: screenWidth / 20,
+            }}
+          />
+        )}
+
+        <TouchableOpacity
+          onPress={handleInput}
+          style={{
+            position: 'absolute',
+            bottom: 40,
+            right: screenWidth / 2 - 50,
+          }}>
+          <Image source={mic_ico} />
+        </TouchableOpacity>
+        <Text style={styles.text_m}>Press to speak</Text>
+        {showHand && (
+          <Image
+            animationType="slide"
+            source={hand_ico}
+            style={{
+              position: 'absolute',
+              bottom: 10,
+              right: screenWidth / 3 - 9,
+            }}
+          />
+        )}
       </Modal>
 
       <Modal visible={step_3} transparent={true}>
-        <View style={[styles.chatBackground]}>
-          <TextInput
-            style={[styles.input]}
-            placeholder="Write here..."
-            placeholderTextColor="#969596"
-            value={text}
-            onChangeText={text => {
-              setText(text);
-            }}
-            autoCapitalize="none"
-          />
-          <TouchableOpacity
-            style={{position: 'absolute', top: 23, right: 25}}
-            onPress={handleSend}>
-            <Image source={messageIcon} />
-          </TouchableOpacity>
-        </View>
+        <Image
+          source={mic_frame}
+          style={{
+            position: 'absolute',
+            bottom: 150,
+            width: (screenWidth * 9) / 10,
+            marginLeft: screenWidth / 20,
+            marginRight: screenWidth / 20,
+          }}
+        />
+        <TouchableOpacity
+          onPress={handleSend}
+          style={{
+            position: 'absolute',
+            bottom: 40,
+            right: screenWidth / 2 - 50,
+          }}>
+          <Image source={mic_ico} />
+        </TouchableOpacity>
+        <Text style={styles.text_m}>Press to speak</Text>
       </Modal>
 
       <CustomGreatModal
@@ -247,16 +286,15 @@ const LearnSection = () => {
         hand_ico={hand_ico}
         icon={thumb_icon}
         showImage={showImage}
-        handleClick={handleClick}
+        handleClick={handleContinue}
         onRequestClose={() => setStep_2(false)}
-        stepText="2/5"
         message="Great job!"
       />
     </View>
   );
 };
 
-export default LearnSection;
+export default SpeakingSection;
 
 const styles = StyleSheet.create({
   container: {
@@ -270,17 +308,7 @@ const styles = StyleSheet.create({
     // justifyContent: 'center',
     // alignItems: 'center',
   },
-  input: {
-    borderWidth: 1,
-    borderColor: '#F08080',
-    height: 40,
-    width: (screenWidth * 9) / 10,
-    marginTop: -40,
-    padding: 1,
-    paddingLeft: 30,
-    borderRadius: 40,
-    fontFamily: 'OpenSans-Regular',
-  },
+
   title: {
     color: 'black',
     fontSize: 18,
@@ -300,11 +328,13 @@ const styles = StyleSheet.create({
     // textAlign: 'left',
   },
   text_m: {
-    color: '#969596',
+    color: '#1E1D2080',
     fontSize: 14,
     fontFamily: 'OpenSans-Regular',
-    textAlign: 'left',
-    marginTop: 6,
+    position: 'absolute',
+    bottom: 20,
+    marginTop: 2,
+    marginLeft: screenWidth / 2 - 41,
     // alignItems: 'center',
   },
   row: {
@@ -365,26 +395,5 @@ const styles = StyleSheet.create({
     left: 0,
     bottom: 0,
     right: 0,
-  },
-  chatBackground: {
-    backgroundColor: 'white',
-    alignItems: 'center',
-    paddingVertical: 59,
-    borderTopRightRadius: 20,
-    borderTopLeftRadius: 20,
-    width: screenWidth,
-    height: 135,
-    bottom: 0,
-    position: 'absolute',
-    // iOS Shadow
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    // Android Shadow
-    elevation: 15,
   },
 });

@@ -7,16 +7,13 @@ import {
   Image,
   StyleSheet,
 } from 'react-native';
-import {BlurView} from '@react-native-community/blur';
 
-const CustomDialog = ({
+const MoveDialog = ({
   modalVisible,
   setModalVisible,
   handleClick,
+  text,
   icon,
-  title,
-  hand_ico,
-  showImage,
 }) => (
   <Modal
     animationType="slide"
@@ -24,19 +21,23 @@ const CustomDialog = ({
     visible={modalVisible}
     onRequestClose={() => setModalVisible(!modalVisible)}>
     <View style={styles.centeredView}>
-      <BlurView
-        style={[styles.blurView, {backgroundColor: 'rgba(255, 218, 185, 0.4)'}]}
-        blurType="light"
-        blurAmount={10}
-        reducedTransparencyFallbackColor="white"
-      />
       <View style={styles.modalView}>
         <Image source={icon} style={styles.icon} />
-        <Text style={styles.text_m}>{title}</Text>
+
+        <Text style={styles.text_m}>
+          {text.split('NN').map((part, index) => (
+            <React.Fragment key={index}>
+              {part}
+              {index !== text.split('NN').length - 1 && <Text>{'\n'}</Text>}
+            </React.Fragment>
+          ))}
+        </Text>
         <TouchableOpacity style={styles.startButton} onPress={handleClick}>
-          <Text style={styles.b3_text}>Let's Start</Text>
+          <Text style={styles.b3_text}>Go</Text>
         </TouchableOpacity>
-        {showImage && <Image source={hand_ico} style={styles.handIcon} />}
+        <TouchableOpacity style={styles.skipButton} onPress={handleClick}>
+          <Text style={styles.b4_text}>Skip</Text>
+        </TouchableOpacity>
       </View>
     </View>
   </Modal>
@@ -47,17 +48,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  blurView: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
+    backgroundColor: '#E0D2C4',
   },
   modalView: {
     backgroundColor: 'white',
     borderRadius: 10,
     width: 349,
-    height: 240,
+    height: 354,
     padding: 20,
     justifyContent: 'center',
     alignItems: 'center',
@@ -70,8 +67,8 @@ const styles = StyleSheet.create({
     height: 24,
   },
   icon: {
-    width: 72,
-    height: 72,
+    width: 100,
+    height: 100,
   },
   handIcon: {
     position: 'absolute',
@@ -86,10 +83,22 @@ const styles = StyleSheet.create({
     borderRadius: 45,
     backgroundColor: '#F08080',
   },
+  skipButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 280,
+    height: 57,
+    marginTop: 20,
+    borderRadius: 45,
+    borderWidth: 1,
+    borderColor: '#F08080',
+    backgroundColor: 'white',
+  },
   text_m: {
     color: 'black',
-    fontSize: 18,
+    fontSize: 20,
     fontFamily: 'OpenSans-Medium',
+    fontWeight: '600',
     textAlign: 'center',
     marginTop: 6,
     // alignItems: 'center',
@@ -99,6 +108,11 @@ const styles = StyleSheet.create({
     fontSize: 21,
     fontFamily: 'OpenSans-Medium',
   },
+  b4_text: {
+    color: '#F08080',
+    fontSize: 21,
+    fontFamily: 'OpenSans-Medium',
+  },
 });
 
-export default CustomDialog;
+export default MoveDialog;

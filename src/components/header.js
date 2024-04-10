@@ -26,7 +26,7 @@ const Header = props => {
   };
 
   return (
-    <View>
+    <>
       <View style={styles.textBackground}>
         <TouchableOpacity
           onPress={handleBackPress}
@@ -46,7 +46,7 @@ const Header = props => {
         width={(screenWidth * 9) / 10}
         style={{marginTop: 20}}
       />
-    </View>
+    </>
   );
 };
 

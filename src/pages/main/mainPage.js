@@ -36,7 +36,7 @@ const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 const boxData = [
   [
-    {icon: person_ico, text: 'Personal\n Identity', nav: 'LearnSection'},
+    {icon: person_ico, text: 'Personal\n Identity', nav: 'TypingSection'},
     {icon: fship_ico, text: 'Friendship', nav: ''},
   ],
   [
