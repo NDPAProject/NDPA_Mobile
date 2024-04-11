@@ -28,15 +28,18 @@ const msg_send_passive = require('../../../assets/icons/msg_send_passive.png');
 const msg_send_active = require('../../../assets/icons/msg_send_active.png');
 
 const mic_ico = require('../../../assets/icons/mic_ico.png');
+const tom_s_ico = require('../../../assets/icons/tom_s.png');
+const repeat_ico = require('../../../assets/icons/repeact_ico.png');
 const mic_frame = require('../../../assets/icons/mic_frame.png');
 const t_icon = require('../../../assets/icons/tom_ico.png');
-const me_icon = require('../../../assets/icons/me.png');
+const me_icon = require('../../../assets/icons/me_ico.png');
 const turtle_ico = require('../../../assets/icons/turtle_ico.png');
 const sound_ico = require('../../../assets/icons/charm_sound-up.png');
 const message = require('../../../assets/icons/message.png');
 const mechat = require('../../../assets/icons/mechat.png');
 const thumb_icon = require('../../../assets/icons/great_ico.png');
 const welcome_ico = require('../../../assets/icons/welcome_ico.png');
+const verify_msg = require('../../../assets/icons/verify_msg.png');
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -69,7 +72,7 @@ const ReviewSection = () => {
 
   const handleClickMove = async () => {
     try {
-      navigation.navigate('SpeakingSection');
+      navigation.navigate('MainPage');
     } catch (error) {
       setErrorMsg((error && error.error) || 'Something went wrong.');
       // setIsLoading(false);
@@ -154,8 +157,9 @@ const ReviewSection = () => {
         modalVisible={step_5}
         setModalVisible={setModalVisible}
         handleClick={handleClickMove}
-        text="Great job1 Let's move NNto the review part"
+        text="Great job! Now you areNN ready to use the app!"
         icon={welcome_ico}
+        visible={true}
       />
 
       <CustomStepModal
@@ -165,76 +169,64 @@ const ReviewSection = () => {
         message="Let's review the conversation.NNTap on the button to repeat."
       />
 
-      <Header />
+      <Header visible={false} />
 
       <Image
-        source={t_icon}
+        source={tom_s_ico}
         style={{position: 'absolute', left: screenWidth / 20, top: 130}}
       />
       <Image
         source={me_icon}
-        style={{position: 'absolute', right: screenWidth / 20, top: 330}}
+        style={{position: 'absolute', right: screenWidth / 20, top: 230}}
       />
 
-      <Modal visible={!modalVisible} transparent={true}>
-        <View style={styles.imageContainer}>
-          <Image source={message} />
-          <Text style={styles.title}>
-            Hi! My name is Tom. {'\n'}What is your name?
-          </Text>
-        </View>
-      </Modal>
+      {/* <Modal visible={!modalVisible} transparent={true}> */}
+      <View style={styles.imageContainer}>
+        <Image source={message} />
+        <Text style={styles.title}>
+          Hi! My name is Tom. {'\n'}What is your name?
+        </Text>
+      </View>
+      {/* </Modal> */}
 
       <View
         style={{
           flexDirection: 'row',
           gap: 9,
           position: 'absolute',
-          top: 205,
-          right: screenWidth / 20,
+          top: 180,
+          left: screenWidth / 20 + 210,
         }}>
         <Image source={sound_ico} />
         <Image source={turtle_ico} />
       </View>
 
-      <Modal visible={step_3 || step_4} transparent={true}>
+      <Modal visible={!modalVisible} transparent={true}>
         <View style={styles.me_imageContainer}>
-          <Image source={mechat} />
-          {sendClick ? (
-            <>
-              <Text style={styles.m_title}>Hi! My name is {text}.</Text>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  gap: 9,
-                  position: 'absolute',
-                  top: 54,
-                  left: 0,
-                }}>
-                <Image source={sound_ico} />
-                <Image source={turtle_ico} />
-              </View>
-            </>
-          ) : (
-            <Text style={styles.m_title}>Hi! My name is ____.</Text>
-          )}
+          {step_4 ? <Image source={verify_msg} /> : <Image source={mechat} />}
+          <>
+            {step_4 ? (
+              <Text style={styles.s_title}>Hi! My name is David.</Text>
+            ) : (
+              <Text style={styles.m_title}>Hi! My name is David.</Text>
+            )}
+
+            <View
+              style={{
+                flexDirection: 'row',
+                gap: 9,
+                position: 'absolute',
+                top: 54,
+                left: 0,
+              }}>
+              <Image source={sound_ico} />
+              <Image source={turtle_ico} />
+            </View>
+          </>
         </View>
       </Modal>
 
       <Modal visible={!modalVisible} transparent={true}>
-        {!sendClick && (
-          <Image
-            source={mic_frame}
-            style={{
-              position: 'absolute',
-              bottom: 150,
-              width: (screenWidth * 9) / 10,
-              marginLeft: screenWidth / 20,
-              marginRight: screenWidth / 20,
-            }}
-          />
-        )}
-
         <TouchableOpacity
           onPress={handleInput}
           style={{
@@ -242,7 +234,7 @@ const ReviewSection = () => {
             bottom: 40,
             right: screenWidth / 2 - 50,
           }}>
-          <Image source={mic_ico} />
+          <Image source={repeat_ico} />
         </TouchableOpacity>
         <Text style={styles.text_m}>Press to speak</Text>
         {showHand && (
@@ -276,7 +268,7 @@ const ReviewSection = () => {
             bottom: 40,
             right: screenWidth / 2 - 50,
           }}>
-          <Image source={mic_ico} />
+          <Image source={repeat_ico} />
         </TouchableOpacity>
         <Text style={styles.text_m}>Press to speak</Text>
       </Modal>
@@ -302,11 +294,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#FFFBF8',
     width: screenWidth,
+    height: screenHeight,
   },
   overlay: {
     flex: 1,
-    // justifyContent: 'center',
-    // alignItems: 'center',
   },
 
   title: {
@@ -318,6 +309,17 @@ const styles = StyleSheet.create({
     left: 10,
     // textAlign: 'left',
   },
+
+  s_title: {
+    color: '#23B80C',
+    fontSize: 18,
+    fontFamily: 'OpenSans-Medium',
+    position: 'relative',
+    top: -48,
+    right: 10,
+    // textAlign: 'left',
+  },
+
   m_title: {
     color: 'black',
     fontSize: 18,
@@ -351,14 +353,14 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     position: 'absolute',
-    right: screenWidth / 20,
-    top: 130,
+    left: screenWidth / 20 + 50,
+    top: 100,
     alignItems: 'center',
   },
   me_imageContainer: {
     position: 'absolute',
-    left: screenWidth / 20,
-    top: 320,
+    right: screenWidth / 20 + 50,
+    top: 220,
     alignItems: 'center',
   },
   icon: {

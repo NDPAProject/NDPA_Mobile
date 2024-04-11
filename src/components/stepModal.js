@@ -1,5 +1,6 @@
 import React from 'react';
 import {Modal, View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {Button} from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
 
 const CustomStepModal = ({visible, onRequestClose, stepText, message}) => (
@@ -26,9 +27,19 @@ const CustomStepModal = ({visible, onRequestClose, stepText, message}) => (
               </React.Fragment>
             ))}
           </Text>
-          <TouchableOpacity onPress={onRequestClose}>
+          {/* <TouchableOpacity onPress={onRequestClose}>
             <Text style={styles.text_m3}>Skip</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
+          {/* <TouchableOpacity
+            onPress={() => console.log('Skip pressed')}
+            style={{
+              // position: 'absolute',
+              bottom: 25,
+              right: 8,
+              padding: 10,
+            }}>
+            <Text style={styles.text_m3}>Skip</Text>
+          </TouchableOpacity> */}
         </View>
       </View>
     </LinearGradient>

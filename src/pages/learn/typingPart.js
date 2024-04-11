@@ -12,6 +12,7 @@ import {
   Modal,
   TouchableOpacity,
   TextInput,
+  Keyboard,
 } from 'react-native';
 import {BlurView} from '@react-native-community/blur';
 import {useNavigation, useRoute} from '@react-navigation/native';
@@ -52,6 +53,9 @@ const TypingSection = () => {
   const [text, setText] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
+  const initialBottom = Dimensions.get('window').height / 2 - 50;
+  const [bottomPadding, setBottomPadding] = useState(initialBottom);
+
   const messageIcon = text ? msg_send_active : msg_send_passive;
 
   const handleContinue = async () => {
@@ -77,7 +81,7 @@ const TypingSection = () => {
 
   const handleClickMove = async () => {
     try {
-      navigation.navigate('SpeakingSection');
+      navigation.navigate('SpeakingSection', {param: text});
     } catch (error) {
       setErrorMsg((error && error.error) || 'Something went wrong.');
       // setIsLoading(false);
@@ -110,6 +114,19 @@ const TypingSection = () => {
     }
   };
 
+  const handleClickSkip = async () => {
+    try {
+      console.log(
+        '=-=-=Clicked handleClickSkip=-=--',
+        step_2,
+        modalVisible,
+        step_3,
+      );
+    } catch (error) {
+      setErrorMsg((error && error.error) || 'Something went wrong.');
+    }
+  };
+
   useEffect(() => {
     console.log(
       '=--------------------------===========',
@@ -135,6 +152,30 @@ const TypingSection = () => {
     return () => clearTimeout(timer);
   }, [step_2, modalVisible]);
 
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      e => {
+        const keyboardHeight = e.endCoordinates.height;
+        const newBottomPadding = initialBottom + keyboardHeight - 465; // Adjust accordingly
+        console.log('......newBottomPadding....', newBottomPadding);
+        setBottomPadding(newBottomPadding);
+      },
+    );
+
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        setBottomPadding(initialBottom);
+      },
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
+
   return (
     <View style={styles.container}>
       <CustomDialog
@@ -147,19 +188,19 @@ const TypingSection = () => {
         showImage={showImage}
       />
 
+      <CustomStepModal
+        visible={step_2}
+        onRequestClose={handleClickSkip}
+        stepText="2/5"
+        message="Let's answer the question.NNTap on the field and enter your name."
+      />
+
       <MoveDialog
         modalVisible={step_5}
         setModalVisible={setModalVisible}
         handleClick={handleClickMove}
-        text="Great job1 Let's move NNto the speaking part"
+        text="Great job! Let's move NNto the speaking part"
         icon={welcome_ico}
-      />
-
-      <CustomStepModal
-        visible={step_2}
-        onRequestClose={() => setStep_2(false)}
-        stepText="2/5"
-        message="Let's answer the question.NNTap on the field and enter your name."
       />
 
       <CustomStepModal
@@ -169,7 +210,7 @@ const TypingSection = () => {
         message="Use the keyboard to write your name.NNYou can also select from the options."
       />
 
-      <Header />
+      <Header visible={true} />
 
       <Image
         source={t_icon}
@@ -227,6 +268,19 @@ const TypingSection = () => {
 
       <Modal visible={!modalVisible && !step_4} transparent={true}>
         <View style={styles.chatBackground}>
+          {!step_3 && (
+            <TouchableOpacity
+              onPress={() => setStep_3(true)}
+              style={{
+                position: 'absolute',
+                bottom: screenHeight / 2 - 50,
+                right: screenWidth / 14,
+                // padding: screenWidth / 20,
+              }}>
+              <Text style={styles.text_m3}>Skip</Text>
+            </TouchableOpacity>
+          )}
+
           <TouchableOpacity
             style={styles.input}
             onPress={handleInput}
@@ -264,6 +318,19 @@ const TypingSection = () => {
             }}
             autoCapitalize="none"
           />
+          {step_3 && (
+            <TouchableOpacity
+              // onPress={navigation.navigate('MainPage')}
+              style={{
+                position: 'absolute',
+                // bottom: screenHeight / 2 - 50,
+                bottom: bottomPadding,
+                right: screenWidth / 14,
+              }}>
+              <Text style={styles.text_m3}>Skip</Text>
+            </TouchableOpacity>
+          )}
+
           <TouchableOpacity
             style={{position: 'absolute', top: 23, right: 25}}
             onPress={handleSend}>

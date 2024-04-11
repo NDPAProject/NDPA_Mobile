@@ -17,20 +17,22 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import {Button} from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
 import {BlurView} from '@react-native-community/blur';
+
 import Footer from '../../components/footer';
+import CustomStepModal from '../../components/stepModal';
 
 const h_icon = require('../../../assets/icons/h_icon.png');
 const person_ico = require('../../../assets/icons/learn/person_ico.png');
 const fship_ico = require('../../../assets/icons/learn/fship_ico.png');
 const choice_ico = require('../../../assets/icons/learn/choice_ico.png');
-const indep_ico = require('../../../assets/icons/learn/fship_ico.png');
-const sep_ico = require('../../../assets/icons/learn/fship_ico.png');
-const loss_ico = require('../../../assets/icons/learn/fship_ico.png');
-const withdrawal_ico = require('../../../assets/icons/learn/fship_ico.png');
-const sadness_ico = require('../../../assets/icons/learn/fship_ico.png');
-const worry_ico = require('../../../assets/icons/learn/fship_ico.png');
-const emotional_ico = require('../../../assets/icons/learn/fship_ico.png');
-const peer_ico = require('../../../assets/icons/learn/fship_ico.png');
+const indep_ico = require('../../../assets/icons/learn/indep_ico.png');
+const sep_ico = require('../../../assets/icons/learn/sep_ico.png');
+const loss_ico = require('../../../assets/icons/learn/loss_ico.png');
+const withdrawal_ico = require('../../../assets/icons/learn/withdrawl_ico.png');
+const sadness_ico = require('../../../assets/icons/learn/sadness_ico.png');
+const worry_ico = require('../../../assets/icons/learn/worry_ico.png');
+const emotional_ico = require('../../../assets/icons/learn/emotional_ico.png');
+const peer_ico = require('../../../assets/icons/learn/peer_ico.png');
 const handle_ico = require('../../../assets/icons/hand_ico.png');
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -58,7 +60,7 @@ const boxData = [
   [{icon: peer_ico, text: '     Peer Difficulties', nav: ''}],
 ];
 
-const MainPage = () => {
+const MainPage = type => {
   const [modalVisible, setModalVisible] = useState(true);
   const [showImage, setShowImage] = useState(false);
   const [step_1, setStep_1] = useState(false);
@@ -69,7 +71,15 @@ const MainPage = () => {
   const handleClick = async () => {
     try {
       setStep_1(true);
-      console.log('=-=-=-=-=--', step_1, modalVisible);
+    } catch (error) {
+      setErrorMsg((error && error.error) || 'Something went wrong.');
+      // setIsLoading(false);
+    }
+  };
+
+  const handleClickSkip = async () => {
+    try {
+      setStep_1(false);
     } catch (error) {
       setErrorMsg((error && error.error) || 'Something went wrong.');
       // setIsLoading(false);
@@ -78,18 +88,15 @@ const MainPage = () => {
 
   useEffect(() => {
     let timer;
-    console.log('------------------', step_1, modalVisible);
-    // Check if step_1 is true, then set a timer to show the modal after 0.4 sec
     if (step_1) {
       setModalVisible(false);
       timer = setTimeout(() => {
         setStep_1(true);
         timer = setTimeout(() => {
           setShowImage(true);
-        }, 800);
-      }, 1000); // 400 milliseconds = 0.4 seconds
+        }, 1000);
+      }, 1200); // 400 milliseconds = 0.4 seconds
     } else {
-      // If step_1 is false, make sure to hide the modal
       setStep_1(false);
     }
 
@@ -101,7 +108,7 @@ const MainPage = () => {
       <Modal
         animationType="fade"
         transparent={true}
-        visible={step_1}
+        visible={step_1 || type}
         onRequestClose={() => {
           setStep_1(!step_1);
         }}>
@@ -148,7 +155,11 @@ const MainPage = () => {
               <Text style={styles.text_m}>
                 Let's choose a topic for conversation.{'\n'}Tap on the screen.
               </Text>
-              <Text style={styles.text_m3}>Skip</Text>
+              <TouchableOpacity
+                style={styles.text_m3}
+                onPress={handleClickSkip}>
+                <Text>Skip</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </LinearGradient>
@@ -342,7 +353,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
     borderRadius: 20,
     width: (screenWidth * 2.1) / 5,
-    height: (screenWidth * 2.1) / 5,
+    height: (screenWidth * 2) / 5,
   },
   blurView: {
     position: 'absolute',

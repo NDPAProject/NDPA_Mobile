@@ -7,7 +7,6 @@ import {persistStore, persistReducer} from 'redux-persist';
 import rootReducer, {rootPersistConfig} from './rootReducer';
 
 // ----------------------------------------------------------------------
-const persistedReducer = persistReducer(rootPersistConfig, rootReducer);
 
 const store = configureStore({
   reducer: persistReducer(rootPersistConfig, rootReducer),

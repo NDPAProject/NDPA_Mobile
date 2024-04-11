@@ -17,7 +17,7 @@ import {useNavigation} from '@react-navigation/native';
 const screenWidth = Dimensions.get('window').width;
 const arrow = require('../../assets/icons/left_ico.png');
 
-const Header = props => {
+const Header = ({visible}) => {
   const navigation = useNavigation();
 
   const handleBackPress = () => {
@@ -40,12 +40,14 @@ const Header = props => {
         <Text style={styles.title}>Introducing yourself</Text>
         <View style={{flexDirection: 'row'}}>{''}</View>
       </View>
-      <ProgressBar
-        progress={0.3}
-        color="#F08080"
-        width={(screenWidth * 9) / 10}
-        style={{marginTop: 20}}
-      />
+      {visible && (
+        <ProgressBar
+          progress={0.3}
+          color="#F08080"
+          width={(screenWidth * 9) / 10}
+          style={{marginTop: 20}}
+        />
+      )}
     </>
   );
 };

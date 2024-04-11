@@ -1,7 +1,11 @@
 import 'react-native-gesture-handler';
-
+import 'react-native-get-random-values';
+import RNFS from 'react-native-fs';
 // Import React and Component
 import React, {useState, useEffect} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
+
+import {transcribeAudio} from '../../redux/slices/audio';
 
 import {
   Image,
@@ -12,9 +16,13 @@ import {
   Modal,
   TouchableOpacity,
   TextInput,
+  Platform,
+  PermissionsAndroid,
 } from 'react-native';
-import {BlurView} from '@react-native-community/blur';
 import {useNavigation, useRoute} from '@react-navigation/native';
+import AudioRecorderPlayer from 'react-native-audio-recorder-player';
+
+//
 import Header from '../../components/header';
 import CustomStepModal from '../../components/stepModal';
 import CustomDialog from '../../components/dialogModal';
@@ -41,7 +49,8 @@ const welcome_ico = require('../../../assets/icons/welcome_ico.png');
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-const SpeakingSection = () => {
+const SpeakingSection = ({route}) => {
+  const dispatch = useDispatch();
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(true);
   const [showImage, setShowImage] = useState(false);
@@ -51,16 +60,22 @@ const SpeakingSection = () => {
   const [step_3, setStep_3] = useState(false);
   const [step_4, setStep_4] = useState(false);
   const [step_5, setStep_5] = useState(false);
+  const [audioPath, setAudioPath] = useState('');
   const [text, setText] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
+  const {audioTxt} = useSelector(state => state.audio);
+
+  const audioRecorderPlayer = new AudioRecorderPlayer();
+
   const messageIcon = text ? msg_send_active : msg_send_passive;
+
+  const {param} = route.params;
 
   const handleClick = async () => {
     try {
       setStep_2(true);
       setModalVisible(false);
-      console.log('=-=-=-=-=--', step_2, modalVisible);
     } catch (error) {
       setErrorMsg((error && error.error) || 'Something went wrong.');
       // setIsLoading(false);
@@ -78,7 +93,6 @@ const SpeakingSection = () => {
 
   const handleContinue = async () => {
     try {
-      console.log('--------clicked---------------');
       setStep_5(true);
     } catch (error) {
       setErrorMsg((error && error.error) || 'Something went wrong.');
@@ -88,11 +102,13 @@ const SpeakingSection = () => {
 
   const handleSend = async () => {
     try {
-      setSendClick(true);
-      setStep_4(true);
+      // setSendClick(true);
+      await onStartRecord();
+      console.log('-------audioPath--------', audioPath);
+      // dispatch(transcribeAudio(audioPath));
+      // setStep_4(true);
       setStep_3(false);
       // setModalVisible(false);
-      console.log('=-=-=handleSend-=-=--', step_4, sendClick);
     } catch (error) {
       setErrorMsg((error && error.error) || 'Something went wrong.');
       // setIsLoading(false);
@@ -106,20 +122,70 @@ const SpeakingSection = () => {
       setStep_3(true);
       setStep_2(false);
       setShowImage(false);
-      console.log('=-=-=Clicked Inputfield=-=--', step_2, modalVisible, step_3);
     } catch (error) {
       setErrorMsg((error && error.error) || 'Something went wrong.');
       // setIsLoading(false);
     }
   };
 
+  const onStartRecord = async () => {
+    console.log('startRecord');
+
+    const path = `${RNFS.DocumentDirectoryPath}/hello.wav`;
+
+    if (Platform.OS === 'android') {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+        {
+          title: 'Audio Recording Permission',
+          message: 'App needs access to your microphone to record audio.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('Recording permission denied');
+        return;
+      }
+    }
+
+    const audioSet = {
+      SampleRate: 44100,
+      Channels: 1,
+      AudioQuality: 'High',
+      AudioEncoding: 'wav',
+    };
+
+    try {
+      console.log('Preparing to record');
+      const result = await audioRecorderPlayer.startRecorder(path, audioSet);
+      console.log('Recording started', result);
+
+      setTimeout(async () => {
+        console.log('Stopping recording...');
+        const res = await audioRecorderPlayer.stopRecorder();
+        console.log('stopped recording', res);
+        console.log('Recorded Audio File Path:', path);
+        setAudioPath(path);
+        // No need to remove the recorder path since you might want to access the file later.
+      }, 5000); // Stop after 5 seconds
+    } catch (error) {
+      console.error('Recording error:', error);
+    }
+  };
+
+  // const onStopRecord = async () => {
+  //   try {
+  //     const result = await audioRecorderPlayer.stopRecorder();
+  //     audioRecorderPlayer.removeRecordBackListener();
+  //     console.log(result);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
   useEffect(() => {
-    console.log(
-      '=--------------------------===========',
-      step_2,
-      modalVisible,
-      step_3,
-    );
     let timer;
     if (modalVisible) {
       timer = setTimeout(() => {
@@ -138,6 +204,13 @@ const SpeakingSection = () => {
     return () => clearTimeout(timer);
   }, [step_2, modalVisible]);
 
+  useEffect(() => {
+    console.log('Updated audioPath:', audioPath);
+    if (audioPath) {
+      dispatch(transcribeAudio(audioPath));
+    }
+  }, [audioPath]);
+
   return (
     <View style={styles.container}>
       <CustomDialog
@@ -154,7 +227,7 @@ const SpeakingSection = () => {
         modalVisible={step_5}
         setModalVisible={setModalVisible}
         handleClick={handleClickMove}
-        text="Great job1 Let's move NNto the review part"
+        text="Great job! Let's move NNto the review part"
         icon={welcome_ico}
       />
 
@@ -165,7 +238,7 @@ const SpeakingSection = () => {
         message="Let's answer the question.Tap on theNN microphone and tell your name."
       />
 
-      <Header />
+      <Header visible={true} />
 
       <Image
         source={t_icon}
@@ -222,18 +295,19 @@ const SpeakingSection = () => {
       </Modal>
 
       <Modal visible={!modalVisible} transparent={true}>
-        {!sendClick && (
-          <Image
-            source={mic_frame}
-            style={{
-              position: 'absolute',
-              bottom: 150,
-              width: (screenWidth * 9) / 10,
-              marginLeft: screenWidth / 20,
-              marginRight: screenWidth / 20,
-            }}
-          />
-        )}
+        {!sendClick ||
+          (step_3 && (
+            <Image
+              source={mic_frame}
+              style={{
+                position: 'absolute',
+                bottom: 150,
+                width: (screenWidth * 9) / 10,
+                marginLeft: screenWidth / 20,
+                marginRight: screenWidth / 20,
+              }}
+            />
+          ))}
 
         <TouchableOpacity
           onPress={handleInput}
@@ -302,6 +376,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#FFFBF8',
     width: screenWidth,
+    height: screenHeight,
   },
   overlay: {
     flex: 1,

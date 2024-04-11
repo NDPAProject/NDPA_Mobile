@@ -75,6 +75,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     backgroundColor: '#FFFBF8',
+    height: screenHeight,
   },
   title: {
     color: 'black',

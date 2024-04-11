@@ -235,6 +235,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     backgroundColor: 'white',
+    height: screenHeight,
   },
   container_in: {
     width: (screenWidth * 9) / 10,

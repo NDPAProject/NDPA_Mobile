@@ -14,6 +14,7 @@ const MoveDialog = ({
   handleClick,
   text,
   icon,
+  visible,
 }) => (
   <Modal
     animationType="slide"
@@ -35,9 +36,11 @@ const MoveDialog = ({
         <TouchableOpacity style={styles.startButton} onPress={handleClick}>
           <Text style={styles.b3_text}>Go</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.skipButton} onPress={handleClick}>
-          <Text style={styles.b4_text}>Skip</Text>
-        </TouchableOpacity>
+        {!visible && (
+          <TouchableOpacity style={styles.skipButton} onPress={handleClick}>
+            <Text style={styles.b4_text}>Skip</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   </Modal>
