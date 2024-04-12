@@ -8,6 +8,7 @@ import {LogBox} from 'react-native';
 // Import Screens
 import Mainpage from './mainpage';
 import Streetview from './streetview';
+import Routepage from './routepage';
 import Routeview from './routeview';
 
 LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
@@ -25,15 +26,23 @@ const Location = () => {
           title: 'Map',
         }}
       />
+
       <Stack.Screen
-        name="StreetView"
+        name="Routepage"
+        component={Routepage}
+        options={{title: 'Your Route'}}
+      />
+
+      <Stack.Screen
+        name="Streetview"
         component={Streetview}
         options={{headerShown: false}}
       />
+
       <Stack.Screen
         name="Routeview"
         component={Routeview}
-        options={{title: 'Your Route'}}
+        options={{headerShown: false}}
       />
     </Stack.Navigator>
   );
