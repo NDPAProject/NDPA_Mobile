@@ -19,18 +19,24 @@ const arrow = require('../../assets/icons/left_ico.png');
 
 const Header = props => {
   const navigation = useNavigation();
-  const handlePress = navTarget => {
-    // Implement navigation logic here, e.g., using React Navigation
-    navigation.navigate(navTarget);
+
+  const handleBackPress = () => {
+    console.log('clicked');
+    navigation.goBack();
   };
 
   return (
-    <View>
+    <>
       <View style={styles.textBackground}>
-        <View style={{flexDirection: 'row'}}>
+        <TouchableOpacity
+          onPress={handleBackPress}
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}>
           <Image source={arrow} />
           <Text style={styles.text}>Back</Text>
-        </View>
+        </TouchableOpacity>
         <Text style={styles.title}>Introducing yourself</Text>
         <View style={{flexDirection: 'row'}}>{''}</View>
       </View>
@@ -40,7 +46,7 @@ const Header = props => {
         width={(screenWidth * 9) / 10}
         style={{marginTop: 20}}
       />
-    </View>
+    </>
   );
 };
 

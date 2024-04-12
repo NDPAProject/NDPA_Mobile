@@ -34,37 +34,47 @@ const peer_ico = require('../../../assets/icons/learn/fship_ico.png');
 const handle_ico = require('../../../assets/icons/hand_ico.png');
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
+const boxData = [
+  [
+    {icon: person_ico, text: 'Personal\n Identity', nav: 'TypingSection'},
+    {icon: fship_ico, text: 'Friendship', nav: ''},
+  ],
+  [
+    {icon: choice_ico, text: 'Choice', nav: ''},
+    {icon: indep_ico, text: 'Independence', nav: ''},
+  ],
+  [
+    {icon: sep_ico, text: 'Separation', nav: ''},
+    {icon: loss_ico, text: 'Loss', nav: ''},
+  ],
+  [
+    {icon: withdrawal_ico, text: 'Withdrawal', nav: ''},
+    {icon: sadness_ico, text: 'Sadness', nav: ''},
+  ],
+  [
+    {icon: worry_ico, text: 'Worry', nav: ''},
+    {icon: emotional_ico, text: 'Emotional\nOutbursts', nav: ''},
+  ],
+  [{icon: peer_ico, text: '     Peer Difficulties', nav: ''}],
+];
 
 const MainPage = () => {
   const [modalVisible, setModalVisible] = useState(true);
   const [showImage, setShowImage] = useState(false);
   const [step_1, setStep_1] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   const navigation = useNavigation();
 
-  const boxData = [
-    [
-      {icon: person_ico, text: 'Personal\n Identity', nav: 'LearnSection'},
-      {icon: fship_ico, text: 'Friendship', nav: ''},
-    ],
-    [
-      {icon: choice_ico, text: 'Choice', nav: ''},
-      {icon: indep_ico, text: 'Independence', nav: ''},
-    ],
-    [
-      {icon: sep_ico, text: 'Separation', nav: ''},
-      {icon: loss_ico, text: 'Loss', nav: ''},
-    ],
-    [
-      {icon: withdrawal_ico, text: 'Withdrawal', nav: ''},
-      {icon: sadness_ico, text: 'Sadness', nav: ''},
-    ],
-    [
-      {icon: worry_ico, text: 'Worry', nav: ''},
-      {icon: emotional_ico, text: 'Emotional\nOutbursts', nav: ''},
-    ],
-    [{icon: peer_ico, text: '     Peer Difficulties', nav: ''}],
-  ];
+  const handleClick = async () => {
+    try {
+      setStep_1(true);
+      console.log('=-=-=-=-=--', step_1, modalVisible);
+    } catch (error) {
+      setErrorMsg((error && error.error) || 'Something went wrong.');
+      // setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     let timer;
@@ -188,7 +198,7 @@ const MainPage = () => {
                 borderRadius: 45,
                 backgroundColor: '#F08080',
               }}
-              onPress={setStep_1}>
+              onPress={handleClick}>
               <Text style={styles.b3_text}>Let's Start</Text>
             </Button>
             <Button
@@ -342,3 +352,7 @@ const styles = StyleSheet.create({
     right: 0,
   },
 });
+
+
+
+

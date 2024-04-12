@@ -9,7 +9,9 @@ import {createStackNavigator} from '@react-navigation/stack';
 //
 // Import Screens
 import MainPage from './mainPage';
-import LearnSection from '../learn/index';
+import TypingSection from '../learn/typingPart';
+import SpeakingSection from '../learn/speakingPart';
+import ReviewSection from '../learn/reviewPart';
 
 import {LogBox} from 'react-native';
 
@@ -27,8 +29,18 @@ const Main = () => {
         options={{headerShown: false}}
       />
       <Stack.Screen
-        name="LearnSection"
-        component={LearnSection}
+        name="TypingSection"
+        component={TypingSection}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="SpeakingSection"
+        component={SpeakingSection}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="ReviewSection"
+        component={ReviewSection}
         options={{headerShown: false}}
       />
     </Stack.Navigator>
