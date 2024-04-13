@@ -1,52 +1,191 @@
 import 'react-native-gesture-handler';
-import {GOOGLE_API_KEY_ANDROID} from '@env';
+import {GOOGLE_API_KEY_ANDROID__} from '@env';
 
 import React, {useState, useEffect, useRef} from 'react';
-import {View, StyleSheet, Dimensions} from 'react-native';
-import MapView, {Marker} from 'react-native-maps';
+import {
+  View,
+  StyleSheet,
+  Dimensions,
+  Text,
+  Image,
+  TouchableOpacity,
+} from 'react-native';
+import MapView, {Marker, Polyline} from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import Geolocation from '@react-native-community/geolocation';
+import Geocoder from 'react-native-geocoding';
+import {getRhumbLineBearing, computeDestinationPoint} from 'geolib';
 
 import Footer from '../../components/footer';
+import {fab_1, fab_4, location_2, right_arrow} from '../../constants/images';
 
-const {width, height} = Dimensions.get('window');
-const ASPECT_RATIO = width / height;
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
+const ASPECT_RATIO = screenWidth / screenHeight;
 const LATITUDE = 37.771707;
 const LONGITUDE = -122.4053769;
-const LATITUDE_DELTA = 0.0922;
-const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
+const LATITUDE_DELTA = 0.005;
+const LONGITUDE_DELTA = 0.005;
+Geocoder.init(GOOGLE_API_KEY_ANDROID__);
+
+const FloatingActionButtonGroup = routedata => {
+  const navigation = useNavigation();
+  const route = useRoute();
+  const [locationaddress, setLocationaddress] = useState({
+    location: '',
+    address: '',
+    location_info: '',
+  });
+
+  useEffect(() => {
+    setLocationaddress({
+      location_info: {lat: routedata.latitude, lng: routedata.longitude},
+    });
+  }, []);
+  return (
+    <View style={styles.fab_container}>
+      <TouchableOpacity
+        key={'route_view_map'}
+        style={[styles.fabButton, {backgroundColor: '#FFFFFF'}]}
+        onPress={() => {
+          navigation.navigate('Routepage', {
+            locationaddress: locationaddress,
+          });
+        }}>
+        <Image source={fab_1} style={styles.fab_image} />
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[styles.fabButton, {backgroundColor: '#FFFFFF'}]}
+        onPress={() => {
+          navigation.navigate('Streetview');
+        }}>
+        <Image source={fab_4} style={styles.fab_image} />
+      </TouchableOpacity>
+    </View>
+  );
+};
 
 const Routeview = () => {
+  const navigation = useNavigation();
+  const route = useRoute();
   const [coordinates, setCoordinates] = useState([
     {
-      latitude: 37.3317876,
-      longitude: -122.0054812,
+      latitude: 51.51656759999999,
+      longitude: -0.1784764,
     },
     {
-      latitude: 37.771707,
-      longitude: -122.4053769,
+      latitude: route.params.locationaddress.location_info.lat,
+      longitude: route.params.locationaddress.location_info.lng,
     },
   ]);
   const mapView = useRef(null);
+  const [result_dur_dis, setResult_dur_dis] = useState({
+    duration: 0,
+    distance: 0,
+  });
 
-  const onMapPress = e => {
-    setCoordinates([...coordinates, e.nativeEvent.coordinate]);
-  };
+  //origin screen center
+  useEffect(() => {
+    if (mapView.current) {
+      mapView.current.animateToRegion({
+        latitude: 51.51656759999999,
+        longitude: -0.1784764,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      });
+    }
+  }, []);
+
+  //street name
+  const [region, setRegion] = useState({
+    latitude: 51.51656759999999,
+    longitude: -0.1784764,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  });
+  const [streetName, setStreetName] = useState('');
+  const [newPoint, setNewPoint] = useState(null);
+
+  useEffect(() => {
+    if (coordinates[0] && coordinates[1]) {
+      const bearing = getRhumbLineBearing(coordinates[0], coordinates[1]);
+      const newPoint = computeDestinationPoint(coordinates[0], 10, bearing);
+      setNewPoint(newPoint);
+      console.log('NEW POINT', bearing, coordinates[1], newPoint);
+    }
+  }, [coordinates]);
+
+  useEffect(() => {
+    if (newPoint) {
+      Geocoder.from(newPoint.latitude, newPoint.longitude)
+        .then(json => {
+          const addressComponent =
+            json.results[0].formatted_address.split(',')[0];
+
+          const street = addressComponent ? addressComponent : '';
+
+          setStreetName(street);
+          setRegion({
+            latitude: newPoint.latitude,
+            longitude: newPoint.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+            title: street,
+          });
+          console.log('STREET NAME', street);
+        })
+        .catch(error => console.warn(error));
+    }
+  }, [newPoint]);
+
+  useEffect(() => {
+    console.log('Updated duration and distance:', result_dur_dis);
+  }, [result_dur_dis]);
+
+  // const onMapPress = e => {
+  //   setCoordinates([...coordinates, e.nativeEvent.coordinate]);
+  // };
 
   return (
     <View style={styles.container}>
       <MapView
-        initialRegion={{
-          latitude: LATITUDE,
-          longitude: LONGITUDE,
-          latitudeDelta: LATITUDE_DELTA,
-          longitudeDelta: LONGITUDE_DELTA,
+        region={{
+          latitude: 51.51656759999999,
+          longitude: -0.1784764,
+          latitudeDelta: 0.001,
+          longitudeDelta: 0.001,
         }}
         style={StyleSheet.absoluteFill}
         ref={mapView}
-        onPress={onMapPress}>
+        // onPress={onMapPress}
+        customMapStyle={mapStyle}>
         {coordinates.map((coordinate, index) => (
-          <Marker key={`coordinate_${index}`} coordinate={coordinate} />
+          <Marker key={`coordinate_${index}`} draggable coordinate={coordinate}>
+            <View
+              style={{
+                width: 32,
+                height: 32,
+                borderColor: '#F08080',
+                backgroundColor: '#F08080',
+                borderWidth: 2.4,
+                borderRadius: 24,
+                justifyContent: 'center',
+                alignItems: 'center',
+                shadowColor: '#FE8572',
+                shadowOffset: {
+                  width: 0,
+                  height: 0,
+                },
+                shadowOpacity: 0.5,
+                shadowRadius: 16,
+                elevation: 20,
+              }}>
+              <Image source={location_2} style={{width: 16, height: 16}} />
+            </View>
+          </Marker>
         ))}
+
         {coordinates.length >= 2 && (
           <MapViewDirections
             origin={coordinates[0]}
@@ -54,9 +193,10 @@ const Routeview = () => {
               coordinates.length > 2 ? coordinates.slice(1, -1) : undefined
             }
             destination={coordinates[coordinates.length - 1]}
-            apikey={GOOGLE_API_KEY_ANDROID}
-            strokeWidth={3}
+            apikey={GOOGLE_API_KEY_ANDROID__}
+            strokeWidth={10}
             strokeColor="#F08080"
+            mode="WALKING"
             optimizeWaypoints
             onStart={params => {
               console.log(
@@ -67,14 +207,19 @@ const Routeview = () => {
               console.log(`Distance: ${result.distance} km`);
               console.log(`Duration: ${result.duration} min.`);
 
-              mapView.current.fitToCoordinates(result.coordinates, {
-                edgePadding: {
-                  right: width / 20,
-                  bottom: height / 20,
-                  left: width / 20,
-                  top: height / 20,
-                },
+              setResult_dur_dis({
+                duration: Math.round(result.duration * 10) / 10,
+                distance: Math.round(result.distance * 10) / 10,
               });
+
+              // mapView.current.fitToCoordinates(result.coordinates, {
+              //   edgePadding: {
+              //     right: 50,
+              //     bottom: 50,
+              //     left: 50,
+              //     top: 50,
+              //   },
+              // });
             }}
             onError={errorMessage => {
               // console.log('GOT AN ERROR');
@@ -82,6 +227,101 @@ const Routeview = () => {
           />
         )}
       </MapView>
+      {streetName && (
+        <View style={[styles.centeredView_]}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: 16,
+            }}>
+            <TouchableOpacity style={{}} onPress={() => {}}>
+              <View
+                style={{
+                  borderRadius: 8.25,
+                  padding: 6.6,
+                  backgroundColor: '#F08080',
+                }}>
+                <Image
+                  source={right_arrow}
+                  style={{width: 52.8, height: 52.8}}
+                  resizeMode="cover"
+                />
+              </View>
+            </TouchableOpacity>
+            <View
+              style={{
+                flexDirection: 'col',
+                justifyContent: 'flex-start',
+                alignItems: 'flex-start',
+              }}>
+              <Text style={styles.sheetText_top}>Turn Left in 10m</Text>
+              <Text style={styles.sheetText}>{streetName}</Text>
+            </View>
+          </View>
+        </View>
+      )}
+
+      <View style={[styles.centeredView]}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+            gap: 24,
+            marginLeft: 16,
+          }}>
+          <View
+            style={{
+              flexDirection: 'col',
+              justifyContent: 'flex-start',
+              alignItems: 'center',
+            }}>
+            <Text style={styles.sheetText}>Distance</Text>
+            <Text
+              style={styles.sheetText_}>{`${result_dur_dis.distance} km`}</Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'col',
+              justifyContent: 'flex-start',
+              alignItems: 'center',
+            }}>
+            <Text style={styles.sheetText}>Time</Text>
+            <Text
+              style={
+                styles.sheetText_
+              }>{`${result_dur_dis.duration} min`}</Text>
+          </View>
+        </View>
+        <TouchableOpacity
+          style={{}}
+          onPress={() => {
+            navigation.navigate('Mainpage');
+          }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: 'auto',
+              height: 45,
+              borderRadius: 45,
+              paddingHorizontal: 24,
+              paddingVertical: 8,
+              backgroundColor: '#F08080',
+            }}>
+            <Text style={styles.button_textStyle}>End</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+      <FloatingActionButtonGroup
+        routedata={{
+          latitude: route.params.locationaddress.location_info.lat,
+          longitude: route.params.locationaddress.location_info.lng,
+        }}
+      />
       <Footer state={0} />
     </View>
   );
@@ -92,6 +332,293 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#FFFBF8',
   },
+  //top tab
+  centeredView_: {
+    flex: 1,
+    padding: 10,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    position: 'absolute',
+    top: 68,
+    backgroundColor: '#FFFFFF',
+    width: screenWidth - 32,
+    gap: 20,
+    borderRadius: 15,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+
+  sheetText_top: {
+    fontSize: 18,
+    lineHeight: 24.51,
+    fontWeight: '600',
+    fontFamily: 'OpenSans-Regular',
+    color: '#1E1D20',
+  },
+  //bottom tab
+  centeredView: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 11,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: 100,
+    backgroundColor: '#FFFFFF',
+    width: screenWidth - 32,
+    gap: 20,
+    borderRadius: 56,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+
+  textStyle: {
+    fontSize: 16,
+    lineHeight: 21.79,
+    color: '#1E1D2080',
+  },
+  button_textStyle: {
+    fontSize: 21,
+    lineHeight: 28.6,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    fontFamily: 'OpenSans-Regular',
+  },
+  sheetText: {
+    fontSize: 16,
+    lineHeight: 21.79,
+    fontWeight: '500',
+    fontFamily: 'OpenSans-Regular',
+    color: '#1E1D2080',
+  },
+  sheetText_: {
+    fontSize: 22,
+    lineHeight: 29.96,
+    fontWeight: '700',
+    fontFamily: 'OpenSans-Regular',
+    color: '#1E1D20',
+  },
+
+  //fab
+  fab_container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    top: 200,
+    right: 16,
+  },
+  fabButton: {
+    width: 56,
+    height: 56,
+    borderRadius: 30,
+    backgroundColor: '#F08080',
+    marginBottom: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  fab_image: {
+    width: 32,
+    height: 32,
+  },
 });
 
+const mapStyle = [
+  {
+    featureType: 'water',
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#e9e9e9',
+      },
+      {
+        lightness: 17,
+      },
+    ],
+  },
+  {
+    featureType: 'landscape',
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#f5f5f5',
+      },
+      {
+        lightness: 20,
+      },
+    ],
+  },
+  {
+    featureType: 'road.highway',
+    elementType: 'geometry.fill',
+    stylers: [
+      {
+        color: '#ffffff',
+      },
+      {
+        lightness: 17,
+      },
+    ],
+  },
+  {
+    featureType: 'road.highway',
+    elementType: 'geometry.stroke',
+    stylers: [
+      {
+        color: '#ffffff',
+      },
+      {
+        lightness: 29,
+      },
+      {
+        weight: 0.2,
+      },
+    ],
+  },
+  {
+    featureType: 'road.arterial',
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#ffffff',
+      },
+      {
+        lightness: 18,
+      },
+    ],
+  },
+  {
+    featureType: 'road.local',
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#ffffff',
+      },
+      {
+        lightness: 16,
+      },
+    ],
+  },
+  {
+    featureType: 'poi',
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#f5f5f5',
+      },
+      {
+        lightness: 21,
+      },
+    ],
+  },
+  {
+    featureType: 'poi.park',
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#dedede',
+      },
+      {
+        lightness: 21,
+      },
+    ],
+  },
+  {
+    elementType: 'labels.text.stroke',
+    stylers: [
+      {
+        visibility: 'on',
+      },
+      {
+        color: '#ffffff',
+      },
+      {
+        lightness: 16,
+      },
+    ],
+  },
+  {
+    elementType: 'labels.text.fill',
+    stylers: [
+      {
+        saturation: 36,
+      },
+      {
+        color: '#333333',
+      },
+      {
+        lightness: 40,
+      },
+    ],
+  },
+  {
+    elementType: 'labels.icon',
+    stylers: [
+      {
+        visibility: 'off',
+      },
+    ],
+  },
+  {
+    featureType: 'transit',
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#f2f2f2',
+      },
+      {
+        lightness: 19,
+      },
+    ],
+  },
+  {
+    featureType: 'administrative',
+    elementType: 'geometry.fill',
+    stylers: [
+      {
+        color: '#fefefe',
+      },
+      {
+        lightness: 20,
+      },
+    ],
+  },
+  {
+    featureType: 'administrative',
+    elementType: 'geometry.stroke',
+    stylers: [
+      {
+        color: '#fefefe',
+      },
+      {
+        lightness: 17,
+      },
+      {
+        weight: 1.2,
+      },
+    ],
+  },
+];
 export default Routeview;
