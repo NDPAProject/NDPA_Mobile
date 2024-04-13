@@ -4,7 +4,6 @@ import RNFS from 'react-native-fs';
 // Import React and Component
 import React, {useState, useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import RewardDialog from '../../components/rewardModal';
 
 import {transcribeAudio, setStateFunc} from '../../redux/slices/audio';
 
@@ -46,7 +45,7 @@ const message = require('../../../assets/icons/message.png');
 const mechat = require('../../../assets/icons/mechat.png');
 const thumb_icon = require('../../../assets/icons/great_ico.png');
 const try_again_ico = require('../../../assets/icons/try_again_ico.png');
-const reward_ico = require('../../../assets/icons/main/reward.png');
+const welcome_ico = require('../../../assets/icons/welcome_ico.png');
 const wrong_msg_ico = require('../../../assets/icons/wrong_msg.png');
 
 const screenWidth = Dimensions.get('window').width;
@@ -63,7 +62,6 @@ const SpeakingSection = ({route}) => {
   const [step_3, setStep_3] = useState(false);
   const [step_4, setStep_4] = useState(false);
   const [step_5, setStep_5] = useState(false);
-  const [step_6, setStep_6] = useState(false);
   const [audioPath, setAudioPath] = useState('');
   const [text, setText] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
@@ -74,9 +72,7 @@ const SpeakingSection = ({route}) => {
 
   const messageIcon = text ? msg_send_active : msg_send_passive;
 
-  //   const {param} = route.params;
-
-  const param = 'test';
+  const {param} = route.params;
 
   console.log('-----------------audioTxt---------------', audioTxt, param);
 
@@ -90,18 +86,9 @@ const SpeakingSection = ({route}) => {
     }
   };
 
-  const handleClickContinue = async () => {
-    try {
-      setStep_2(false);
-      setStep_3(true);
-    } catch (error) {
-      setErrorMsg((error && error.error) || 'Something went wrong.');
-      // setIsLoading(false);
-    }
-  };
-
   const handleClickMove = async () => {
     try {
+      setText(param);
       navigation.navigate('ReviewSection', {param: text});
     } catch (error) {
       setErrorMsg((error && error.error) || 'Something went wrong.');
@@ -129,12 +116,11 @@ const SpeakingSection = ({route}) => {
 
   const handleSend = async () => {
     try {
-      //   await onStartRecord();
+      await onStartRecord();
       console.log('-------audioPath--------', audioPath);
-      setStep_2(true);
       // dispatch(transcribeAudio(audioPath));
-      //   setStep_4(true);
-      //   setStep_3(false);
+      setStep_4(true);
+      setStep_3(false);
 
       // setModalVisible(false);
     } catch (error) {
@@ -213,33 +199,33 @@ const SpeakingSection = ({route}) => {
   //   }
   // };
 
-  //   useEffect(() => {
-  //     console.log('Updated audioPath:', audioPath);
-  //     if (audioPath) {
-  //       dispatch(setStateFunc);
-  //       dispatch(transcribeAudio(audioPath));
-  //     }
-  //   }, [audioPath]);
+  useEffect(() => {
+    let timer;
+    if (modalVisible) {
+      timer = setTimeout(() => {
+        setShowImage(true);
+      }, 1000);
+    } else if (step_2) {
+      setModalVisible(false);
+      timer = setTimeout(() => {
+        setShowHand(true);
+      }, 1200);
+    }
+    //  else if (step_4) {
+    //   timer = setTimeout(() => {
+    //     setShowImage(true);
+    //   }, 800);
+    // }
+    return () => clearTimeout(timer);
+  }, [step_2, modalVisible]);
 
-  const MessageBlock = ({children}) => (
-    <>
-      <View style={styles.imageContainer}>
-        <Image source={message} />
-        <Text style={styles.title}>{children}</Text>
-      </View>
-      <View
-        style={{
-          flexDirection: 'row',
-          gap: 9,
-          position: 'absolute',
-          top: 205,
-          right: screenWidth / 20,
-        }}>
-        <Image source={sound_ico} />
-        <Image source={turtle_ico} />
-      </View>
-    </>
-  );
+  useEffect(() => {
+    console.log('Updated audioPath:', audioPath);
+    if (audioPath) {
+      dispatch(setStateFunc);
+      dispatch(transcribeAudio(audioPath));
+    }
+  }, [audioPath]);
 
   return (
     <View style={styles.container}>
@@ -253,15 +239,21 @@ const SpeakingSection = ({route}) => {
         showImage={showImage}
       />
 
-      <RewardDialog
-        modalVisible={step_6}
+      <MoveDialog
+        modalVisible={step_5}
         setModalVisible={setModalVisible}
         handleClick={handleClickMove}
-        title="Great job!"
-        text="You've finished speaking level!NN  Claim your reward."
-        buttonText="Go to Step 3"
-        icon={reward_ico}
+        text="Great job! Let's move NNto the review part"
+        icon={welcome_ico}
       />
+
+      <CustomStepModal
+        visible={step_2}
+        onRequestClose={() => setStep_2(false)}
+        stepText="4/5"
+        message="Let's answer the question.Tap on theNN microphone and tell your name."
+      />
+
       <Header visible={true} />
 
       <Image
@@ -273,149 +265,128 @@ const SpeakingSection = ({route}) => {
         style={{position: 'absolute', right: screenWidth / 20, top: 330}}
       />
 
-      {/* <MessageBlock children={' Hi! My name is Tom. \nWhat is your name?'} />
+      <Modal visible={!modalVisible} transparent={true}>
+        <View style={styles.imageContainer}>
+          <Image source={message} />
+          <Text style={styles.title}>
+            Hi! My name is Tom. {'\n'}What is your name?
+          </Text>
+        </View>
+      </Modal>
 
-      <View style={styles.me_imageContainer}>
-        <Image source={mechat} />
-
-        <>
-          <Text style={styles.m_title}>Hi! My name is {text || '___'} .</Text>
-          <View
-            style={{
-              flexDirection: 'row',
-              gap: 9,
-              position: 'absolute',
-              top: 54,
-              left: 0,
-            }}>
-            <Image source={sound_ico} />
-            <Image source={turtle_ico} />
-          </View>
-        </>
-      </View> */}
-      {step_2 && (
-        <>
-          <MessageBlock
-            children={' Hi! My name is Tom. \nWhat is your name?'}
-          />
-
-          <View style={styles.me_imageContainer}>
-            <Image source={mechat} />
-
-            <>
-              <Text style={styles.m_title}>
-                Hi! My name is {text || '___'} .
-              </Text>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  gap: 9,
-                  position: 'absolute',
-                  top: 54,
-                  left: 0,
-                }}>
-                <Image source={sound_ico} />
-                <Image source={turtle_ico} />
-              </View>
-            </>
-          </View>
-
-          <Image
-            source={mic_frame}
-            style={{
-              position: 'absolute',
-              bottom: 150,
-              width: (screenWidth * 9) / 10,
-              marginLeft: screenWidth / 20,
-              marginRight: screenWidth / 20,
-              opacity: isloading ? 0 : 1,
-            }}
-          />
-          <TouchableOpacity
-            onPress={handleSend}
-            style={{
-              position: 'absolute',
-              bottom: 40,
-              right: screenWidth / 2 - 50,
-            }}>
-            <Image source={mic_ico} />
-          </TouchableOpacity>
-          <Text style={styles.text_m}>Press to speak</Text>
-        </>
-      )}
-
-      <View style={styles.me_imageContainer}>
-        <>
-          {isloading ? (
-            <>
-              <Image
-                source={
-                  param === audioTxt?.DisplayText ? mechat : wrong_msg_ico
-                }
-              />
-              <Text style={styles.m_title}>
-                Hi! My name is{' '}
-                {param === audioTxt?.DisplayText
-                  ? audioTxt.DisplayText
-                  : '_____'}
-                .
-              </Text>
-            </>
-          ) : (
-            <>
-              <Image source={mechat} />
-              <Text style={styles.m_title}>Hi! My name is _____.</Text>
-            </>
-          )}
-
-          <View
-            style={{
-              flexDirection: 'row',
-              gap: 9,
-              position: 'absolute',
-              top: 54,
-              left: 0,
-            }}>
-            <Image source={sound_ico} />
-            <Image source={turtle_ico} />
-          </View>
-        </>
+      <View
+        style={{
+          flexDirection: 'row',
+          gap: 9,
+          position: 'absolute',
+          top: 205,
+          right: screenWidth / 20,
+        }}>
+        <Image source={sound_ico} />
+        <Image source={turtle_ico} />
       </View>
-      {/* {!step_2 ? (
-        <>
+
+      <Modal visible={step_3 || step_4} transparent={true}>
+        <View style={styles.me_imageContainer}>
+          <>
+            {isloading ? (
+              <>
+                <Image
+                  source={
+                    param === audioTxt?.DisplayText ? mechat : wrong_msg_ico
+                  }
+                />
+                <Text style={styles.m_title}>
+                  Hi! My name is{' '}
+                  {param === audioTxt?.DisplayText
+                    ? audioTxt.DisplayText
+                    : '_____'}
+                  .
+                </Text>
+              </>
+            ) : (
+              <>
+                <Image source={mechat} />
+                <Text style={styles.m_title}>Hi! My name is _____.</Text>
+              </>
+            )}
+
+            <View
+              style={{
+                flexDirection: 'row',
+                gap: 9,
+                position: 'absolute',
+                top: 54,
+                left: 0,
+              }}>
+              <Image source={sound_ico} />
+              <Image source={turtle_ico} />
+            </View>
+          </>
+        </View>
+      </Modal>
+
+      <Modal visible={!modalVisible && !step_4} transparent={true}>
+        {/* {!sendClick ||
+          (step_3 && (
+            <Image
+              source={mic_frame}
+              style={{
+                position: 'absolute',
+                bottom: 150,
+                width: (screenWidth * 9) / 10,
+                marginLeft: screenWidth / 20,
+                marginRight: screenWidth / 20,
+              }}
+            />
+          ))} */}
+
+        <TouchableOpacity
+          onPress={handleInput}
+          style={{
+            position: 'absolute',
+            bottom: 40,
+            right: screenWidth / 2 - 50,
+          }}>
+          <Image source={mic_ico} />
+        </TouchableOpacity>
+        <Text style={styles.text_m}>Press to speak</Text>
+        {showHand && (
           <Image
-            source={mic_frame}
+            animationType="slide"
+            source={hand_ico}
             style={{
               position: 'absolute',
-              bottom: 150,
-              width: (screenWidth * 9) / 10,
-              marginLeft: screenWidth / 20,
-              marginRight: screenWidth / 20,
-              opacity: isloading ? 0 : 1,
+              bottom: 10,
+              right: screenWidth / 3 - 9,
             }}
           />
-          <TouchableOpacity
-            onPress={handleSend}
-            style={{
-              position: 'absolute',
-              bottom: 40,
-              right: screenWidth / 2 - 50,
-            }}>
-            <Image source={mic_ico} />
-          </TouchableOpacity>
-          <Text style={styles.text_m}>Press to speak</Text>
-        </>
-      ) : (
+        )}
+      </Modal>
+      <Image
+        source={mic_frame}
+        visible={step_4}
+        style={{
+          position: 'absolute',
+          bottom: 150,
+          width: (screenWidth * 9) / 10,
+          marginLeft: screenWidth / 20,
+          marginRight: screenWidth / 20,
+          opacity: isloading ? 0 : 1,
+        }}
+      />
+      <Modal visible={step_3} transparent={true}>
         <TouchableOpacity
-          style={styles.startButton}
-          onPress={handleClickContinue}>
-          <Text style={styles.b3_text}>Continue</Text>
+          onPress={handleSend}
+          style={{
+            position: 'absolute',
+            bottom: 40,
+            right: screenWidth / 2 - 50,
+          }}>
+          <Image source={mic_ico} />
         </TouchableOpacity>
-      )} */}
-
-      {/* <TouchableOpacity style={styles.startButton} onPress={handleClick}>
-        <Text style={styles.b3_text}>Continue</Text>
-      </TouchableOpacity> */}
+        <Text style={styles.text_m}>Press to speak</Text>
+      </Modal>
 
       {param === audioTxt?.DisplayText ? (
         <CustomGreatModal
@@ -460,16 +431,7 @@ const styles = StyleSheet.create({
     // justifyContent: 'center',
     // alignItems: 'center',
   },
-  startButton: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
-    bottom: 50,
-    width: (screenWidth * 9) / 10,
-    height: 57,
-    borderRadius: 45,
-    backgroundColor: '#F08080',
-  },
+
   title: {
     color: 'black',
     fontSize: 18,
@@ -526,11 +488,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 72,
     height: 72,
-  },
-  b3_text: {
-    color: 'white',
-    fontSize: 21,
-    fontFamily: 'OpenSans-Medium',
   },
   textBackground: {
     flexDirection: 'row',

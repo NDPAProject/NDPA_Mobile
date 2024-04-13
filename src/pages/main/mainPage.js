@@ -38,7 +38,11 @@ const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 const boxData = [
   [
-    {icon: person_ico, text: 'Personal\n Identity', nav: 'TypingSection'},
+    {
+      icon: person_ico,
+      text: 'Personal\n Identity',
+      nav: 'MainLearningSection',
+    },
     {icon: fship_ico, text: 'Friendship', nav: ''},
   ],
   [
@@ -60,11 +64,15 @@ const boxData = [
   [{icon: peer_ico, text: '     Peer Difficulties', nav: ''}],
 ];
 
-const MainPage = type => {
+const MainPage = ({route}) => {
   const [modalVisible, setModalVisible] = useState(true);
   const [showImage, setShowImage] = useState(false);
   const [step_1, setStep_1] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+
+  const {param} = route?.params;
+
+  console.log('-==param---------------------', param);
 
   const navigation = useNavigation();
 
@@ -79,6 +87,7 @@ const MainPage = type => {
 
   const handleClickSkip = async () => {
     try {
+      setModalVisible(false);
       setStep_1(false);
     } catch (error) {
       setErrorMsg((error && error.error) || 'Something went wrong.');
@@ -108,7 +117,7 @@ const MainPage = type => {
       <Modal
         animationType="fade"
         transparent={true}
-        visible={step_1 || type}
+        visible={step_1}
         onRequestClose={() => {
           setStep_1(!step_1);
         }}>
@@ -126,7 +135,7 @@ const MainPage = type => {
             }}>
             <View style={{position: 'absolute', top: 150, left: 20}}>
               <TouchableOpacity
-                onPress={() => navigation.navigate(boxData[0][0].nav)}>
+                onPress={() => navigation.navigate('TypingSection')}>
                 <View style={styles.boxBackground}>
                   <Image source={boxData[0][0].icon} style={styles.icon} />
                   <Text style={styles.text}>{boxData[0][0].text}</Text>
@@ -167,7 +176,7 @@ const MainPage = type => {
       <Modal
         animationType="slide"
         transparent={true}
-        visible={modalVisible}
+        visible={modalVisible && !param}
         onRequestClose={() => {
           setModalVisible(!modalVisible);
         }}>
@@ -223,7 +232,7 @@ const MainPage = type => {
                 borderRadius: 45,
                 backgroundColor: 'white',
               }}
-              onPress={setModalVisible}>
+              onPress={handleClickSkip}>
               <Text style={styles.b4_text}>Skip</Text>
             </Button>
           </View>

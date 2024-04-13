@@ -7,11 +7,10 @@ import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 //
 // Import Screens
-import MainPage from './mainPage';
-import TypingSection from '../learnTutorial/typingTutor';
-import SpeakingSection from '../learnTutorial/speakingTutor';
-import ReviewSection from '../learnTutorial/reviewTutor';
-import MainLearningSection from '../learn';
+import TypingSection from './typingPart';
+import SpeakingSection from './speakingPart';
+// import ReviewSection from './reviewPart';
+import StartPersonalSection from './personalIdPart';
 
 import {LogBox} from 'react-native';
 
@@ -20,12 +19,12 @@ LogBox.ignoreAllLogs(); //Ignore all log notifications
 
 const Stack = createStackNavigator();
 
-const Main = () => {
+const MainLearningSection = () => {
   return (
-    <Stack.Navigator initialRouteName="MainPage">
+    <Stack.Navigator initialRouteName="SpeakingSection">
       <Stack.Screen
-        name="MainPage"
-        component={MainPage}
+        name="StartPersonalSection"
+        component={StartPersonalSection}
         options={{headerShown: false}}
         initialParams={{param: false}}
       />
@@ -39,18 +38,14 @@ const Main = () => {
         component={SpeakingSection}
         options={{headerShown: false}}
       />
-      <Stack.Screen
+
+      {/* <Stack.Screen
         name="ReviewSection"
         component={ReviewSection}
         options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="MainLearningSection"
-        component={MainLearningSection}
-        options={{headerShown: false}}
-      />
+      />  */}
     </Stack.Navigator>
   );
 };
 
-export default Main;
+export default MainLearningSection;

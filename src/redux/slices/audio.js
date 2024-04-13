@@ -4,7 +4,12 @@ import RNFS from 'react-native-fs';
 import {Buffer} from 'buffer';
 
 // utils
-import {AZURE_SPEECH_API, AZURE_SPEECH_KEY} from '@env';
+import {
+  AZURE_SPEECH_TO_TEXT_API,
+  AZURE_SPEECH_KEY,
+  AZURE_TEXT_TO_SPEECH_API,
+} from '@env';
+import {dispatch} from '../store';
 
 const initialState = {
   isloading: false,
@@ -26,15 +31,24 @@ const slice = createSlice({
     },
 
     getAudioTextSuccess(state, action) {
-      state.isloading = false;
+      state.isloading = true;
       state.audioTxt = action.payload;
+    },
+
+    getTextAudioSuccess(state, action) {
+      state.isloading = true;
+      state.txtAudio = action.payload;
+    },
+
+    setisLoading(state) {
+      state.isloading = false;
     },
   },
 });
 
 export default slice.reducer;
 
-export const {getAudioTextSuccess} = slice.actions;
+export const {getAudioTextSuccess, setisLoading} = slice.actions;
 
 export const transcribeAudio = audioPath => async dispatch => {
   try {
@@ -53,8 +67,8 @@ export const transcribeAudio = audioPath => async dispatch => {
 
     const binaryData = base64ToBinary(audioBase64);
 
-    console.log('22222222222222222222222222', AZURE_SPEECH_API);
-    const response = await fetch(AZURE_SPEECH_API.trim(), {
+    console.log('22222222222222222222222222', AZURE_SPEECH_TO_TEXT_API);
+    const response = await fetch(AZURE_SPEECH_TO_TEXT_API.trim(), {
       method: 'POST',
       headers: {
         'Ocp-Apim-Subscription-Key': AZURE_SPEECH_KEY.trim(),
@@ -96,4 +110,36 @@ export const transcribeAudio = audioPath => async dispatch => {
     }
     dispatch(slice.actions.hasError(error));
   }
+};
+
+// Function to convert text to speech
+export const textToSpeech = text => async dispatch => {
+  try {
+    const response = await axios.post(
+      AZURE_TEXT_TO_SPEECH_API.trim(),
+      `<speak version='1.0' xml:lang='en-US'><voice xml:lang='en-US' xml:gender='Female' name='en-US-JessaNeural'>${text}</voice></speak>`, // XML body to specify the voice and text
+      {
+        headers: {
+          'Ocp-Apim-Subscription-Key': AZURE_SPEECH_KEY.trim(),
+          'Content-Type': 'application/ssml+xml',
+          'X-Microsoft-OutputFormat': 'audio-16khz-32kbitrate-mono-mp3', // Output format
+        },
+        responseType: 'arraybuffer', // Important to handle the binary audio data
+      },
+    );
+
+    // Convert the response to a base64 string to play the audio
+    const audioBase64 = Buffer.from(response.data, 'binary').toString('base64');
+    const audioSrc = `data:audio/mp3;base64,${audioBase64}`;
+    console.log('-------audioSrc------', audioSrc);
+    dispatch(getTextAudioSuccess(audioSrc));
+  } catch (error) {
+    console.error('Error:', error);
+    dispatch(slice.actions.hasError(error));
+  }
+};
+
+export const setStateFunc = () => async dispatch => {
+  console.log('11111111111');
+  dispatch(setisLoading);
 };

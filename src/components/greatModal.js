@@ -1,3 +1,4 @@
+import {type} from 'microsoft-cognitiveservices-speech-sdk/distrib/lib/src/common.speech/SpeechServiceConfig';
 import React from 'react';
 import {
   Modal,
@@ -18,6 +19,7 @@ const CustomGreatModal = ({
   icon,
   message,
   showImage,
+  buttonType,
   hand_ico,
   handleClick,
 }) => (
@@ -47,9 +49,16 @@ const CustomGreatModal = ({
               </React.Fragment>
             ))}
           </Text>
-          <TouchableOpacity style={styles.startButton} onPress={handleClick}>
-            <Text style={styles.b3_text}>Continue</Text>
-          </TouchableOpacity>
+          {buttonType ? (
+            <TouchableOpacity style={styles.startButton} onPress={handleClick}>
+              <Text style={styles.b3_text}>Continue</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity style={styles.tryButton} onPress={handleClick}>
+              <Text style={styles.b4_text}>Try again</Text>
+            </TouchableOpacity>
+          )}
+
           {showImage && <Image source={hand_ico} style={styles.handIcon} />}
         </View>
       </View>
@@ -115,8 +124,22 @@ const styles = StyleSheet.create({
     borderRadius: 45,
     backgroundColor: '#23B80C',
   },
+  tryButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: (screenWidth * 9.3) / 10,
+    height: 57,
+    marginTop: 20,
+    borderRadius: 45,
+    backgroundColor: '#FFC700',
+  },
   b3_text: {
     color: 'white',
+    fontSize: 21,
+    fontFamily: 'OpenSans-Medium',
+  },
+  b4_text: {
+    color: 'black',
     fontSize: 21,
     fontFamily: 'OpenSans-Medium',
   },

@@ -16,7 +16,7 @@ import {
 import {useNavigation, useRoute} from '@react-navigation/native';
 import Footer from '../../components/footer';
 
-const intro_ico = require('../../../assets/icons/learn/intro_ico.png');
+const intro_ico = require('../../../assets/icons/learn/person_ico.png');
 const check_pos_ico = require('../../../assets/icons/learn/check_pos_ico.png');
 const be_pos_ico = require('../../../assets/icons/learn/be_pos_ico.png');
 const pos_ico = require('../../../assets/icons/learn/pos_ico.png');
@@ -25,14 +25,14 @@ const road_ico = require('../../../assets/icons/learn/road.png');
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-const TutorSection = () => {
+const StartPersonalSection = () => {
   const navigation = useNavigation();
 
   return (
     <View style={styles.container}>
       <View style={styles.textBackground}>
         <Image source={intro_ico} />
-        <Text style={styles.title}>Introducing Yourself</Text>
+        <Text style={styles.title}>Personal Identity</Text>
       </View>
       <Image style={styles.road} source={road_ico} />
       <Image
@@ -63,7 +63,7 @@ const TutorSection = () => {
             left: (screenWidth * 5) / 7 - 10,
           },
         ]}
-        onPress={() => navigation.navigate('DestinationScreen')}>
+        onPress={() => navigation.navigate('TypingSection')}>
         <Image source={pos_ico} />
       </TouchableOpacity>
       <Image
@@ -91,13 +91,14 @@ const TutorSection = () => {
   );
 };
 
-export default TutorSection;
+export default StartPersonalSection;
 
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
     flex: 1,
     alignItems: 'center',
+    height: screenHeight,
     backgroundColor: '#FFFBF8',
   },
   title: {

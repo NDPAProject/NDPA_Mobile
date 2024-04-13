@@ -50,7 +50,7 @@ const Signin = () => {
   useEffect(() => {
     console.log('isAuthenticated', isAuthenticated);
     if (isAuthenticated) {
-      navigation.navigate('Main');
+      navigation.navigate('Main', {param: false});
     }
   }, [isAuthenticated, navigation]);
 
