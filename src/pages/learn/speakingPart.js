@@ -25,7 +25,6 @@ import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 
 //
 import Header from '../../components/header';
-import CustomStepModal from '../../components/stepModal';
 import CustomDialog from '../../components/dialogModal';
 import CustomGreatModal from '../../components/greatModal';
 import MoveDialog from '../../components/moveDialog';
@@ -262,7 +261,13 @@ const SpeakingSection = ({route}) => {
         buttonText="Go to Step 3"
         icon={reward_ico}
       />
-      <Header visible={true} />
+
+      <Header
+        visible={true}
+        text={'Introducing yourself'}
+        color={'#FFFBF8'}
+        editalbe={false}
+      />
 
       <Image
         source={t_icon}

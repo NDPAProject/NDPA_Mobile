@@ -13,13 +13,15 @@ import {
 } from 'react-native';
 import {Button} from 'react-native-paper';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import {useAuth} from '../../contexts/AuthContext';
+import {useAuth} from '../../../contexts/AuthContext';
+import Header from '../../../components/header';
 
 const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
 
-const appIcon = require('../../../assets/icons/lock_ico.png');
+const appIcon = require('../../../../assets/icons/lock_ico.png');
 
-const Createpwd = () => {
+const ChangePwd = () => {
   const {changePassword, isChangePwd, email} = useAuth('');
   const [password, setPassword] = useState('');
   const [cpassword, setCpassword] = useState('');
@@ -55,21 +57,17 @@ const Createpwd = () => {
 
   return (
     <View style={styles.container}>
-      <Image
-        source={appIcon}
-        resizeMode={'contain'}
-        style={{
-          height: 180,
-          width: 180,
-        }}
+      <Header
+        visible={false}
+        text={'Change Password'}
+        color={'white'}
+        editalbe={false}
       />
-      <Text style={styles.title}>Create New Password</Text>
-      <Text style={styles.text}>
-        {' '}
-        Your new password must be {'\n'}different from previously used
-      </Text>
       <View style={styles.container_in}>
-        <Text style={styles.b1_text}>Password</Text>
+        <Text style={styles.text}>
+          Your new password must be different from{'\n'}previously used.
+        </Text>
+        <Text style={styles.b1_text}>New Password</Text>
         <View
           style={{
             flexDirection: 'row',
@@ -101,12 +99,12 @@ const Createpwd = () => {
             }}
             onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
             <Image
-              source={require('../../../assets/icons/eye_show.png')}
+              source={require('../../../../assets/icons/eye_show.png')}
               style={{justifyContent: 'center'}}
             />
           </TouchableOpacity>
         </View>
-        <Text style={styles.b1_text}>Confirm Password</Text>
+        <Text style={styles.b1_text}>New Confirm Password</Text>
         <View
           style={{
             flexDirection: 'row',
@@ -138,91 +136,77 @@ const Createpwd = () => {
             }}
             onPress={() => setIsCpasswordVisible(!isCpasswordVisible)}>
             <Image
-              source={require('../../../assets/icons/eye_show.png')}
+              source={require('../../../../assets/icons/eye_show.png')}
               style={{justifyContent: 'center'}}
             />
           </TouchableOpacity>
         </View>
       </View>
-      <Button
-        style={{
-          justifyContent: 'center',
-          width: (screenWidth * 9) / 10,
-          height: 57,
-          marginTop: 51,
-          borderRadius: 45,
-          backgroundColor: '#F08080',
-        }}
-        // onPress={() => navigation.navigate('Pwddone')}>
-        onPress={handleCreatePass}>
-        <Text style={styles.b3_text}>Save</Text>
-      </Button>
+      {password === '' || cpassword === '' ? (
+        <Button
+          style={{
+            justifyContent: 'center',
+            width: (screenWidth * 9) / 10,
+            height: 57,
+            marginTop: 51,
+            borderRadius: 45,
+            backgroundColor: '#E9E9E9',
+          }}>
+          <Text style={styles.b2_text}>Save</Text>
+        </Button>
+      ) : (
+        <Button
+          style={{
+            justifyContent: 'center',
+            width: (screenWidth * 9) / 10,
+            height: 57,
+            marginTop: 51,
+            borderRadius: 45,
+            backgroundColor: '#F08080',
+          }}
+          onPress={handleCreatePass}>
+          <Text style={styles.b3_text}>Save</Text>
+        </Button>
+      )}
     </View>
   );
 };
 
-export default Createpwd;
+export default ChangePwd;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: 'white',
+    height: screenHeight,
   },
   container_in: {
     width: (screenWidth * 9) / 10,
     marginTop: 40,
   },
-  title: {
-    marginTop: 25,
-    letterSpacing: -1,
-    color: '#F08080',
-    fontSize: 32,
-    fontFamily: 'OpenSans-Bold',
-  },
+
   text: {
-    paddingTop: 20,
-    color: '#8F8E8F',
+    textAlign: 'left',
+    color: 'black',
     fontSize: 16,
     fontFamily: 'OpenSans-Medium',
   },
-  input: {
-    borderWidth: 1,
-    borderColor: '#BBBBBC',
-    width: 46,
-    height: 46,
-    paddingLeft: 18,
-    borderRadius: 5,
-    fontSize: 20,
-    fontFamily: 'OpenSans-Regular',
-  },
+
   b1_text: {
-    marginTop: 5,
+    marginTop: 25,
     color: '#F08080',
     fontSize: 16,
     fontFamily: 'OpenSans-Bold',
   },
-
+  b2_text: {
+    color: '#838384',
+    fontSize: 19,
+    fontFamily: 'OpenSans-Bold',
+  },
   b3_text: {
     color: 'white',
     fontSize: 19,
     fontFamily: 'OpenSans-Bold',
-  },
-  b4_text: {
-    color: 'black',
-    fontSize: 16,
-    fontFamily: 'OpenSans-Regular',
-  },
-  b5_text: {
-    color: '#F08080',
-    fontSize: 16,
-    fontFamily: 'OpenSans-Bold',
-  },
-  underline: {
-    height: 2,
-    backgroundColor: '#F08080',
-    width: '100%',
-    // marginTop: 1,
   },
 });

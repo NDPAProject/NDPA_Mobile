@@ -17,7 +17,7 @@ import {useNavigation} from '@react-navigation/native';
 const screenWidth = Dimensions.get('window').width;
 const arrow = require('../../assets/icons/left_ico.png');
 
-const Header = ({visible}) => {
+const Header = ({visible, text, color, editalbe, setEdit}) => {
   const navigation = useNavigation();
 
   const handleBackPress = () => {
@@ -25,20 +25,29 @@ const Header = ({visible}) => {
     navigation.goBack();
   };
 
+  const handleEditable = () => {
+    setEdit(prev => !prev);
+  };
+
   return (
     <>
-      <View style={styles.textBackground}>
+      <View style={[styles.textBackground, {backgroundColor: color}]}>
         <TouchableOpacity
           onPress={handleBackPress}
           style={{
             flexDirection: 'row',
             alignItems: 'center',
+            zIndex: 2,
           }}>
           <Image source={arrow} />
           <Text style={styles.text}>Back</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>Introducing yourself</Text>
-        <View style={{flexDirection: 'row'}}>{''}</View>
+        <Text style={styles.title}>{text}</Text>
+        {editalbe && (
+          <TouchableOpacity style={styles.startButton} onPress={handleEditable}>
+            <Text style={styles.b3_text}>Edit</Text>
+          </TouchableOpacity>
+        )}
       </View>
       {visible && (
         <ProgressBar
@@ -57,18 +66,22 @@ export default Header;
 const styles = StyleSheet.create({
   textBackground: {
     flexDirection: 'row',
-    backgroundColor: '#FFFBF8',
     alignItems: 'center',
-    justifyContent: 'space-between',
     marginTop: 40,
     width: (screenWidth * 9) / 10,
+    position: 'relative',
   },
   title: {
     textAlign: 'center',
     fontFamily: 'OpenSans-Regular',
     fontWeight: '600',
     fontSize: 20,
+    position: 'absolute',
+    left: 0,
+    right: 0,
     color: 'black',
+    zIndex: 1,
+    pointerEvents: 'none',
   },
   text: {
     fontFamily: 'OpenSans-Regular',
@@ -77,5 +90,20 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
     fontSize: 16,
     color: '#F08080',
+  },
+  startButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 64,
+    height: 30,
+    borderRadius: 45,
+    backgroundColor: '#F08080',
+    marginLeft: (screenWidth * 9) / 10 - 120,
+    zIndex: 2,
+  },
+  b3_text: {
+    color: 'white',
+    fontSize: 16,
+    fontFamily: 'OpenSans-Medium',
   },
 });

@@ -264,7 +264,12 @@ const TypingSection = () => {
         icon={reward_ico}
       />
 
-      <Header visible={true} />
+      <Header
+        visible={true}
+        text={'Introducing yourself'}
+        color={'#FFFBF8'}
+        editalbe={false}
+      />
 
       <Image
         source={t_icon}

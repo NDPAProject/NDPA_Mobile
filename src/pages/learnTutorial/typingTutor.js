@@ -232,7 +232,12 @@ const TypingSection = () => {
         message="Use the keyboard to write your name.NNYou can also select from the options."
       />
 
-      <Header visible={true} />
+      <Header
+        visible={true}
+        text={'Introducing yourself'}
+        color={'#FFFBF8'}
+        editalbe={false}
+      />
 
       <Image
         source={t_icon}

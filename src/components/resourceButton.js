@@ -28,7 +28,7 @@ const ResourceButton = ({image, text}) => (
       gap: 4,
     }}
     onPress={() => {
-      console.log('serch the cakes on map');
+      console.log('search the cakes on map');
     }}>
     <Image source={image} style={{width: 16, height: 16}} />
     <Text

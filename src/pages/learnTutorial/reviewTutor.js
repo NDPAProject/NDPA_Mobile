@@ -171,7 +171,12 @@ const ReviewSection = ({route}) => {
         message="Let's review the conversation.NNTap on the button to repeat."
       />
 
-      <Header visible={false} />
+      <Header
+        visible={false}
+        text={'Introducing yourself'}
+        color={'#FFFBF8'}
+        editalbe={false}
+      />
 
       <Image
         source={tom_s_ico}

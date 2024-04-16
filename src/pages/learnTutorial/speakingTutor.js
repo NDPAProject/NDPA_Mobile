@@ -254,7 +254,12 @@ const SpeakingSection = ({route}) => {
         message="Let's answer the question.Tap on theNN microphone and tell your name."
       />
 
-      <Header visible={true} />
+      <Header
+        visible={true}
+        text={'Introducing yourself'}
+        color={'#FFFBF8'}
+        editalbe={false}
+      />
 
       <Image
         source={t_icon}

@@ -20,7 +20,7 @@ const footerIcons = [
   {
     source: require('../../assets/icons/footer/learn.png'),
     sourceClick: require('../../assets/icons/footer/learn_click.png'),
-    navTarget: 'LearnSection',
+    navTarget: 'Main',
   },
   {
     source: require('../../assets/icons/footer/chat.png'),
