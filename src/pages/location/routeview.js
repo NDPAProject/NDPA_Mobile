@@ -9,27 +9,33 @@ import {
   Text,
   Image,
   TouchableOpacity,
+  Modal,
+  Button,
 } from 'react-native';
 import MapView, {Marker, Polyline} from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import {useNavigation, useRoute} from '@react-navigation/native';
+import LinearGradient from 'react-native-linear-gradient';
 import Geolocation from '@react-native-community/geolocation';
 import Geocoder from 'react-native-geocoding';
 import {getRhumbLineBearing, computeDestinationPoint} from 'geolib';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Footer from '../../components/footer';
-import {fab_1, fab_4, location_2, right_arrow} from '../../constants/images';
+import {
+  fab_1,
+  fab_4,
+  hand_ico,
+  location_2,
+  right_arrow,
+} from '../../constants/images';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
-const ASPECT_RATIO = screenWidth / screenHeight;
-const LATITUDE = 37.771707;
-const LONGITUDE = -122.4053769;
-const LATITUDE_DELTA = 0.005;
-const LONGITUDE_DELTA = 0.005;
+
 Geocoder.init(GOOGLE_API_KEY_ANDROID__);
 
-const FloatingActionButtonGroup = routedata => {
+const FloatingActionButtonGroup = (routedata, showImage) => {
   const navigation = useNavigation();
   const route = useRoute();
   const [locationaddress, setLocationaddress] = useState({
@@ -55,13 +61,25 @@ const FloatingActionButtonGroup = routedata => {
         }}>
         <Image source={fab_1} style={styles.fab_image} />
       </TouchableOpacity>
-      <TouchableOpacity
-        style={[styles.fabButton, {backgroundColor: '#FFFFFF'}]}
-        onPress={() => {
-          navigation.navigate('Streetview');
-        }}>
-        <Image source={fab_4} style={styles.fab_image} />
-      </TouchableOpacity>
+      <View>
+        <TouchableOpacity
+          style={[styles.fabButton, {backgroundColor: '#FFFFFF'}]}
+          onPress={() => {
+            navigation.navigate('Streetview', {routedata: routedata});
+          }}>
+          <Image source={fab_4} style={styles.fab_image} />
+        </TouchableOpacity>
+        {showImage && (
+          <Image
+            source={hand_ico}
+            style={{
+              position: 'relative',
+              bottom: 35,
+              left: 0,
+            }}
+          />
+        )}
+      </View>
     </View>
   );
 };
@@ -69,6 +87,10 @@ const FloatingActionButtonGroup = routedata => {
 const Routeview = () => {
   const navigation = useNavigation();
   const route = useRoute();
+  //modal
+  const [step_6, setStep_6] = useState(false);
+  const [showImage, setShowImage] = useState(false);
+  //
   const [coordinates, setCoordinates] = useState([
     {
       latitude: 51.51656759999999,
@@ -95,6 +117,20 @@ const Routeview = () => {
         longitudeDelta: 0.0421,
       });
     }
+
+    AsyncStorage.getItem('hasSeenTutorial').then(value => {
+      if (value === null) {
+        let timer;
+
+        timer = setTimeout(() => {
+          setStep_6(true);
+          timer = setTimeout(() => {
+            setShowImage(true);
+          }, 800);
+        }, 1000);
+        return () => clearTimeout(timer);
+      }
+    });
   }, []);
 
   //street name
@@ -321,8 +357,78 @@ const Routeview = () => {
           latitude: route.params.locationaddress.location_info.lat,
           longitude: route.params.locationaddress.location_info.lng,
         }}
+        showImage={false}
       />
       <Footer state={0} />
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={step_6}
+        onRequestClose={() => setStep_6(!step_6)}>
+        <LinearGradient
+          style={{flex: 1}}
+          colors={['rgba(0, 0, 0, 0.2)', 'rgba(255, 218, 185, 0.4)']}
+          start={{x: 0, y: 0}}
+          end={{x: 1, y: 0}}>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: 'rgba(224, 208, 193, 0.5)',
+            }}>
+            <View
+              style={{
+                backgroundColor: 'white',
+                borderRadius: 10,
+                width: 360,
+                height: 102,
+                paddingTop: 4,
+                paddingBottom: 12,
+                paddingHorizontal: 12,
+              }}>
+              <Text
+                style={{
+                  fontWeight: '700',
+                  fontSize: 10,
+                  lineHeight: 13.62,
+                  color: '#1E1D20',
+                }}>
+                6/8
+              </Text>
+              <Text
+                style={{
+                  fontWeight: '400',
+                  fontSize: 18,
+                  lineHeight: 24.51,
+                  color: '#1E1D20',
+                }}>
+                To begin, tap on the search bar to{'\n'}start finding your
+                desired location.
+              </Text>
+              <Text
+                style={{
+                  fontWeight: '600',
+                  fontSize: 16,
+                  lineHeight: 21.79,
+                  color: '#1E1D2080',
+                  textAlign: 'right',
+                }}>
+                Skip
+              </Text>
+            </View>
+
+            <FloatingActionButtonGroup
+              routedata={{
+                latitude: route.params.locationaddress.location_info.lat,
+                longitude: route.params.locationaddress.location_info.lng,
+              }}
+              showImage={showImage}
+            />
+          </View>
+        </LinearGradient>
+      </Modal>
     </View>
   );
 };
