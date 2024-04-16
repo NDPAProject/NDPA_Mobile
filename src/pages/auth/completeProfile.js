@@ -11,27 +11,70 @@ import {
   TouchableOpacity,
   TextInput,
   Modal,
+  ActivityIndicator,
 } from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
 import {Button} from 'react-native-paper';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {Calendar} from 'react-native-calendars';
 import CountryPicker, {Country} from 'react-native-country-picker-modal';
 
+import {useAuth} from '../../contexts/AuthContext';
+import {createProfile} from '../../redux/slices/user';
+
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
 const Completeprofile = () => {
+  const {users} = useAuth();
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
   const [pemail, setPemail] = useState('');
-  const [date, setDate] = useState < string > '';
-  const [open, setOpen] = useState < boolean > false;
+  const [date, setDate] = useState('');
+  const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
-  const [country, setCountry] = useState < string > '';
-  const [countryCode, setCountryCode] = useState < string > 'US';
-  const [pickerVisible, setPickerVisible] = useState < boolean > false;
+  const [country, setCountry] = useState('');
+  const [countryCode, setCountryCode] = useState('US');
+  const [pickerVisible, setPickerVisible] = useState(false);
   const [isValidEmail, setIsValidEmail] = useState(false);
 
-  const navigation = useNavigation();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const {message, error} = useSelector(state => state.user);
+
+  useEffect(() => {
+    const userData = {
+      fullName: name,
+      pEmail: pemail,
+      phoneNumber: number,
+      country: country,
+      bday: date,
+    };
+    console.log('isLoading:', isLoading, userData, users.id);
+    if (isLoading) {
+      dispatch(createProfile(userData, users.id));
+    }
+  }, [isLoading]);
+
+  useEffect(() => {
+    console.log('message:', message, error);
+    if (message?.code === 200) {
+      setIsLoading(false);
+      navigation.navigate('Profiledone');
+    } else if (error) {
+      setIsLoading(false);
+    }
+  }, [message, error]);
+
+  const handleSave = async () => {
+    try {
+      setIsLoading(true);
+    } catch (error) {
+      setErrorMsg((error && error.error) || 'Something went wrong.');
+      setIsLoading(false);
+    }
+  };
 
   const isValidEmailT = email => {
     return /\S+@\S+\.\S+/.test(email);
@@ -184,13 +227,11 @@ const Completeprofile = () => {
                     />
                   </TouchableOpacity>
                 </View>
-                {/* Replace DatePicker with Calendar from react-native-calendars */}
                 <Calendar
                   onDayPress={day => {
                     setDate(day.dateString);
                     setOpen(false);
                   }}
-                  // You can customize the Calendar further as needed
                 />
               </View>
             </View>
@@ -250,18 +291,25 @@ const Completeprofile = () => {
           </View>
         </View>
       </View>
-      <Button
+      <TouchableOpacity
         style={{
           justifyContent: 'center',
+          alignItems: 'center',
           width: (screenWidth * 9) / 10,
           height: 57,
-          marginTop: 40,
+          marginTop: 51,
           borderRadius: 45,
           backgroundColor: '#F08080',
+          opacity: isLoading ? 0.5 : 1,
         }}
-        onPress={() => navigation.navigate('Profiledone')}>
-        <Text style={styles.b3_text}>Save</Text>
-      </Button>
+        onPress={handleSave}
+        disabled={isLoading}>
+        {isLoading ? (
+          <ActivityIndicator size="small" color="#FFFFFF" />
+        ) : (
+          <Text style={styles.b3_text}>Save</Text>
+        )}
+      </TouchableOpacity>
     </View>
   );
 };
@@ -284,15 +332,11 @@ const styles = StyleSheet.create({
     fontSize: 40,
     justifyContent: 'center',
     alignItems: 'center',
+    letterSpacing: -2,
     marginTop: screenHeight / 20,
     fontFamily: 'OpenSans-Bold',
   },
-  text: {
-    paddingTop: 15,
-    color: '#8F8E8F',
-    fontSize: 16,
-    fontFamily: 'OpenSans-Medium',
-  },
+
   input: {
     borderWidth: 1,
     borderColor: '#F08080',
@@ -306,7 +350,7 @@ const styles = StyleSheet.create({
     color: '#F08080', // Change text color to red when email is valid
   },
   b0_text: {
-    marginTop: 30,
+    marginTop: screenHeight / 30,
     color: '#F08080',
     fontSize: 14,
     fontFamily: 'OpenSans-Bold',

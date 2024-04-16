@@ -10,22 +10,27 @@ import {
   Dimensions,
   TouchableOpacity,
   TextInput,
+  ActivityIndicator,
 } from 'react-native';
 import {useAuth} from '../../contexts/AuthContext';
 import {Button} from 'react-native-paper';
 import {useNavigation} from '@react-navigation/native';
+import {useSelector} from 'react-redux';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
 const Signin = () => {
-  const {login, isAuthenticated} = useAuth();
+  const {login, isAuthenticated, user, clearData, users} = useAuth();
+  const {message} = useSelector(state => state.user);
+
   const [email, setEmail] = useState('');
   const [isValidEmail, setIsValidEmail] = useState(false);
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [reason, setReason] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -37,7 +42,20 @@ const Signin = () => {
 
   const handleLogin = async () => {
     try {
+      console.log('Clicked-----', password.length, email);
       setIsLoading(true);
+      setReason('');
+      if (email.length === 0) {
+        setIsLoading(false);
+        setReason('Please enter email.');
+        return;
+      }
+      if (password.length === 0) {
+        console.log('222222222222s');
+        setIsLoading(false);
+        setReason('Password cannot be empty.');
+        return;
+      }
       console.log('=-=-=-=-=--', email, password);
       await login(email, password);
       setIsLoading(false);
@@ -48,11 +66,14 @@ const Signin = () => {
   };
 
   useEffect(() => {
-    console.log('isAuthenticated', isAuthenticated);
+    console.log('-------------isAuthenticated-------------', isAuthenticated);
     if (isAuthenticated) {
-      navigation.navigate('Main', {param: false});
+      const destination = message?.code === 200 ? 'Main' : 'Cprofile';
+      navigation.navigate(destination);
+      console.log(`Navigating to ${destination}`);
+      // navigation.navigate('Cprofile');
     }
-  }, [isAuthenticated, navigation]);
+  }, [isAuthenticated, users, navigation, clearData]);
 
   const navigation = useNavigation();
 
@@ -103,7 +124,7 @@ const Signin = () => {
               borderColor: '#F08080',
               padding: 10,
               paddingLeft: 30,
-              marginTop: 15,
+              marginTop: 10,
               marginBottom: 10,
               borderRadius: 40,
               fontFamily: 'OpenSans-Regular',
@@ -138,18 +159,25 @@ const Signin = () => {
         <TouchableOpacity onPress={() => navigation.navigate('Resetpwd')}>
           <Text style={styles.b2_text}>Forgot Password?</Text>
         </TouchableOpacity>
+        {!isLoading && <Text style={styles.errorText}>{reason}</Text>}
+        {!isAuthenticated && <Text style={styles.errorText}>{user}</Text>}
       </View>
       <Button
         style={{
           justifyContent: 'center',
           width: (screenWidth * 9) / 10,
           height: 57,
-          marginTop: 51,
+          marginTop: 15,
           borderRadius: 45,
           backgroundColor: '#F08080',
         }}
-        onPress={handleLogin}>
-        <Text style={styles.b3_text}>Sign In</Text>
+        onPress={handleLogin}
+        disabled={isLoading}>
+        {isLoading ? (
+          <ActivityIndicator size="small" color="#FFFFFF" />
+        ) : (
+          <Text style={styles.b3_text}>Sign In</Text>
+        )}
       </Button>
       <View style={styles.dividerContainer}>
         <View style={styles.dividerLine} />
@@ -181,7 +209,7 @@ const Signin = () => {
           justifyContent: 'space-between',
           flexDirection: 'row',
           alignItems: 'center',
-          marginTop: 50,
+          marginTop: 40,
         }}>
         <Text style={styles.b4_text}>Don`t have an account? </Text>
         <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
@@ -200,6 +228,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     backgroundColor: 'white',
+    height: screenHeight,
   },
   container_in: {
     width: (screenWidth * 9) / 10,
@@ -214,7 +243,7 @@ const styles = StyleSheet.create({
     fontFamily: 'OpenSans-Bold',
   },
   text: {
-    paddingTop: 15,
+    paddingTop: 10,
     color: '#8F8E8F',
     fontSize: 16,
     fontFamily: 'OpenSans-Medium',
@@ -230,7 +259,7 @@ const styles = StyleSheet.create({
     fontFamily: 'OpenSans-Regular',
   },
   b1_text: {
-    marginTop: 40,
+    marginTop: 30,
     color: '#F08080',
     fontSize: 14,
     fontFamily: 'OpenSans-Bold',
@@ -282,14 +311,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     flexDirection: 'row', // Align items in a row
     alignItems: 'center', // Center items vertically
-    marginVertical: 20, // Add some vertical margin
+    marginVertical: 25, // Add some vertical margin
   },
   social: {
     width: (screenWidth * 2.3) / 5,
     justifyContent: 'space-between',
     flexDirection: 'row', // Align items in a row
     alignItems: 'center', // Center items vertically
-    marginTop: 35,
+    marginTop: 20,
   },
   dividerLine: {
     flex: 1, // Take up equal space

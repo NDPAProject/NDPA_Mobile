@@ -4,6 +4,7 @@ import {persistReducer} from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 // slices
 import audioReducer from './slices/audio';
+import userReducer from './slices/user';
 // ----------------------------------------------------------------------
 
 export const createNoopStorage = () => ({
@@ -29,6 +30,7 @@ export const rootPersistConfig = {
 
 const rootReducer = combineReducers({
   audio: audioReducer,
+  user: userReducer,
 });
 
 export default rootReducer;

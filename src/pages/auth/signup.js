@@ -10,6 +10,7 @@ import {
   Dimensions,
   TouchableOpacity,
   TextInput,
+  ActivityIndicator,
 } from 'react-native';
 import {Button} from 'react-native-paper';
 import {useNavigation, useRoute} from '@react-navigation/native';
@@ -20,7 +21,7 @@ const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
 const Signup = () => {
-  const {register, isRegister} = useAuth();
+  const {register, isRegister, data, clearData} = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [cpassword, setCpassword] = useState('');
@@ -28,36 +29,59 @@ const Signup = () => {
   const [isValidPassword, setIsValidPassword] = useState(true);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isCpasswordVisible, setIsCpasswordVisible] = useState(false);
+  const [reason, setReason] = useState('');
 
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  // const handleSignup = ()
   const handleSignup = async () => {
     try {
-      if (password === cpassword) {
-        // setIsLoading(true);
-        console.log('=-=-=-=-=--', email, password);
-        await register(email, password);
-        // setIsLoading(false);
-      } else {
-        setIsValidPassword(false);
+      console.log('Clicked-----', password.length, cpassword, email);
+      setIsLoading(true);
+      setReason('');
+      if (email.length === 0) {
+        setIsLoading(false);
+        setReason('Please enter email.');
+        return;
       }
+      if (password.length === 0) {
+        console.log('222222222222s');
+        setIsLoading(false);
+        setReason('Password cannot be empty.');
+        return;
+      }
+      if (cpassword.length === 0) {
+        setIsLoading(false);
+        setReason('ConfirmPassword cannot be empty.');
+        return;
+      }
+      if (password !== cpassword) {
+        setIsLoading(false);
+        setReason('Passwords do not match.');
+        return;
+      }
+      await register(email, password);
+      setIsLoading(false);
     } catch (error) {
       setErrorMsg((error && error.error) || 'Something went wrong.');
-      // setIsLoading(false);
+      setIsLoading(false);
     }
   };
   const navigation = useNavigation();
 
   useEffect(() => {
-    console.log('isRegister', isRegister);
-    if (isRegister) {
+    clearData();
+    console.log('Component mounted, data cleared');
+  }, [clearData]);
+
+  useEffect(() => {
+    console.log('====', data);
+    if (data?.code === 201) {
       navigation.navigate('Signin');
     }
-  }, [isRegister, navigation]);
+  }, [data, navigation]);
 
   const handlePress = () => {
     console.log('Apple icon clicked!');
@@ -98,6 +122,7 @@ const Signup = () => {
         {!isValidEmailT(email) && email.length > 0 && (
           <Text style={styles.errorText}>Invalid email format</Text>
         )}
+        {isRegister && <Text style={styles.errorText}>{data.message}</Text>}
         <Text style={styles.b1_text}>Password</Text>
         <View
           style={{
@@ -172,9 +197,7 @@ const Signup = () => {
             />
           </TouchableOpacity>
         </View>
-        {!isValidPassword && (
-          <Text style={styles.errorText}>Password's do not match</Text>
-        )}
+        {!isLoading && <Text style={styles.errorText}>{reason}</Text>}
       </View>
       <TouchableOpacity
         style={{
@@ -185,11 +208,17 @@ const Signup = () => {
           marginTop: 51,
           borderRadius: 45,
           backgroundColor: '#F08080',
+          opacity: isLoading ? 0.5 : 1,
         }}
-        onPress={handleSignup}>
-        {/* onPress={() => navigation.navigate('Cprofile')}> */}
-        <Text style={styles.b3_text}>Sign Up</Text>
+        onPress={handleSignup}
+        disabled={isLoading}>
+        {isLoading ? (
+          <ActivityIndicator size="small" color="#FFFFFF" />
+        ) : (
+          <Text style={styles.b3_text}>Sign Up</Text>
+        )}
       </TouchableOpacity>
+
       <View style={styles.dividerContainer}>
         <View style={styles.dividerLine} />
         <Text style={styles.dividerText}>or</Text>

@@ -372,7 +372,3 @@ const styles = StyleSheet.create({
     right: 0,
   },
 });
-
-
-
-

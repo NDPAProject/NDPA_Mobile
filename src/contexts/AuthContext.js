@@ -23,8 +23,10 @@ const initialState = {
   isCheckCode: false,
   isChangePwd: false,
   user: null,
+  users: [],
   email: null,
   access: null,
+  data: null,
 };
 
 const reducer = (state, action) => {
@@ -38,14 +40,17 @@ const reducer = (state, action) => {
       isCheckCode: action.payload.isCheckCode,
       isChangePwd: action.payload.isChangePwd,
       user: action.payload.user,
+      users: action.payload.users,
       email: action.payload.email,
       access: action.payload.access,
+      data: action.payload.data,
     };
   }
   if (action.type === 'LOGIN') {
     return {
       ...state,
-      isAuthenticated: true,
+      isAuthenticated: action.payload.isAuthenticated,
+      users: action.payload.users,
       user: action.payload.user,
       access: action.payload.access,
     };
@@ -53,9 +58,8 @@ const reducer = (state, action) => {
   if (action.type === 'REGISTER') {
     return {
       ...state,
-      isRegister: true,
-      // user: action.payload.user,
-      // access: action.payload.access,
+      isRegister: action.payload.isRegister,
+      data: action.payload.data,
     };
   }
   if (action.type === 'FORGOTPASS') {
@@ -88,6 +92,7 @@ const reducer = (state, action) => {
       ...state,
       isAuthenticated: false,
       user: null,
+      users: [],
       access: null,
       email: null,
     };
@@ -128,7 +133,7 @@ const AuthProvider = ({children}) => {
           dispatch({
             type: 'INITIAL',
             payload: {
-              isAuthenticated: true,
+              isAuthenticated: false,
               isRegister: false,
               isForgotPassword: false,
               isChangePwd: false,
@@ -193,17 +198,29 @@ const AuthProvider = ({children}) => {
         email,
         password,
       });
-      const {accessToken, user} = response.data.data;
-      setSession(accessToken);
-      const {exp} = jwtDecode(accessToken);
-      await tokenExpired(exp);
-      dispatch({
-        type: 'LOGIN',
-        payload: {
-          user,
-          access: accessToken,
-        },
-      });
+      console.log('---------------data---------------', response.data);
+      if (response.data.code === 410) {
+        dispatch({
+          type: 'LOGIN',
+          payload: {
+            isAuthenticated: false,
+            user: response.data.message,
+          },
+        });
+      } else {
+        const {accessToken, user} = response.data.data;
+        setSession(accessToken);
+        const {exp} = jwtDecode(accessToken);
+        await tokenExpired(exp);
+        dispatch({
+          type: 'LOGIN',
+          payload: {
+            isAuthenticated: true,
+            users: user,
+            access: accessToken,
+          },
+        });
+      }
     } catch (error) {
       if (error.response) {
         // The request was made and the server responded with a status code
@@ -238,8 +255,16 @@ const AuthProvider = ({children}) => {
         dispatch({
           type: 'REGISTER',
           payload: {
-            // user,
-            // access: accessToken,
+            isRegister: true,
+            data: registerResponse.data,
+          },
+        });
+      } else if (registerResponse.data.code === 407) {
+        dispatch({
+          type: 'REGISTER',
+          payload: {
+            isRegister: true,
+            data: registerResponse.data,
           },
         });
       }
@@ -262,6 +287,25 @@ const AuthProvider = ({children}) => {
       throw (error && error.response && error.response.data) || error;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const clearData = useCallback(async => {
+    dispatch({
+      type: 'INITIAL',
+      payload: {
+        isAuthenticated: false,
+        isRegister: false,
+        isForgotPassword: false,
+        isVerifyEmail: false,
+        isCheckCode: false,
+        isChangePwd: false,
+        user: null,
+        data: null,
+        email: null,
+        access: null,
+        users: [],
+      },
+    });
   }, []);
 
   // ForgetPassword
@@ -375,6 +419,8 @@ const AuthProvider = ({children}) => {
       user: state.user,
       access: state.access,
       email: state.email,
+      data: state.data,
+      users: state.users,
       isChangePwd: state.isChangePwd,
       method: 'jwt',
       initialize,
@@ -385,6 +431,7 @@ const AuthProvider = ({children}) => {
       forgotPassword,
       logout,
       resend,
+      clearData,
       changePassword,
     }),
     [
@@ -395,8 +442,10 @@ const AuthProvider = ({children}) => {
       state.isVerifyEmail,
       state.isCheckCode,
       state.user,
+      state.users,
       state.access,
       state.email,
+      state.data,
       state.isChangePwd,
       initialize,
       login,
@@ -406,6 +455,7 @@ const AuthProvider = ({children}) => {
       forgotPassword,
       logout,
       resend,
+      clearData,
       changePassword,
     ],
   );
