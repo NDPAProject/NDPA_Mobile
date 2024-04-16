@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import {GOOGLE_API_KEY_ANDROID, GOOGLE_API_KEY_ANDROID__} from '@env';
+import {GOOGLE_API_KEY_ANDROID__, GOOGLE_API_KEY_ANDROID___} from '@env';
 
 //import modules
 import React, {useState, useEffect, useRef} from 'react';
@@ -20,6 +20,7 @@ import {useNavigation} from '@react-navigation/native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import LinearGradient from 'react-native-linear-gradient';
 import {BlurView} from '@react-native-community/blur';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 //import screens
 import Footer from '../../components/footer';
 import {
@@ -98,7 +99,44 @@ const Mainpage = () => {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [step_1, setStep_1] = useState(false);
-  const [showImage, setShowImage] = useState(false);
+  const [showImage, setShowImage] = useState(0);
+  const [showstep_1, setShowstep_1] = useState(true);
+  const [showstep_2, setShowstep_2] = useState(false);
+  const [step_3, setStep_3] = useState(false);
+  const [tutodata, setTutodata] = useState('');
+  const [placeId, setPlaceId] = useState(null);
+
+  const [step_4, setStep_4] = useState(false);
+  const [showstep_4, setShowstep_4] = useState(false);
+
+  useEffect(() => {
+    // AsyncStorage.removeItem('hasSeenTutorial');
+    AsyncStorage.getItem('hasSeenTutorial').then(value => {
+      if (value === null) {
+        // If no data is available in AsyncStorage, show the modal
+        setModalVisible(true);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    console.log('geometry', placeId);
+    fetch(
+      `https://maps.googleapis.com/maps/api/place/details/json?placeid=${placeId}&key=${GOOGLE_API_KEY_ANDROID__}`,
+    )
+      .then(response => response.json())
+      .then(data => {
+        if (data.result) {
+          setLocation(data.result.geometry.location);
+          setLocationaddress({
+            location: data.result.address_components[0].short_name,
+            address: data.result.formatted_address,
+            location_info: data.result.geometry.location,
+          });
+          // console.log('Geometry', data.result);
+        }
+      });
+  }, [placeId]);
 
   useEffect(() => {
     ref.current?.setAddressText('');
@@ -124,22 +162,36 @@ const Mainpage = () => {
   };
   useEffect(() => {
     let timer;
-    console.log('------------------', step_1, modalVisible);
     // Check if step_1 is true, then set a timer to show the modal after 0.4 sec
     if (step_1) {
       timer = setTimeout(() => {
         setStep_1(true);
         timer = setTimeout(() => {
-          setShowImage(true);
+          setShowImage(1);
         }, 800);
-      }, 1000); // 400 milliseconds = 0.4 seconds
+      }, 1000);
     } else {
-      // If step_1 is false, make sure to hide the modal
       setStep_1(false);
     }
 
     return () => clearTimeout(timer); // Cleanup the timer when the component unmounts or step_1 changes
   }, [step_1]);
+
+  useEffect(() => {
+    let timer;
+    console.log('--------step_3----------', step_3);
+
+    if (step_3) {
+      timer = setTimeout(() => {
+        setShowImage(3);
+      }, 1000);
+    } else {
+      // If step_1 is false, make sure to hide the modal
+      setStep_3(false);
+    }
+
+    return () => clearTimeout(timer); // Cleanup the timer when the component unmounts or step_1 changes
+  }, [step_3]);
 
   return (
     <View style={styles.container}>
@@ -189,7 +241,7 @@ const Mainpage = () => {
                 location_info: details.geometry.location,
               });
               setFocus_sb(false);
-              setModalVisible(true);
+              // setModalVisible(true);
               refRBSheet.current.open();
             }
           }}
@@ -256,7 +308,7 @@ const Mainpage = () => {
             placeholderTextColor: '#1E1D2080',
           }}
           query={{
-            key: GOOGLE_API_KEY_ANDROID__,
+            key: GOOGLE_API_KEY_ANDROID___,
             language: 'en',
             types: 'address',
           }}
@@ -321,6 +373,9 @@ const Mainpage = () => {
           justifyContent: 'flex-start',
           alignItems: 'flex-start',
           gap: 16,
+          position: 'absolute',
+          top: 86,
+          zIndex: 1,
         }}>
         {resourcedata.map((data, i) => (
           <ResourceButton key={i} image={data.image} text={data.text} />
@@ -426,12 +481,23 @@ const Mainpage = () => {
               </View>
             </TouchableOpacity>
           </View>
+
+          {showImage === 4 && (
+            <Image
+              source={hand_ico}
+              style={{
+                position: 'absolute',
+                bottom: 44,
+                left: 70,
+              }}
+            />
+          )}
         </View>
       </RBSheet>
 
       <Footer state={0} />
 
-      {/* <Modal
+      <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisible}
@@ -505,7 +571,8 @@ const Mainpage = () => {
                   borderWidth: 1,
                   borderColor: '#F08080',
                 }}
-                onPress={setModalVisible}>
+                // onPress={setModalVisible}
+              >
                 <Text
                   style={{
                     fontWeight: '600',
@@ -540,6 +607,112 @@ const Mainpage = () => {
             }}>
             <View style={{position: 'absolute', top: 58}}>
               <GooglePlacesAutocomplete
+                ref={ref}
+                onPress={(data, details = null) => {
+                  if (details) {
+                    setLocation(details.geometry.location);
+                    console.log('data', data, '\n location', details);
+                    setLocationaddress({
+                      location: details.address_components[0].short_name,
+                      address: details.formatted_address,
+                      location_info: details.geometry.location,
+                    });
+                    setFocus_sb(false);
+                    // setModalVisible(true);
+                    refRBSheet.current.open();
+                  }
+                }}
+                renderRow={(data, i) => {
+                  if (i == 0) {
+                    setTutodata(data.description);
+
+                    setPlaceId(data.place_id);
+                    console.log('data', data.place_id);
+                  }
+                  return (
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'flex-start',
+                        alignItems: 'center',
+                        width: screenWidth - 30,
+                        paddingTop: 32,
+                        paddingBottom: 10,
+                      }}>
+                      <Image
+                        source={img_location}
+                        style={{width: 32, height: 32, marginRight: 8}}
+                        resizeMode="contain"
+                      />
+                      <Text
+                        style={{
+                          color: '#1E1D20',
+                          fontSize: 16,
+                          fontFamily: 'OpenSans-Regular',
+                          fontWeight: 400,
+                        }}>
+                        {data.description}
+                      </Text>
+                    </View>
+                  );
+                }}
+                renderRightButton={() => (
+                  <TouchableOpacity
+                    key={'voice'}
+                    style={{flexDirection: 'row', alignItems: 'center'}}
+                    onPress={() => {
+                      ref.current?.clear();
+                      setFocus_sb(false);
+                    }}>
+                    <Image
+                      source={focus_sb ? close : sb_voice}
+                      style={{width: 24, height: 24, marginRight: 16}}
+                    />
+                  </TouchableOpacity>
+                )}
+                renderLeftButton={() => (
+                  <TouchableOpacity
+                    key={'se'}
+                    style={{flexDirection: 'row', alignItems: 'center'}}
+                    onPress={() => {
+                      setFocus_sb(false);
+                    }}>
+                    <Image
+                      source={focus_sb ? back : sb_search}
+                      style={{width: 24, height: 24, marginLeft: 16}}
+                    />
+                  </TouchableOpacity>
+                )}
+                textInputProps={{
+                  onChangeText: text => {
+                    if (text.length > 1) {
+                      setAddress(text);
+                      if (address) setFocus_sb(true);
+                      setShowstep_2(false);
+                      let timer;
+                      setShowstep_1(false);
+                      timer = setTimeout(() => {
+                        setStep_3(true);
+                      }, 800);
+                    }
+                  },
+                  onFocus: () => {
+                    setShowImage(0);
+                    let timer;
+                    setShowstep_1(false);
+                    timer = setTimeout(() => {
+                      setShowstep_2(true);
+                    }, 800);
+
+                    console.log('Input focused');
+                  },
+                  placeholderTextColor: '#1E1D2080',
+                }}
+                query={{
+                  key: GOOGLE_API_KEY_ANDROID__,
+                  language: 'en',
+                  types: 'address',
+                }}
                 placeholder="Enter Location"
                 minLength={2}
                 autoFocus={false}
@@ -576,12 +749,24 @@ const Mainpage = () => {
                     lineHeight: 21,
                     padding: 12,
                   },
+                  predefinedPlacesDescription: {
+                    color: '#1faadb',
+                  },
+
+                  listView: {
+                    backgroundColor: 'white',
+                    width: screenWidth,
+                    height: '100%',
+                  },
+                  separator: {
+                    height: 1,
+                    backgroundColor: '#1E1D201A',
+                  },
                 }}
                 enablePoweredByContainer={false}
-                onPress={() => setStep_1(false)}
               />
 
-              {showImage && (
+              {showImage === 1 && (
                 <Image
                   source={hand_ico}
                   style={{
@@ -592,6 +777,228 @@ const Mainpage = () => {
                 />
               )}
             </View>
+            {showstep_1 && (
+              <View
+                style={{
+                  backgroundColor: 'white',
+                  borderRadius: 10,
+                  width: 360,
+                  height: 102,
+                  paddingTop: 4,
+                  paddingBottom: 12,
+                  paddingHorizontal: 12,
+                }}>
+                <Text
+                  style={{
+                    fontWeight: '700',
+                    fontSize: 10,
+                    lineHeight: 13.62,
+                    color: '#1E1D20',
+                  }}>
+                  1/8
+                </Text>
+                <Text
+                  style={{
+                    fontWeight: '400',
+                    fontSize: 18,
+                    lineHeight: 24.51,
+                    color: '#1E1D20',
+                  }}>
+                  To begin, tap on the search bar to{'\n'}start finding your
+                  desired location.
+                </Text>
+                <Text
+                  style={{
+                    fontWeight: '600',
+                    fontSize: 16,
+                    lineHeight: 21.79,
+                    color: '#1E1D2080',
+                    textAlign: 'right',
+                  }}>
+                  Skip
+                </Text>
+              </View>
+            )}
+            {showstep_2 && (
+              <View
+                style={{
+                  backgroundColor: 'white',
+                  borderRadius: 10,
+                  width: 360,
+                  height: 102,
+                  paddingTop: 4,
+                  paddingBottom: 12,
+                  paddingHorizontal: 12,
+                }}>
+                <Text
+                  style={{
+                    fontWeight: '700',
+                    fontSize: 10,
+                    lineHeight: 13.62,
+                    color: '#1E1D20',
+                  }}>
+                  2/8
+                </Text>
+                <Text
+                  style={{
+                    fontWeight: '400',
+                    fontSize: 18,
+                    lineHeight: 24.51,
+                    color: '#1E1D20',
+                  }}>
+                  To begin, tap on the search bar to{'\n'}start finding your
+                  desired location.
+                </Text>
+                <Text
+                  style={{
+                    fontWeight: '600',
+                    fontSize: 16,
+                    lineHeight: 21.79,
+                    color: '#1E1D2080',
+                    textAlign: 'right',
+                  }}>
+                  Skip
+                </Text>
+              </View>
+            )}
+          </View>
+          <Modal
+            animationType="fade"
+            transparent={true}
+            visible={step_3}
+            onRequestClose={() => setStep_3(!step_3)}>
+            <LinearGradient
+              style={{flex: 1}}
+              colors={['rgba(0, 0, 0, 0.2)', 'rgba(255, 218, 185, 0.4)']}
+              start={{x: 0, y: 0}}
+              end={{x: 1, y: 0}}>
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: 'rgba(224, 208, 193, 0.5)',
+                }}>
+                <TouchableOpacity
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                    alignItems: 'center',
+                    position: 'absolute',
+                    top: 140,
+                    width: screenWidth,
+                    paddingTop: 32,
+                    paddingBottom: 10,
+                    backgroundColor: 'white',
+                    paddingHorizontal: 24,
+                  }}
+                  onPress={() => {
+                    setStep_3(false);
+                    setStep_1(false);
+                    refRBSheet.current.open();
+                    let timer;
+                    timer = setTimeout(() => {
+                      refRBSheet.current.close();
+                      timer = setTimeout(() => {
+                        setStep_4(true);
+                        refRBSheet.current.open();
+                        timer = setTimeout(() => {
+                          setShowImage(4);
+                        }, 1000);
+                      }, 1000);
+                    }, 1000);
+                  }}>
+                  <Image
+                    source={img_location}
+                    style={{width: 32, height: 32, marginRight: 8}}
+                    resizeMode="contain"
+                  />
+                  <Text
+                    style={{
+                      color: '#1E1D20',
+                      fontSize: 16,
+                      fontFamily: 'OpenSans-Regular',
+                      fontWeight: 400,
+                    }}>
+                    {tutodata}
+                  </Text>
+                </TouchableOpacity>
+
+                {showImage === 3 && (
+                  <Image
+                    source={hand_ico}
+                    style={{
+                      position: 'absolute',
+                      top: 190,
+                      right: 85,
+                    }}
+                  />
+                )}
+                {
+                  <View
+                    style={{
+                      backgroundColor: 'white',
+                      borderRadius: 10,
+                      width: 360,
+                      height: 102,
+                      paddingTop: 4,
+                      paddingBottom: 12,
+                      paddingHorizontal: 12,
+                    }}>
+                    <Text
+                      style={{
+                        fontWeight: '700',
+                        fontSize: 10,
+                        lineHeight: 13.62,
+                        color: '#1E1D20',
+                      }}>
+                      3/8
+                    </Text>
+                    <Text
+                      style={{
+                        fontWeight: '400',
+                        fontSize: 18,
+                        lineHeight: 24.51,
+                        color: '#1E1D20',
+                      }}>
+                      To begin, tap on the search bar to{'\n'}start finding your
+                      desired location.
+                    </Text>
+                    <Text
+                      style={{
+                        fontWeight: '600',
+                        fontSize: 16,
+                        lineHeight: 21.79,
+                        color: '#1E1D2080',
+                        textAlign: 'right',
+                      }}>
+                      Skip
+                    </Text>
+                  </View>
+                }
+              </View>
+            </LinearGradient>
+          </Modal>
+        </LinearGradient>
+      </Modal>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={step_4}
+        onRequestClose={() => setStep_4(!step_4)}>
+        <LinearGradient
+          style={{flex: 1}}
+          colors={['rgba(0, 0, 0, 0.2)', 'rgba(255, 218, 185, 0.4)']}
+          start={{x: 0, y: 0}}
+          end={{x: 1, y: 0}}>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: 'rgba(224, 208, 193, 0.5)',
+            }}>
             <View
               style={{
                 backgroundColor: 'white',
@@ -609,7 +1016,7 @@ const Mainpage = () => {
                   lineHeight: 13.62,
                   color: '#1E1D20',
                 }}>
-                1/8
+                4/8
               </Text>
               <Text
                 style={{
@@ -634,7 +1041,7 @@ const Mainpage = () => {
             </View>
           </View>
         </LinearGradient>
-      </Modal> */}
+      </Modal>
     </View>
   );
 };
@@ -698,9 +1105,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    position: 'relative',
-    top: 0,
-    right: -screenWidth / 2 + 46,
+    position: 'absolute',
+    top: 130,
+    right: 16,
   },
   fabButton: {
     width: 56,
