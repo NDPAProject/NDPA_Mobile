@@ -20,3 +20,5 @@ export const fab_5 = require('../../assets/icons/location/fab_5.png');
 export const str_icon = require('../../assets/icons/location/str_icon.png');
 export const tuto_1 = require('../../assets/icons/location/tuto_1.png');
 export const hand_ico = require('../../assets/icons/hand_ico.png');
+export const arrow_up = require('../../assets/icons/location/arrow-up.png');
+export const tuto_2 = require('../../assets/icons/location/tuto_2.png');
