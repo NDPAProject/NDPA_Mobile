@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 
 // Import React and Component
-import React from 'react';
+import React, {useState} from 'react';
 
 import {
   Image,
@@ -16,6 +16,7 @@ import {useNavigation} from '@react-navigation/native';
 
 import Footer from '../../../components/footer';
 import Header from '../../../components/header';
+import MoveDialog from '../../../components/moveDialog';
 
 const account_ico = require('../../../../assets/icons/profile/setting/account_ico.png');
 const card = require('../../../../assets/icons/profile/setting/card.png');
@@ -31,6 +32,7 @@ const perimeter_ico = require('../../../../assets/icons/profile/setting/perimete
 const sand_clock = require('../../../../assets/icons/profile/setting/sand_clock.png');
 const right_arrow_ico = require('../../../../assets/icons/profile/setting/right_arrow_ico.png');
 const mdi_logout = require('../../../../assets/icons/profile/setting/mdi_logout.png');
+const out_ico = require('../../../../assets/icons/profile/setting/out_ico.png');
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -42,18 +44,47 @@ const boxData = [
   {icon: sand_clock, text: 'Time support', nav: 'TimeSupportPage'},
   {icon: perimeter_ico, text: 'Perimeter safety', nav: ''},
   {icon: card, text: 'Payment details', nav: ''},
-  {icon: notification_ico, text: 'Notifications', nav: ''},
-  {icon: mdi_book, text: 'Privacy policy', nav: ''},
-  {icon: docum_ico, text: 'Terms and Conditions', nav: ''},
-  {icon: help_ico, text: 'Help', nav: ''},
-  {icon: mdi_web, text: 'Language & Country', nav: ''},
+  {icon: notification_ico, text: 'Notifications', nav: 'NotificationPage'},
+  {icon: mdi_book, text: 'Privacy policy', nav: 'PrivacyPage'},
+  {icon: docum_ico, text: 'Terms and Conditions', nav: 'TermsPage'},
+  {icon: help_ico, text: 'Help', nav: 'HelpPage'},
+  {icon: mdi_web, text: 'Language & Country', nav: 'LanguagePage'},
 ];
 
 const SettingPage = () => {
   const navigation = useNavigation();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const handleClick = async () => {
+    try {
+      setModalVisible(true);
+      console.log('=-=-=-=-=--', modalVisible);
+    } catch (error) {
+      setErrorMsg((error && error.error) || 'Something went wrong.');
+      // setIsLoading(false);
+    }
+  };
+
+  const handleClickMove = async () => {
+    try {
+      navigation.navigate('Fpage');
+    } catch (error) {
+      setErrorMsg((error && error.error) || 'Something went wrong.');
+      // setIsLoading(false);
+    }
+  };
 
   return (
     <View style={styles.container}>
+      <MoveDialog
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        handleClick={handleClickMove}
+        text="Are you sure NNwant to log out?"
+        icon={out_ico}
+        visible={false}
+      />
       <Header
         visible={false}
         text={'Settings'}
@@ -77,7 +108,7 @@ const SettingPage = () => {
               <View style={styles.underline} />
             </TouchableOpacity>
           ))}
-          <TouchableOpacity onPress={() => navigation.navigate('')}>
+          <TouchableOpacity onPress={handleClick}>
             <View style={styles.boxBackground}>
               <View
                 style={{flexDirection: 'row', alignItems: 'center', gap: 25}}>

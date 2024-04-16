@@ -35,10 +35,12 @@ const MoveDialog = ({
         </Text>
         <TouchableOpacity style={styles.startButton} onPress={handleClick}>
           <Text style={styles.b3_text}>Go</Text>
+          {/* <Text style={styles.b3_text}>Yes</Text> */}
         </TouchableOpacity>
         {!visible && (
           <TouchableOpacity style={styles.skipButton} onPress={handleClick}>
             <Text style={styles.b4_text}>Skip</Text>
+            {/* <Text style={styles.b4_text}>No</Text> */}
           </TouchableOpacity>
         )}
       </View>

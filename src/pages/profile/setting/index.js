@@ -7,7 +7,6 @@ import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 //
 // Import Screens
-// import SENPass from './senPass';
 import SettingPage from './setting';
 import PersonalInfoPage from './personalInfo';
 import ChangePwdPage from './changePwd';
@@ -16,9 +15,11 @@ import TimeSettingPage from './timeSet';
 import IdVerificationPage from './idVerification';
 import IdVerificationList from './idVeriList';
 import SENPassportPage from './senPass';
-// import AccessMenu from './accessMenu';
-// import CallKey from './callKey';
-// import EditAvatar from './editAvatar';
+import NotificationPage from './notification';
+import PrivacyPage from './policy';
+import TermsPage from './terms';
+import HelpPage from './help';
+import LanguagePage from './language';
 
 import {LogBox} from 'react-native';
 
@@ -68,6 +69,31 @@ const Main = () => {
       <Stack.Screen
         name="SENPassportPage"
         component={SENPassportPage}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="NotificationPage"
+        component={NotificationPage}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="PrivacyPage"
+        component={PrivacyPage}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="TermsPage"
+        component={TermsPage}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="HelpPage"
+        component={HelpPage}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="LanguagePage"
+        component={LanguagePage}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

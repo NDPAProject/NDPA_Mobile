@@ -25,7 +25,7 @@ const Signup = () => {
   const [password, setPassword] = useState('');
   const [cpassword, setCpassword] = useState('');
   const [isValidEmail, setIsValidEmail] = useState(false);
-  const [isValidPassword, setIsValidPassword] = useState(false);
+  const [isValidPassword, setIsValidPassword] = useState(true);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isCpasswordVisible, setIsCpasswordVisible] = useState(false);
 
@@ -173,9 +173,10 @@ const Signup = () => {
           </TouchableOpacity>
         </View>
       </View>
-      <Button
+      <TouchableOpacity
         style={{
           justifyContent: 'center',
+          alignItems: 'center',
           width: (screenWidth * 9) / 10,
           height: 57,
           marginTop: 51,
@@ -185,7 +186,7 @@ const Signup = () => {
         onPress={handleSignup}>
         {/* onPress={() => navigation.navigate('Cprofile')}> */}
         <Text style={styles.b3_text}>Sign Up</Text>
-      </Button>
+      </TouchableOpacity>
       <View style={styles.dividerContainer}>
         <View style={styles.dividerLine} />
         <Text style={styles.dividerText}>or</Text>
