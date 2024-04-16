@@ -172,6 +172,9 @@ const Signup = () => {
             />
           </TouchableOpacity>
         </View>
+        {!isValidPassword && (
+          <Text style={styles.errorText}>Password's do not match</Text>
+        )}
       </View>
       <TouchableOpacity
         style={{
