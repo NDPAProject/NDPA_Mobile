@@ -1,10 +1,16 @@
 // https://aboutreact.com/react-native-login-and-signup/
 
 // Import React and Component
-import React, {useState, useEffect, useContext} from 'react';
-import {Image, View, StyleSheet, Text, Dimensions} from 'react-native';
-import {Button} from 'react-native-paper';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import React, {useState, useEffect} from 'react';
+import {
+  Image,
+  View,
+  StyleSheet,
+  Text,
+  Dimensions,
+  TouchableOpacity,
+} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 
 const appIcon = require('../../../assets/icons/app_logo.png');
 const screenWidth = Dimensions.get('window').width;
@@ -37,9 +43,10 @@ const Fpage = () => {
       <View style={styles.textBackground}>
         <Text style={styles.title}>Join us today</Text>
         <Text style={styles.text}>Enter your details to proceed further</Text>
-        <Button
+        <TouchableOpacity
           style={{
             justifyContent: 'center',
+            alignItems: 'center',
             width: (screenWidth * 8) / 10,
             height: 57,
             marginTop: 51,
@@ -48,10 +55,11 @@ const Fpage = () => {
           }}
           onPress={() => navigation.navigate('Signup')}>
           <Text style={styles.b1_text}>Get Started</Text>
-        </Button>
-        <Button
+        </TouchableOpacity>
+        <TouchableOpacity
           style={{
             justifyContent: 'center',
+            alignItems: 'center',
             width: (screenWidth * 8) / 10,
             height: 57,
             borderColor: '#F08080',
@@ -62,7 +70,7 @@ const Fpage = () => {
           }}
           onPress={() => navigation.navigate('Signin')}>
           <Text style={styles.b2_text}>Sign In</Text>
-        </Button>
+        </TouchableOpacity>
       </View>
     </View>
   );

@@ -14,8 +14,6 @@ import {
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 
-import Footer from '../../components/footer';
-
 const access_menu = require('../../../assets/icons/profile/access_menu.png');
 const call_keyworker = require('../../../assets/icons/profile/call_keyworker.png');
 const edit_avatar = require('../../../assets/icons/profile/edit_avatar.png');
@@ -34,7 +32,7 @@ const boxData = [
     {icon: call_keyworker, text: '       Call\nKey Worker', nav: ''},
   ],
   [
-    {icon: access_menu, text: 'Accessibility\n      Menu', nav: ''},
+    {icon: access_menu, text: 'Accessibility\n      Menu', nav: 'AccessMenu'},
     {icon: sen_passport, text: 'SEN Passport', nav: ''},
   ],
   [{icon: setting, text: 'Settings', nav: 'SettingPart'}],
@@ -66,7 +64,6 @@ const MainPage = () => {
           ))}
         </View>
       </ScrollView>
-      <Footer />
     </View>
   );
 };

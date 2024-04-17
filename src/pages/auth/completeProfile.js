@@ -14,7 +14,6 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import {Button} from 'react-native-paper';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {Calendar} from 'react-native-calendars';
 import CountryPicker, {Country} from 'react-native-country-picker-modal';

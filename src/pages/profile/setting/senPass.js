@@ -15,7 +15,6 @@ import {
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 
-import Footer from '../../../components/footer';
 import Header from '../../../components/header';
 
 const screenWidth = Dimensions.get('window').width;
@@ -162,7 +161,6 @@ const SENPassportPage = () => {
           )}
         </View>
       </ScrollView>
-      <Footer state={4} />
     </View>
   );
 };

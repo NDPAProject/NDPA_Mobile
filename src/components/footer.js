@@ -61,11 +61,7 @@ const Footer = props => {
             setActiveIcon(index), handlePress(icon.navTarget);
           }}>
           <Image
-            source={
-              activeIcon === index || props.state === index
-                ? icon.sourceClick
-                : icon.source
-            }
+            source={props.state === index ? icon.sourceClick : icon.source}
           />
         </TouchableOpacity>
       ))}

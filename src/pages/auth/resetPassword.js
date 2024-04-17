@@ -9,9 +9,9 @@ import {
   Dimensions,
   TouchableOpacity,
   TextInput,
+  ActivityIndicator,
 } from 'react-native';
-import {Button} from 'react-native-paper';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import {useAuth} from '../../contexts/AuthContext';
 
 const screenWidth = Dimensions.get('window').width;
@@ -24,6 +24,7 @@ const Resetpwd = () => {
   const [email, setEmail] = useState('');
 
   const [isLoading, setIsLoading] = useState(false);
+  const [reason, setReason] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -40,7 +41,15 @@ const Resetpwd = () => {
   const handleSendOTP = async () => {
     try {
       console.log('0000000000000000', email);
+      setIsLoading(true);
+      setReason('');
+      if (email.length === 0) {
+        setIsLoading(false);
+        setReason('Please enter email.');
+        return;
+      }
       await forgotPassword(email);
+      setIsLoading(false);
     } catch (error) {
       setIsError(true);
       setErrorMsg(
@@ -87,19 +96,26 @@ const Resetpwd = () => {
         {!isValidEmailT(email) && email.length > 0 && (
           <Text style={styles.errorText}>Invalid email format</Text>
         )}
+        {!isLoading && <Text style={styles.errorText}>{reason}</Text>}
       </View>
-      <Button
+      <TouchableOpacity
         style={{
           justifyContent: 'center',
+          alignItems: 'center',
           width: (screenWidth * 9) / 10,
           height: 57,
           marginTop: 51,
           borderRadius: 45,
           backgroundColor: '#F08080',
         }}
-        onPress={handleSendOTP}>
-        <Text style={styles.b3_text}>Send</Text>
-      </Button>
+        onPress={handleSendOTP}
+        disabled={isLoading}>
+        {isLoading ? (
+          <ActivityIndicator size="small" color="#FFFFFF" />
+        ) : (
+          <Text style={styles.b3_text}>Send</Text>
+        )}
+      </TouchableOpacity>
 
       <View
         style={{

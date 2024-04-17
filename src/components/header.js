@@ -67,7 +67,8 @@ const styles = StyleSheet.create({
   textBackground: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 40,
+    marginTop: 30,
+    marginBottom: 10,
     width: (screenWidth * 9) / 10,
     position: 'relative',
   },

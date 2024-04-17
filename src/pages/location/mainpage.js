@@ -10,7 +10,6 @@ import {
   Image,
   Text,
   Modal,
-  Button,
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
@@ -22,7 +21,6 @@ import LinearGradient from 'react-native-linear-gradient';
 import {BlurView} from '@react-native-community/blur';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 //import screens
-import Footer from '../../components/footer';
 import {
   sb_search,
   sb_voice,
@@ -110,7 +108,7 @@ const Mainpage = () => {
   const [showstep_4, setShowstep_4] = useState(false);
 
   useEffect(() => {
-    // AsyncStorage.removeItem('hasSeenTutorial');
+    AsyncStorage.removeItem('hasSeenTutorial');
     AsyncStorage.getItem('hasSeenTutorial').then(value => {
       if (value === null) {
         // If no data is available in AsyncStorage, show the modal
@@ -494,8 +492,6 @@ const Mainpage = () => {
           )}
         </View>
       </RBSheet>
-
-      <Footer state={0} />
 
       <Modal
         animationType="slide"

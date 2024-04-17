@@ -133,7 +133,7 @@ const AuthProvider = ({children}) => {
           dispatch({
             type: 'INITIAL',
             payload: {
-              isAuthenticated: false,
+              isAuthenticated: true,
               isRegister: false,
               isForgotPassword: false,
               isChangePwd: false,

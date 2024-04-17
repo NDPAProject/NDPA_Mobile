@@ -189,16 +189,6 @@ const SpeakingSection = ({route}) => {
     }
   };
 
-  // const onStopRecord = async () => {
-  //   try {
-  //     const result = await audioRecorderPlayer.stopRecorder();
-  //     audioRecorderPlayer.removeRecordBackListener();
-  //     console.log(result);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
   useEffect(() => {
     let timer;
     if (modalVisible) {
@@ -395,7 +385,7 @@ const SpeakingSection = ({route}) => {
 
       {param === audioTxt?.DisplayText ? (
         <CustomGreatModal
-          visible={isloading && !step_3}
+          visible={isloading && !step_3 && !modalVisible && !step_2}
           hand_ico={hand_ico}
           icon={thumb_icon}
           showImage={showImage}
@@ -406,7 +396,7 @@ const SpeakingSection = ({route}) => {
         />
       ) : (
         <CustomGreatModal
-          visible={isloading && !step_3}
+          visible={isloading && !step_3 && !modalVisible && !step_2}
           hand_ico={hand_ico}
           icon={try_again_ico}
           showImage={showImage}

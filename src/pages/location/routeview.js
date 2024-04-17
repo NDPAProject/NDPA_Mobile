@@ -10,18 +10,15 @@ import {
   Image,
   TouchableOpacity,
   Modal,
-  Button,
 } from 'react-native';
 import MapView, {Marker, Polyline} from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
-import Geolocation from '@react-native-community/geolocation';
 import Geocoder from 'react-native-geocoding';
 import {getRhumbLineBearing, computeDestinationPoint} from 'geolib';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import Footer from '../../components/footer';
 import {
   fab_1,
   fab_4,
@@ -359,7 +356,6 @@ const Routeview = () => {
         }}
         showImage={false}
       />
-      <Footer state={0} />
 
       <Modal
         animationType="fade"

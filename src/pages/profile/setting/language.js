@@ -15,7 +15,6 @@ import {
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 
-import Footer from '../../../components/footer';
 import Header from '../../../components/header';
 
 const language_ico = require('../../../../assets/icons/profile/setting/language_ico.png');
@@ -82,7 +81,6 @@ const LanguagePage = () => {
           ))}
         </View>
       </ScrollView>
-      <Footer state={4} />
     </View>
   );
 };

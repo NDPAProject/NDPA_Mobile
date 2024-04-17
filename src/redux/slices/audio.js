@@ -15,6 +15,7 @@ const initialState = {
   isloading: false,
   error: null,
   audioTxt: null,
+  txtAudio: null,
 };
 
 const slice = createSlice({
@@ -48,7 +49,8 @@ const slice = createSlice({
 
 export default slice.reducer;
 
-export const {getAudioTextSuccess, setisLoading} = slice.actions;
+export const {getAudioTextSuccess, getTextAudioSuccess, setisLoading} =
+  slice.actions;
 
 export const transcribeAudio = audioPath => async dispatch => {
   try {
@@ -131,7 +133,7 @@ export const textToSpeech = text => async dispatch => {
     // Convert the response to a base64 string to play the audio
     const audioBase64 = Buffer.from(response.data, 'binary').toString('base64');
     const audioSrc = `data:audio/mp3;base64,${audioBase64}`;
-    console.log('-------audioSrc------', audioSrc);
+    console.log('-------audioSrc------');
     dispatch(getTextAudioSuccess(audioSrc));
   } catch (error) {
     console.error('Error:', error);

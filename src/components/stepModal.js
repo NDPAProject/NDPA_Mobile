@@ -1,9 +1,24 @@
 import React from 'react';
 import {Modal, View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import {Button} from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
 
-const CustomStepModal = ({visible, onRequestClose, stepText, message}) => (
+import MessageTom from './tomMsg';
+import ChatBox from './chatBox';
+import MyMessage from './myMsg';
+
+const CustomStepModal = ({
+  visible,
+  onRequestClose,
+  stepText,
+  message,
+  handleInput,
+  text,
+  handleSend,
+  messageIcon,
+  handleChangeText,
+  showHand,
+  sendClick,
+}) => (
   <Modal
     animationType="fade"
     transparent={true}
@@ -27,20 +42,27 @@ const CustomStepModal = ({visible, onRequestClose, stepText, message}) => (
               </React.Fragment>
             ))}
           </Text>
-          {/* <TouchableOpacity onPress={onRequestClose}>
+          <TouchableOpacity
+            onPress={onRequestClose}
+            style={{position: 'absolute', bottom: 5, right: 8, zIndex: 3}}>
             <Text style={styles.text_m3}>Skip</Text>
-          </TouchableOpacity> */}
-          {/* <TouchableOpacity
-            onPress={() => console.log('Skip pressed')}
-            style={{
-              // position: 'absolute',
-              bottom: 25,
-              right: 8,
-              padding: 10,
-            }}>
-            <Text style={styles.text_m3}>Skip</Text>
-          </TouchableOpacity> */}
+          </TouchableOpacity>
         </View>
+        {stepText === '2/5' && (
+          <MessageTom
+            children={' Hi! My name is Tom. \nWhat is your name?'}
+            type={false}
+          />
+        )}
+        {stepText === '3/5' && <MyMessage sendClick={sendClick} text={text} />}
+        <ChatBox
+          showHand={showHand}
+          handleInput={handleInput}
+          text={text}
+          handleChangeText={handleChangeText}
+          handleSend={handleSend}
+          messageIcon={messageIcon}
+        />
       </View>
     </LinearGradient>
   </Modal>
@@ -50,6 +72,7 @@ const styles = StyleSheet.create({
   flexContainer: {
     flex: 1,
   },
+
   modalBackground: {
     flex: 1,
     justifyContent: 'center',
@@ -69,6 +92,7 @@ const styles = StyleSheet.create({
     fontFamily: 'OpenSans-Medium',
     textAlign: 'center',
     marginTop: 6,
+    zIndex: 1,
     // alignItems: 'center',
   },
   text_m2: {
@@ -78,15 +102,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 5,
     left: 8,
+    zIndex: 1,
   },
   text_m3: {
     color: '#9D9C9D',
     fontSize: 16,
     fontFamily: 'OpenSans-Medium',
     textDecorationLine: 'underline',
-    position: 'absolute',
-    bottom: -25,
-    right: -8,
   },
 });
 

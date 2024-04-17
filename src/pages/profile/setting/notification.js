@@ -9,29 +9,12 @@ import {
   StyleSheet,
   Text,
   Dimensions,
-  TouchableOpacity,
   ScrollView,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import Toggle from 'react-native-toggle-element';
 
-import Footer from '../../../components/footer';
 import Header from '../../../components/header';
-
-const account_ico = require('../../../../assets/icons/profile/setting/account_ico.png');
-const card = require('../../../../assets/icons/profile/setting/card.png');
-const docum_ico = require('../../../../assets/icons/profile/setting/docum_ico.png');
-const help_ico = require('../../../../assets/icons/profile/setting/help_ico.png');
-const id_card = require('../../../../assets/icons/profile/setting/id_card.png');
-const mdi_book = require('../../../../assets/icons/profile/setting/mdi_book-lock-outline.png');
-const mdi_web = require('../../../../assets/icons/profile/setting/mdi_web.png');
-const notification_ico = require('../../../../assets/icons/profile/setting/notification_ico.png');
-const passport = require('../../../../assets/icons/profile/setting/passport.png');
-const lock_ico = require('../../../../assets/icons/profile/setting/lock_ico.png');
-const perimeter_ico = require('../../../../assets/icons/profile/setting/perimeter_ico.png');
-const sand_clock = require('../../../../assets/icons/profile/setting/sand_clock.png');
-const right_arrow_ico = require('../../../../assets/icons/profile/setting/right_arrow_ico.png');
-const mdi_logout = require('../../../../assets/icons/profile/setting/mdi_logout.png');
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;

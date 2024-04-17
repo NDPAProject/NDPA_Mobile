@@ -17,7 +17,6 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import Footer from '../../components/footer';
 import {hand_ico} from '../../constants/images';
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -325,7 +324,6 @@ const Routepage = () => {
           </View>
         </TouchableOpacity>
       </View>
-      <Footer state={0} />
 
       <Modal
         animationType="fade"

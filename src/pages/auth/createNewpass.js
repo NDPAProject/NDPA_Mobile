@@ -10,8 +10,8 @@ import {
   Dimensions,
   TouchableOpacity,
   TextInput,
+  ActivityIndicator,
 } from 'react-native';
-import {Button} from 'react-native-paper';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {useAuth} from '../../contexts/AuthContext';
 
@@ -25,22 +25,33 @@ const Createpwd = () => {
   const [cpassword, setCpassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isCpasswordVisible, setIsCpasswordVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation();
 
   const handleCreatePass = async () => {
     console.log('clicked', password, cpassword);
     try {
-      console.log('=-=-=-=-=--', email, password);
-      if (password === cpassword) {
-        // setIsLoading(true);
-        console.log('=-=-=-=-=--', email, password);
-        await changePassword(email, password);
-        // setIsLoading(false);
-      } else {
-        setIsValidPassword(false);
+      setIsLoading(true);
+      if (password.length === 0) {
+        setIsLoading(false);
+        setReason('Password cannot be empty.');
+        return;
       }
+      if (cpassword.length === 0) {
+        setIsLoading(false);
+        setReason('ConfirmPassword cannot be empty.');
+        return;
+      }
+      if (password !== cpassword) {
+        setIsLoading(false);
+        setReason('Passwords do not match.');
+        return;
+      }
+      await changePassword(email, password);
+      setIsLoading(false);
     } catch (error) {
       console.log(error);
+      setIsLoading(false);
       // setErrorMsg((error && error.error) || 'Something went wrong.');
       // setIsLoading(false);
     }
@@ -49,7 +60,7 @@ const Createpwd = () => {
   useEffect(() => {
     console.log('isChangePwd', isChangePwd);
     if (isChangePwd) {
-      navigation.navigate('pwdDone');
+      navigation.navigate('Pwddone');
     }
   }, [isChangePwd, navigation]);
 
@@ -144,19 +155,24 @@ const Createpwd = () => {
           </TouchableOpacity>
         </View>
       </View>
-      <Button
+      <TouchableOpacity
         style={{
           justifyContent: 'center',
+          alignItems: 'center',
           width: (screenWidth * 9) / 10,
           height: 57,
           marginTop: 51,
           borderRadius: 45,
           backgroundColor: '#F08080',
         }}
-        // onPress={() => navigation.navigate('Pwddone')}>
-        onPress={handleCreatePass}>
-        <Text style={styles.b3_text}>Save</Text>
-      </Button>
+        onPress={handleCreatePass}
+        disabled={isLoading}>
+        {isLoading ? (
+          <ActivityIndicator size="small" color="#FFFFFF" />
+        ) : (
+          <Text style={styles.b3_text}>Save</Text>
+        )}
+      </TouchableOpacity>
     </View>
   );
 };

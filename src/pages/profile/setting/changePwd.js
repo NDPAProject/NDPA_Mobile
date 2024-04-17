@@ -11,7 +11,6 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
-import {Button} from 'react-native-paper';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {useAuth} from '../../../contexts/AuthContext';
 import Header from '../../../components/header';
@@ -143,9 +142,10 @@ const ChangePwd = () => {
         </View>
       </View>
       {password === '' || cpassword === '' ? (
-        <Button
+        <TouchableOpacity
           style={{
             justifyContent: 'center',
+            alignItems: 'center',
             width: (screenWidth * 9) / 10,
             height: 57,
             marginTop: 51,
@@ -153,11 +153,12 @@ const ChangePwd = () => {
             backgroundColor: '#E9E9E9',
           }}>
           <Text style={styles.b2_text}>Save</Text>
-        </Button>
+        </TouchableOpacity>
       ) : (
-        <Button
+        <TouchableOpacity
           style={{
             justifyContent: 'center',
+            alignItems: 'center',
             width: (screenWidth * 9) / 10,
             height: 57,
             marginTop: 51,
@@ -166,7 +167,7 @@ const ChangePwd = () => {
           }}
           onPress={handleCreatePass}>
           <Text style={styles.b3_text}>Save</Text>
-        </Button>
+        </TouchableOpacity>
       )}
     </View>
   );

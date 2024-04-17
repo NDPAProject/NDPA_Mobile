@@ -12,6 +12,7 @@ const MoveDialog = ({
   modalVisible,
   setModalVisible,
   handleClick,
+  handleClickSkip,
   text,
   icon,
   visible,
@@ -38,7 +39,7 @@ const MoveDialog = ({
           {/* <Text style={styles.b3_text}>Yes</Text> */}
         </TouchableOpacity>
         {!visible && (
-          <TouchableOpacity style={styles.skipButton} onPress={handleClick}>
+          <TouchableOpacity style={styles.skipButton} onPress={handleClickSkip}>
             <Text style={styles.b4_text}>Skip</Text>
             {/* <Text style={styles.b4_text}>No</Text> */}
           </TouchableOpacity>

@@ -13,7 +13,6 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import {useAuth} from '../../contexts/AuthContext';
-import {Button} from 'react-native-paper';
 import {useNavigation} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
 
@@ -68,7 +67,7 @@ const Signin = () => {
   useEffect(() => {
     console.log('-------------isAuthenticated-------------', isAuthenticated);
     if (isAuthenticated) {
-      const destination = message?.code === 200 ? 'Main' : 'Cprofile';
+      const destination = user?.parentEmail !== null ? 'Main' : 'Cprofile';
       navigation.navigate(destination);
       console.log(`Navigating to ${destination}`);
       // navigation.navigate('Cprofile');
@@ -162,9 +161,10 @@ const Signin = () => {
         {!isLoading && <Text style={styles.errorText}>{reason}</Text>}
         {!isAuthenticated && <Text style={styles.errorText}>{user}</Text>}
       </View>
-      <Button
+      <TouchableOpacity
         style={{
           justifyContent: 'center',
+          alignItems: 'center',
           width: (screenWidth * 9) / 10,
           height: 57,
           marginTop: 15,
@@ -178,7 +178,7 @@ const Signin = () => {
         ) : (
           <Text style={styles.b3_text}>Sign In</Text>
         )}
-      </Button>
+      </TouchableOpacity>
       <View style={styles.dividerContainer}>
         <View style={styles.dividerLine} />
         <Text style={styles.dividerText}>or</Text>

@@ -4,16 +4,12 @@ import 'react-native-gesture-handler';
 import React, {useState} from 'react';
 
 import {
-  Image,
   View,
   StyleSheet,
   Text,
   TextInput,
   Dimensions,
   TouchableOpacity,
-  ScrollView,
-  Button,
-  SafeAreaView,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';

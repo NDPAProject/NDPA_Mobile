@@ -5,6 +5,7 @@ import React from 'react';
 // Import Navigators from React Navigation
 // import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
+import {View} from 'react-native';
 //
 // Import Screens
 import MainPage from './mainPage';

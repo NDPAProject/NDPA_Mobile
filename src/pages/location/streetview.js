@@ -9,9 +9,7 @@ import {
   TouchableOpacity,
   Modal,
   Animated,
-  Button,
 } from 'react-native';
-import MapView from 'react-native-maps';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import StreetView from 'react-native-streetview';
 import LinearGradient from 'react-native-linear-gradient';

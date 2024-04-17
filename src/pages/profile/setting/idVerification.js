@@ -1,11 +1,17 @@
 // https://aboutreact.com/react-native-login-and-signup/
 
 // Import React and Component
-import React, {useState, useEffect, useRef} from 'react';
-import {Image, View, StyleSheet, Text, Dimensions} from 'react-native';
+import React, {useState} from 'react';
+import {
+  Image,
+  View,
+  StyleSheet,
+  Text,
+  Dimensions,
+  TouchableOpacity,
+} from 'react-native';
 // import {RNCamera} from 'react-native-camera';
-import {Button} from 'react-native-paper';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import Header from '../../../components/header';
 
 const screenWidth = Dimensions.get('window').width;
@@ -69,9 +75,10 @@ const IdVerificationPage = () => {
         )}
       </View>
       {success ? (
-        <Button
+        <TouchableOpacity
           style={{
             justifyContent: 'center',
+            alignItems: 'center',
             width: 286,
             height: 57,
             marginTop: 51,
@@ -80,11 +87,12 @@ const IdVerificationPage = () => {
           }}
           onPress={handleClickOk}>
           <Text style={styles.b3_text}>OK</Text>
-        </Button>
+        </TouchableOpacity>
       ) : (
-        <Button
+        <TouchableOpacity
           style={{
             justifyContent: 'center',
+            alignItems: 'center',
             width: 286,
             height: 57,
             marginTop: 51,
@@ -93,7 +101,7 @@ const IdVerificationPage = () => {
           }}
           onPress={handleCreatePass}>
           <Text style={styles.b3_text}>Start</Text>
-        </Button>
+        </TouchableOpacity>
       )}
     </View>
   );

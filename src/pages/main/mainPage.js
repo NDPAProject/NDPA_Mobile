@@ -13,8 +13,7 @@ import {
   ScrollView,
   Modal,
 } from 'react-native';
-import {useNavigation, useRoute} from '@react-navigation/native';
-import {Button} from 'react-native-paper';
+import {useNavigation} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import {BlurView} from '@react-native-community/blur';
 
@@ -209,9 +208,10 @@ const MainPage = ({route}) => {
             <Text style={styles.text_m}>
               Let's learn {'\n'}how to use the app!
             </Text>
-            <Button
+            <TouchableOpacity
               style={{
                 justifyContent: 'center',
+                alignItems: 'center',
                 width: 280,
                 height: 57,
                 marginTop: 20,
@@ -220,10 +220,11 @@ const MainPage = ({route}) => {
               }}
               onPress={handleClick}>
               <Text style={styles.b3_text}>Let's Start</Text>
-            </Button>
-            <Button
+            </TouchableOpacity>
+            <TouchableOpacity
               style={{
                 justifyContent: 'center',
+                alignItems: 'center',
                 width: 280,
                 height: 57,
                 borderColor: '#F08080',
@@ -234,7 +235,7 @@ const MainPage = ({route}) => {
               }}
               onPress={handleClickSkip}>
               <Text style={styles.b4_text}>Skip</Text>
-            </Button>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>

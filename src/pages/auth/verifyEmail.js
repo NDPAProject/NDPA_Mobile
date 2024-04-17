@@ -10,8 +10,8 @@ import {
   Dimensions,
   TouchableOpacity,
   TextInput,
+  ActivityIndicator,
 } from 'react-native';
-import {Button} from 'react-native-paper';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {useAuth} from '../../contexts/AuthContext';
 
@@ -24,6 +24,7 @@ const Verifyemail = () => {
   const inputRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
   const {checkCode, isCheckCode, email, resend} = useAuth();
   const [errorMsg, setErrorMsg] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleTextChange = (text, index) => {
     const newCode = [...code];
@@ -31,23 +32,19 @@ const Verifyemail = () => {
     setCode(newCode);
 
     if (text && index < 3) {
-      // Check if the next ref.current is not null before calling focus
       inputRefs[index + 1].current?.focus();
     }
     if (!text && index > 0) {
-      // Check if the previous ref.current is not null before calling focus
       inputRefs[index - 1].current?.focus();
     }
   };
 
   const handleCheck = async () => {
     try {
-      // setIsLoading(true);
-      console.log('=-=-=-=-=--', code, email);
+      setIsLoading(true);
       const codeNumber = parseInt(code.join(''), 10);
-      console.log('=-=-=-=-=--', codeNumber, email);
       await checkCode(email, codeNumber);
-      // setIsLoading(false);
+      setIsLoading(false);
     } catch (error) {
       setErrorMsg((error && error.error) || 'Something went wrong.');
       // setIsLoading(false);
@@ -56,10 +53,9 @@ const Verifyemail = () => {
 
   const handleResend = async () => {
     try {
-      // setIsLoading(true);
-      console.log('=-=-=-=-=--', email);
+      setIsLoading(true);
       await resend(email);
-      // setIsLoading(false);
+      setIsLoading(false);
     } catch (error) {
       setErrorMsg((error && error.error) || 'Something went wrong.');
       // setIsLoading(false);
@@ -74,7 +70,6 @@ const Verifyemail = () => {
   }, [isCheckCode, navigation]);
 
   const navigation = useNavigation();
-  // const email = 'email.example@email.com';
 
   return (
     <View style={styles.container}>
@@ -102,18 +97,24 @@ const Verifyemail = () => {
           />
         ))}
       </View>
-      <Button
+      <TouchableOpacity
         style={{
           justifyContent: 'center',
+          alignItems: 'center',
           width: (screenWidth * 9) / 10,
           height: 57,
           marginTop: 51,
           borderRadius: 45,
           backgroundColor: '#F08080',
         }}
-        onPress={handleCheck}>
-        <Text style={styles.b3_text}>Verify</Text>
-      </Button>
+        onPress={handleCheck}
+        disabled={isLoading}>
+        {isLoading ? (
+          <ActivityIndicator size="small" color="#FFFFFF" />
+        ) : (
+          <Text style={styles.b3_text}>Verify</Text>
+        )}
+      </TouchableOpacity>
 
       <View
         style={{
@@ -123,9 +124,15 @@ const Verifyemail = () => {
           marginTop: 50,
         }}>
         <Text style={styles.b4_text}>Didn`t receive a code? </Text>
-        <TouchableOpacity onPress={handleResend}>
-          <Text style={styles.b5_text}> Resend Code</Text>
-          <View style={styles.underline} />
+        <TouchableOpacity onPress={handleResend} disabled={isLoading}>
+          {isLoading ? (
+            <ActivityIndicator size="small" color="#FFFFFF" />
+          ) : (
+            <>
+              <Text style={styles.b5_text}> Resend Code</Text>
+              <View style={styles.underline} />
+            </>
+          )}
         </TouchableOpacity>
       </View>
     </View>
@@ -140,6 +147,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'white',
+    height: screenHeight,
   },
   container_in: {
     gap: 24,
@@ -194,12 +202,10 @@ const styles = StyleSheet.create({
     color: '#F08080',
     fontSize: 16,
     fontFamily: 'OpenSans-Bold',
-    // textDecorationLine: 'underline',
   },
   underline: {
-    height: 2, // Thickness of the underline
-    backgroundColor: '#F08080', // Match the color with the text or as desired
-    width: '100%', // Match the width with the text. Adjust if necessary
-    // marginTop: 1, // Adjust the spacing between the text and the underline as needed
+    height: 2,
+    backgroundColor: '#F08080',
+    width: '100%',
   },
 });

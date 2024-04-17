@@ -16,7 +16,6 @@ import {
   UIManager,
 } from 'react-native';
 
-import Footer from '../../../components/footer';
 import Header from '../../../components/header';
 
 const screenWidth = Dimensions.get('window').width;
@@ -96,7 +95,6 @@ const HelpPage = () => {
           ))}
         </View>
       </ScrollView>
-      <Footer state={4} />
     </View>
   );
 };

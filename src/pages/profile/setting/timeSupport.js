@@ -14,7 +14,6 @@ import {
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 
-import Footer from '../../../components/footer';
 import Header from '../../../components/header';
 import DeleteModal from '../../../components/deleteModal';
 
@@ -97,7 +96,6 @@ const TimeSupport = () => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-      <Footer state={4} />
     </View>
   );
 };

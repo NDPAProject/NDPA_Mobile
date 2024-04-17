@@ -1,10 +1,16 @@
 // https://aboutreact.com/react-native-login-and-signup/
 
 // Import React and Component
-import React, {useState, useEffect, useContext} from 'react';
-import {Image, View, StyleSheet, Text, Dimensions} from 'react-native';
-import {Button} from 'react-native-paper';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import React from 'react';
+import {
+  Image,
+  View,
+  StyleSheet,
+  Text,
+  Dimensions,
+  TouchableOpacity,
+} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 
 const appIcon = require('../../../assets/icons/up_done.png');
 const screenWidth = Dimensions.get('window').width;
@@ -26,9 +32,10 @@ const Profiledone = () => {
       <Text style={styles.text}>
         You have successfully {'\n'}completed your profile
       </Text>
-      <Button
+      <TouchableOpacity
         style={{
           justifyContent: 'center',
+          alignItems: 'center',
           width: (screenWidth * 9) / 10,
           height: 57,
           marginTop: 40,
@@ -37,7 +44,7 @@ const Profiledone = () => {
         }}
         onPress={() => navigation.navigate('Main')}>
         <Text style={styles.b3_text}>Let's Start</Text>
-      </Button>
+      </TouchableOpacity>
     </View>
   );
 };

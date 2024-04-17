@@ -12,7 +12,6 @@ import {
   TextInput,
   ActivityIndicator,
 } from 'react-native';
-import {Button} from 'react-native-paper';
 import {useNavigation, useRoute} from '@react-navigation/native';
 
 import {useAuth} from '../../contexts/AuthContext';
@@ -26,15 +25,11 @@ const Signup = () => {
   const [password, setPassword] = useState('');
   const [cpassword, setCpassword] = useState('');
   const [isValidEmail, setIsValidEmail] = useState(false);
-  const [isValidPassword, setIsValidPassword] = useState(true);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isCpasswordVisible, setIsCpasswordVisible] = useState(false);
   const [reason, setReason] = useState('');
 
   const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
 
   const handleSignup = async () => {
     try {

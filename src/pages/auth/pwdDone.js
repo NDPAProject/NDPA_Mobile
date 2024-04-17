@@ -1,9 +1,15 @@
 // https://aboutreact.com/react-native-login-and-signup/
 
 // Import React and Component
-import React, {useState, useEffect, useContext} from 'react';
-import {Image, View, StyleSheet, Text, Dimensions} from 'react-native';
-import {Button} from 'react-native-paper';
+import React from 'react';
+import {
+  Image,
+  View,
+  StyleSheet,
+  Text,
+  Dimensions,
+  TouchableOpacity,
+} from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 
 const appIcon = require('../../../assets/icons/pwd_done.png');
@@ -27,9 +33,10 @@ const Pwddone = () => {
       <Text style={styles.text}>
         You have successfully {'\n'} {'   '}change password.
       </Text>
-      <Button
+      <TouchableOpacity
         style={{
           justifyContent: 'center',
+          alignItems: 'center',
           width: (screenWidth * 9) / 10,
           height: 57,
           marginTop: 40,
@@ -38,7 +45,7 @@ const Pwddone = () => {
         }}
         onPress={() => navigation.navigate('Signin')}>
         <Text style={styles.b3_text}>Log In</Text>
-      </Button>
+      </TouchableOpacity>
     </View>
   );
 };

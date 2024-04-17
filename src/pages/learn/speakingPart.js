@@ -422,7 +422,7 @@ const SpeakingSection = ({route}) => {
         <Text style={styles.b3_text}>Continue</Text>
       </TouchableOpacity> */}
 
-      {param === audioTxt?.DisplayText ? (
+      {/* {param === audioTxt?.DisplayText ? (
         <CustomGreatModal
           visible={isloading && !step_3}
           hand_ico={hand_ico}
@@ -445,7 +445,7 @@ const SpeakingSection = ({route}) => {
           onRequestClose={() => setStep_2(false)}
           message="Don't give up"
         />
-      )}
+      )} */}
     </View>
   );
 };

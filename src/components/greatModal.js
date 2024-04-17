@@ -15,7 +15,6 @@ const screenWidth = Dimensions.get('window').width;
 
 const CustomGreatModal = ({
   visible,
-  onRequestClose,
   icon,
   message,
   showImage,
@@ -23,11 +22,7 @@ const CustomGreatModal = ({
   hand_ico,
   handleClick,
 }) => (
-  <Modal
-    animationType="fade"
-    transparent={true}
-    visible={visible}
-    onRequestClose={onRequestClose}>
+  <Modal animationType="fade" transparent={true} visible={visible}>
     <LinearGradient
       style={styles.flexContainer}
       colors={['rgba(0, 0, 0, 0.2)', 'rgba(255, 218, 185, 0.4)']}
