@@ -65,9 +65,18 @@ const SettingPage = () => {
     }
   };
 
+  const handleClickSkip = async () => {
+    try {
+      navigation.goBack();
+    } catch (error) {
+      setErrorMsg((error && error.error) || 'Something went wrong.');
+      // setIsLoading(false);
+    }
+  };
+
   const handleClickMove = async () => {
     try {
-      navigation.navigate('Fpage');
+      navigation.navigate('Signin');
     } catch (error) {
       setErrorMsg((error && error.error) || 'Something went wrong.');
       // setIsLoading(false);
@@ -80,9 +89,11 @@ const SettingPage = () => {
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
         handleClick={handleClickMove}
+        handleClickSkip={handleClickSkip}
         text="Are you sure NNwant to log out?"
         icon={out_ico}
         visible={false}
+        type={true}
       />
       <Header
         visible={false}

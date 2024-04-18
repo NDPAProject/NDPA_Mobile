@@ -20,9 +20,10 @@ const screenWidth = Dimensions.get('window').width;
 const appIcon = require('../../../assets/icons/lock_ico.png');
 
 const Createpwd = () => {
-  const {changePassword, isChangePwd, email} = useAuth('');
+  const {changePassword, isChangePwd, email} = useAuth();
   const [password, setPassword] = useState('');
   const [cpassword, setCpassword] = useState('');
+  const [reason, setReason] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isCpasswordVisible, setIsCpasswordVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -155,6 +156,7 @@ const Createpwd = () => {
           </TouchableOpacity>
         </View>
       </View>
+      {!isLoading && <Text style={styles.errorText}>{reason}</Text>}
       <TouchableOpacity
         style={{
           justifyContent: 'center',
@@ -240,5 +242,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#F08080',
     width: '100%',
     // marginTop: 1,
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: 10,
   },
 });

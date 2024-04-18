@@ -27,6 +27,7 @@ const initialState = {
   email: null,
   access: null,
   data: null,
+  msg: null,
 };
 
 const reducer = (state, action) => {
@@ -65,8 +66,9 @@ const reducer = (state, action) => {
   if (action.type === 'FORGOTPASS') {
     return {
       ...state,
-      isForgotPassword: true,
+      isForgotPassword: action.payload.isForgotPassword,
       email: action.payload.email,
+      msg: action.payload.msg,
     };
   }
   if (action.type === 'SENDVERIFY') {
@@ -133,7 +135,7 @@ const AuthProvider = ({children}) => {
           dispatch({
             type: 'INITIAL',
             payload: {
-              isAuthenticated: true,
+              isAuthenticated: false,
               isRegister: false,
               isForgotPassword: false,
               isChangePwd: false,
@@ -199,6 +201,15 @@ const AuthProvider = ({children}) => {
         password,
       });
       console.log('---------------data---------------', response.data);
+      if (response.data.code === 404) {
+        dispatch({
+          type: 'LOGIN',
+          payload: {
+            isAuthenticated: false,
+            user: response.data.message,
+          },
+        });
+      }
       if (response.data.code === 410) {
         dispatch({
           type: 'LOGIN',
@@ -312,19 +323,26 @@ const AuthProvider = ({children}) => {
   const forgotPassword = useCallback(async email => {
     console.log('---------email---------', email);
     const reponse = await axiosInstance.post('/auth/forgotPassword', {email});
-    console.log('==================', reponse.data);
+    console.log('========reponse==========', reponse.data);
     const res = reponse.data;
     if (res.code === 200) {
       // AsyncStorage.setItem('current', res.data);
       dispatch({
         type: 'FORGOTPASS',
         payload: {
+          isForgotPassword: true,
           email: email,
         },
       });
-      return true;
     } else {
-      return false;
+      console.log('404040404');
+      dispatch({
+        type: 'FORGOTPASS',
+        payload: {
+          isForgotPassword: false,
+          msg: res.message,
+        },
+      });
     }
   }, []);
 
@@ -421,6 +439,7 @@ const AuthProvider = ({children}) => {
       email: state.email,
       data: state.data,
       users: state.users,
+      msg: state.msg,
       isChangePwd: state.isChangePwd,
       method: 'jwt',
       initialize,
@@ -444,6 +463,7 @@ const AuthProvider = ({children}) => {
       state.user,
       state.users,
       state.access,
+      state.msg,
       state.email,
       state.data,
       state.isChangePwd,

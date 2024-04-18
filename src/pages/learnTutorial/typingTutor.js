@@ -19,6 +19,7 @@ import MoveDialog from '../../components/moveDialog';
 
 import MessageTom from '../../components/tomMsg';
 import MyMessage from '../../components/myMsg';
+import ChatBox from '../../components/chatBox';
 
 const phone_ico = require('../../../assets/icons/phone_ico.png');
 const hand_ico = require('../../../assets/icons/hand_ico.png');
@@ -241,7 +242,8 @@ const TypingSection = () => {
       <MoveDialog
         modalVisible={step_5}
         setModalVisible={setModalVisible}
-        handleClick={handleClickMove}
+        // handleClick={handleClickMove}
+        handleClick={handleClickSkip}
         handleClickSkip={handleClickSkip}
         text="Great job! Let's move NNto the speaking part"
         icon={welcome_ico}
@@ -261,7 +263,7 @@ const TypingSection = () => {
         type={true}
       />
 
-      <MyMessage sendClick={false} />
+      <MyMessage sendClick={false} text={text} />
 
       <CustomGreatModal
         visible={step_4}

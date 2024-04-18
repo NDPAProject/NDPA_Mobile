@@ -16,10 +16,14 @@ import {
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {Calendar} from 'react-native-calendars';
+import CalendarModal from '../../components/calendaModal';
 import CountryPicker, {Country} from 'react-native-country-picker-modal';
 
 import {useAuth} from '../../contexts/AuthContext';
 import {createProfile} from '../../redux/slices/user';
+
+const calend_ico = require('../../../assets/icons/calend_ico.png');
+const close_ico = require('../../../assets/icons/close_ico.png');
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -79,6 +83,22 @@ const Completeprofile = () => {
     return /\S+@\S+\.\S+/.test(email);
   };
 
+  const handleClose = async () => {
+    try {
+      setOpen(false);
+    } catch (error) {
+      setErrorMsg((error && error.error) || 'Something went wrong.');
+    }
+  };
+
+  const handleSelect = async () => {
+    try {
+      setOpen(false);
+    } catch (error) {
+      setErrorMsg((error && error.error) || 'Something went wrong.');
+    }
+  };
+
   const onSelect = country => {
     const countryName = typeof country.name === 'string' ? country.name : '';
     setCountryCode(country.cca2);
@@ -93,9 +113,25 @@ const Completeprofile = () => {
   };
 
   const validateDate = inputDate => {
+    // Regex to match YYYY-MM-DD format
     const datePattern =
-      /^([0-2][0-9]|(3)[0-1])\/(((0)[0-9])|((1)[0-2]))\/\d{4}$/;
-    return datePattern.test(inputDate);
+      /^(19|20)\d{2}-((0[1-9]|1[0-2]))-((0[1-9]|[12][0-9]|3[01]))$/;
+
+    // If you want to allow progressive input (e.g., "2020-", "2020-04-", "2020-04-0")
+    const progressiveDatePattern =
+      /^(19|20)\d{0,2}(-((0[1-9]|1[0-2])?(-((0[1-9]|[12][0-9]|3[01])?)?)?)?)?$/;
+
+    // Check if the full date is valid
+    if (datePattern.test(inputDate)) {
+      console.log('Full date is valid.');
+      return datePattern.test(inputDate);
+    } else if (progressiveDatePattern.test(inputDate)) {
+      console.log('Progressive date input is valid.');
+      // return false;  // Return false but indicate it's still a valid progression
+    } else {
+      console.log('Invalid date input.');
+      // return false;
+    }
   };
 
   const handleDateChange = inputDate => {
@@ -187,54 +223,13 @@ const Completeprofile = () => {
               marginTop: 15, // Align with TextInput
             }}
             onPress={() => setOpen(true)}>
-            <Image
-              source={require('../../../assets/icons/calend_ico.png')}
-              style={{marginTop: 9}}
-            />
+            <Image source={calend_ico} style={{marginTop: 9}} />
           </TouchableOpacity>
-          <Modal transparent={true} visible={open} animationType="slide">
-            <View
-              style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-                backgroundColor: 'rgba(237,226,216,0.5)',
-              }}>
-              <View
-                style={{
-                  backgroundColor: 'white',
-                  borderTopRightRadius: 25,
-                  borderTopLeftRadius: 25,
-                  padding: 20,
-                  position: 'absolute',
-                  bottom: 0,
-                  width: screenWidth,
-                }}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                  }}>
-                  <Text style={styles.b2_text}>Date of Birth</Text>
-                  <TouchableOpacity
-                    onPress={() => setOpen(false)}
-                    style={{
-                      marginTop: 5,
-                    }}>
-                    <Image
-                      source={require('../../../assets/icons/close_ico.png')}
-                    />
-                  </TouchableOpacity>
-                </View>
-                <Calendar
-                  onDayPress={day => {
-                    setDate(day.dateString);
-                    setOpen(false);
-                  }}
-                />
-              </View>
-            </View>
-          </Modal>
+          <CalendarModal
+            visible={open}
+            onClose={handleClose}
+            onDateSelected={handleDateChange}
+          />
         </View>
         <Text style={styles.b0_text}>Country</Text>
         <View

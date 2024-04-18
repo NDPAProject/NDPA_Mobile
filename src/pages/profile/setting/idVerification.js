@@ -10,8 +10,8 @@ import {
   Dimensions,
   TouchableOpacity,
 } from 'react-native';
-// import {RNCamera} from 'react-native-camera';
 import {useNavigation} from '@react-navigation/native';
+import {RNCamera} from 'react-native-camera';
 import Header from '../../../components/header';
 
 const screenWidth = Dimensions.get('window').width;
@@ -24,12 +24,6 @@ const IdVerificationPage = () => {
   const navigation = useNavigation();
 
   const [success, setSuccess] = useState(false);
-  const [barcode, setBarcode] = useState(null);
-
-  const barcodeRecognized = ({barcodes}) => {
-    barcodes.forEach(barcode => console.log(barcode.data));
-    setBarcode(barcodes[0].data); // Handle the first scanned barcode
-  };
 
   const handleCreatePass = async () => {
     try {
@@ -50,6 +44,12 @@ const IdVerificationPage = () => {
     }
   };
 
+  const takePicture = async camera => {
+    const options = {quality: 0.5, base64: true};
+    const data = await camera.takePictureAsync(options);
+    console.log(data.uri);
+  };
+
   return (
     <View style={styles.container}>
       <Header
@@ -62,9 +62,27 @@ const IdVerificationPage = () => {
         <Image source={success ? passport_ico : lucide_scan} />
         {/* <RNCamera
           style={styles.preview}
-          onBarCodeRead={barcodeRecognized}
-          captureAudio={false}
-        /> */}
+          type={RNCamera.Constants.Type.back}
+          flashMode={RNCamera.Constants.FlashMode.on}
+          captureAudio={false}>
+          {({camera, status}) => {
+            if (status !== 'READY') return <View />;
+            return (
+              <View
+                style={{
+                  flex: 0,
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                }}>
+                <TouchableOpacity
+                  onPress={() => takePicture(camera)}
+                  style={styles.capture}>
+                  <Text style={{fontSize: 14}}> SNAP </Text>
+                </TouchableOpacity>
+              </View>
+            );
+          }}
+        </RNCamera> */}
         {success && <Text style={styles.b2_text}>Success</Text>}
         {success ? (
           <Text style={styles.text}>
@@ -139,5 +157,15 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 19,
     fontFamily: 'OpenSans-Bold',
+  },
+  preview: {flex: 1, justifyContent: 'flex-end', alignItems: 'center'},
+  capture: {
+    flex: 0,
+    backgroundColor: '#fff',
+    borderRadius: 5,
+    padding: 15,
+    paddingHorizontal: 20,
+    alignSelf: 'center',
+    margin: 20,
   },
 });
