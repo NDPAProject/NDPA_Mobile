@@ -8,6 +8,8 @@ const initialState = {
   isloading: false,
   error: null,
   message: '',
+  up_message: '',
+  userInfo: [],
 };
 
 const slice = createSlice({
@@ -28,6 +30,16 @@ const slice = createSlice({
       state.message = action.payload;
     },
 
+    GetUserSuccess(state, action) {
+      state.isloading = true;
+      state.userInfo = action.payload;
+    },
+
+    UpdateUserSuccess(state, action) {
+      state.isloading = true;
+      state.up_message = action.payload;
+    },
+
     setisLoading(state) {
       state.isloading = false;
     },
@@ -36,7 +48,8 @@ const slice = createSlice({
 
 export default slice.reducer;
 
-export const {PutUserSuccess, setisLoading} = slice.actions;
+export const {PutUserSuccess, GetUserSuccess, UpdateUserSuccess, setisLoading} =
+  slice.actions;
 
 export const createProfile = (userData, id) => async dispatch => {
   try {
@@ -56,6 +69,79 @@ export const createProfile = (userData, id) => async dispatch => {
 
     // Assuming getAudioTextSuccess is an action that handles the successful transcription
     dispatch(PutUserSuccess(response.data));
+
+    return response;
+  } catch (error) {
+    console.error('Error during transcription:', error);
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+    } else if (error.request) {
+      // The request was made but no response was received
+      console.log(error.request);
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      console.log('Error', error.message);
+    }
+    dispatch(slice.actions.hasError(error));
+  }
+};
+
+export const getUserInfo = id => async dispatch => {
+  try {
+    const token = await AsyncStorage.getItem('accessToken');
+    console.log('userData', token);
+    const response = await axiosInstance.get(`/user/${id}`, {
+      headers: {
+        Authorization: '', // add the token to the request header
+      },
+    });
+
+    console.log('Put profile Result:', response.data);
+
+    // Assuming getAudioTextSuccess is an action that handles the successful transcription
+    dispatch(GetUserSuccess(response.data));
+
+    return response;
+  } catch (error) {
+    console.error('Error during transcription:', error);
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+    } else if (error.request) {
+      // The request was made but no response was received
+      console.log(error.request);
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      console.log('Error', error.message);
+    }
+    dispatch(slice.actions.hasError(error));
+  }
+};
+
+export const updateUserInfo = (userData, id) => async dispatch => {
+  try {
+    console.log('userData', userData, id);
+    const response = await axiosInstance.put(
+      `/user/updateprofile/${id}`,
+      {userData},
+      {
+        headers: {
+          Authorization: '', // add the token to the request header
+        },
+      },
+    );
+
+    console.log('Put profile Result:', response.data);
+
+    // Assuming getAudioTextSuccess is an action that handles the successful transcription
+    dispatch(UpdateUserSuccess(response.data));
 
     return response;
   } catch (error) {
