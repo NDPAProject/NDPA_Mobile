@@ -92,7 +92,8 @@ const TypingSection = () => {
 
   const handleClickMove = async () => {
     try {
-      navigation.navigate('SpeakingSection', {param: text});
+      // navigation.navigate('SpeakingSection', {param: text});
+       navigation.navigate('MainPage', {param: true});
     } catch (error) {
       setErrorMsg((error && error.error) || 'Something went wrong.');
       // setIsLoading(false);

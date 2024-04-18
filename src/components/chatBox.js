@@ -19,7 +19,7 @@ const ChatBox = ({
   messageIcon,
   handleChangeText,
 }) => {
-  console.log('--------ChatBox----------------', showHand, text.length);
+  console.log('--------ChatBox----------------', showHand, text);
   return (
     <>
       <View style={[styles.chatBackground]}>

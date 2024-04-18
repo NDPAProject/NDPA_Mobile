@@ -39,7 +39,7 @@ const IdVeriList = () => {
   const [editMode, setEditMode] = useState(false);
   const handlePress = () => {
     console.log('goto');
-    navigation.navigate('TimeSettingPage');
+    // navigation.navigate('TimeSettingPage');
   };
 
   console.log('-------------------', editMode);

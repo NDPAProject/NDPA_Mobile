@@ -10,6 +10,7 @@ import {
   Dimensions,
   TouchableOpacity,
   TextInput,
+  ActivityIndicator,
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {useAuth} from '../../../contexts/AuthContext';
@@ -21,32 +22,41 @@ const screenHeight = Dimensions.get('window').height;
 const appIcon = require('../../../../assets/icons/lock_ico.png');
 
 const ChangePwd = () => {
-  const {changePassword, isChangePwd, email} = useAuth('');
+  const {changePassword, isChangePwd, email} = useAuth();
   const [password, setPassword] = useState('');
   const [cpassword, setCpassword] = useState('');
+  const [reason, setReason] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isCpasswordVisible, setIsCpasswordVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation();
 
   const handleCreatePass = async () => {
     console.log('clicked', password, cpassword);
     try {
-      console.log('=-=-=-=-=--', email, password);
-      if (password === cpassword) {
-        // setIsLoading(true);
-        console.log('=-=-=-=-=--', email, password);
-        await changePassword(email, password);
-        // setIsLoading(false);
-      } else {
-        setIsValidPassword(false);
+      setIsLoading(true);
+      if (password.length === 0) {
+        setIsLoading(false);
+        setReason('Password cannot be empty.');
+        return;
       }
+      if (cpassword.length === 0) {
+        setIsLoading(false);
+        setReason('ConfirmPassword cannot be empty.');
+        return;
+      }
+      if (password !== cpassword) {
+        setIsLoading(false);
+        setReason('Passwords do not match.');
+        return;
+      }
+      await changePassword(email, password);
+      setIsLoading(false);
     } catch (error) {
       console.log(error);
-      // setErrorMsg((error && error.error) || 'Something went wrong.');
-      // setIsLoading(false);
+      setIsLoading(false);
     }
   };
-
   useEffect(() => {
     console.log('isChangePwd', isChangePwd);
     if (isChangePwd) {
@@ -142,7 +152,7 @@ const ChangePwd = () => {
         </View>
       </View>
       {password === '' || cpassword === '' ? (
-        <TouchableOpacity
+        <View
           style={{
             justifyContent: 'center',
             alignItems: 'center',
@@ -153,21 +163,29 @@ const ChangePwd = () => {
             backgroundColor: '#E9E9E9',
           }}>
           <Text style={styles.b2_text}>Save</Text>
-        </TouchableOpacity>
+        </View>
       ) : (
-        <TouchableOpacity
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: (screenWidth * 9) / 10,
-            height: 57,
-            marginTop: 51,
-            borderRadius: 45,
-            backgroundColor: '#F08080',
-          }}
-          onPress={handleCreatePass}>
-          <Text style={styles.b3_text}>Save</Text>
-        </TouchableOpacity>
+        <>
+          {!isLoading && <Text style={styles.errorText}>{reason}</Text>}
+          <TouchableOpacity
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: (screenWidth * 9) / 10,
+              height: 57,
+              marginTop: 51,
+              borderRadius: 45,
+              backgroundColor: '#F08080',
+            }}
+            onPress={handleCreatePass}
+            disabled={isLoading}>
+            {isLoading ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <Text style={styles.b3_text}>Save</Text>
+            )}
+          </TouchableOpacity>
+        </>
       )}
     </View>
   );
@@ -209,5 +227,9 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 19,
     fontFamily: 'OpenSans-Bold',
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: 10,
   },
 });

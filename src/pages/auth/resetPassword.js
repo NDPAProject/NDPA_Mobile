@@ -19,7 +19,7 @@ const screenHeight = Dimensions.get('window').height;
 const eye_show = require('../../../assets/icons/eye_show.png');
 
 const Resetpwd = () => {
-  const {forgotPassword, isForgotPassword} = useAuth();
+  const {forgotPassword, isForgotPassword, msg} = useAuth();
   const [isValidEmail, setIsValidEmail] = useState(false);
   const [email, setEmail] = useState('');
 
@@ -32,11 +32,17 @@ const Resetpwd = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    console.log('isForgotPassword', isForgotPassword);
-    if (isForgotPassword) {
-      navigation.navigate('Verifyemail');
+    if (isLoading) {
+      console.log('isForgotPassword', isForgotPassword, msg);
+      if (isForgotPassword) {
+        setIsLoading(false);
+        navigation.navigate('Verifyemail');
+      } else {
+        setIsLoading(false);
+        setReason(msg);
+      }
     }
-  }, [isForgotPassword, navigation]);
+  }, [isForgotPassword, msg, navigation]);
 
   const handleSendOTP = async () => {
     try {

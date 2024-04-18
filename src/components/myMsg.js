@@ -27,7 +27,7 @@ const MyMessage = ({sendClick, text}) => (
           </View>
         </>
       ) : (
-        <Text style={styles.m_title}>Hi! My name is ____.</Text>
+        <Text style={styles.m_title}>Hi! My name is {text}.</Text>
       )}
     </View>
   </>
