@@ -117,20 +117,19 @@ const Streetview = routedata => {
             alignItems: 'center',
             gap: 16,
           }}>
-          <TouchableOpacity style={{}} onPress={() => {}}>
-            <View
-              style={{
-                borderRadius: 8.25,
-                padding: 6.6,
-                backgroundColor: '#F08080',
-              }}>
-              <Image
-                source={right_arrow}
-                style={{width: 52.8, height: 52.8}}
-                resizeMode="cover"
-              />
-            </View>
-          </TouchableOpacity>
+          <View
+            style={{
+              borderRadius: 8.25,
+              padding: 6.6,
+              backgroundColor: '#F08080',
+            }}>
+            <Image
+              source={right_arrow}
+              style={{width: 52.8, height: 52.8}}
+              resizeMode="cover"
+            />
+          </View>
+
           <View
             style={{
               flexDirection: 'col',
