@@ -200,7 +200,6 @@ const Signup = () => {
           alignItems: 'center',
           width: (screenWidth * 9) / 10,
           height: 57,
-          marginTop: 51,
           borderRadius: 45,
           backgroundColor: '#F08080',
           opacity: isLoading ? 0.5 : 1,
@@ -244,7 +243,7 @@ const Signup = () => {
           justifyContent: 'space-between',
           flexDirection: 'row',
           alignItems: 'center',
-          marginTop: 20,
+          marginTop: 18,
         }}>
         <Text style={styles.b4_text}>Have an account </Text>
         <TouchableOpacity onPress={() => navigation.navigate('Signin')}>
@@ -360,7 +359,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     flexDirection: 'row', // Align items in a row
     alignItems: 'center', // Center items vertically
-    marginTop: 2,
+    // marginTop: 2,
   },
   dividerLine: {
     flex: 1, // Take up equal space

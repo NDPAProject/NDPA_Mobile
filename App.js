@@ -21,7 +21,8 @@ import Resetpwd from './src/pages/auth/resetPassword';
 import Verifyemail from './src/pages/auth/verifyEmail';
 import Createpwd from './src/pages/auth/createNewpass';
 import Pwddone from './src/pages/auth/pwdDone';
-import Location from './src/pages/location/index';
+import locationTutorial from './src/pages/locationTutorial/index';
+import location from './src/pages/location/index';
 import ProfileSection from './src/pages/profile/index';
 
 import {LogBox} from 'react-native';
@@ -89,7 +90,12 @@ const App = () => {
             />
             <Stack.Screen
               name="LocationSection"
-              component={Location}
+              component={locationTutorial}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="Location"
+              component={location}
               options={{headerShown: false}}
             />
             <Stack.Screen

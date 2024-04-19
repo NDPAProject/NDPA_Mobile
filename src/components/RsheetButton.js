@@ -9,13 +9,22 @@ const RsheetButton = ({
   bgcolor,
   locationaddress,
   text,
+  handlebottomvisible,
+  type,
 }) => {
   const navigation = useNavigation();
 
+  const handleclick = () => {
+    if (!type) {
+      navigation.navigate(navigate, {locationaddress});
+
+      handlebottomvisible();
+    }
+    navigation.navigate(navigate, {locationaddress});
+  };
+
   return (
-    <TouchableOpacity
-      style={styles.button}
-      onPress={() => navigation.navigate(navigate, {locationaddress})}>
+    <TouchableOpacity style={styles.button} onPress={handleclick}>
       <View
         style={[
           styles.buttonInner,

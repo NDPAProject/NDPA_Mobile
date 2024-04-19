@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
-    gap: 4,
+    marginLeft: 10,
   },
   sheetTextTop: {
     fontSize: 18,

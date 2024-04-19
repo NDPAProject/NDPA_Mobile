@@ -37,7 +37,7 @@ const FloatingActionButtonGroup = () => {
         key={'route_view_map'}
         style={[styles.fabButton, {backgroundColor: '#FFFFFF'}]}
         // onPress={() => {
-        //   navigation.navigate('Mainpage');
+        //   navigation.navigate('RoutepageTutorial');
         // }}
       >
         <Image source={fab_1} style={styles.fab_image} />
@@ -46,7 +46,7 @@ const FloatingActionButtonGroup = () => {
       <TouchableOpacity
         style={[styles.fabButton, {backgroundColor: '#FFFFFF'}]}
         onPress={() => {
-          navigation.navigate('Streetview');
+          navigation.navigate('RoutepageTutorial');
         }}>
         <Image source={fab_5} style={styles.fab_image} />
       </TouchableOpacity>
@@ -60,7 +60,7 @@ const Streetview = routedata => {
   //modal
   const [step_7, setStep_7] = useState(false);
   const [step_8, setStep_8] = useState(false);
-  const [showImage, setShowImage] = useState(0);
+  const [showImage, setShowImage] = useState(2);
   const slideAnim = useRef(new Animated.Value(0)).current;
   const [modalVisible, setModalVisible] = useState(false);
   //
@@ -70,19 +70,20 @@ const Streetview = routedata => {
   });
 
   useEffect(() => {
-    console.log(route.name, '<><><><><><><><><><><');
-    // AsyncStorage.getItem('hasSeenTutorial').then(value => {
-    //   if (value === null) {
-    //     let timer;
-    //     timer = setTimeout(() => {
-    //       setStep_7(true);
-    //       timer = setTimeout(() => {
-    //         setShowImage(true);
-    //       }, 800);
-    //     }, 1000);
-    //     return () => clearTimeout(timer);
-    //   }
-    // });
+    AsyncStorage.getItem('hasSeenTutorial').then(value => {
+      if (value === null) {
+        let timer;
+
+        timer = setTimeout(() => {
+          setStep_7(true);
+          timer = setTimeout(() => {
+            setShowImage(true);
+          }, 800);
+        }, 1000);
+
+        return () => clearTimeout(timer);
+      }
+    });
   }, []);
 
   useEffect(() => {
@@ -137,14 +138,14 @@ const Streetview = routedata => {
               alignItems: 'flex-start',
             }}>
             <Text style={styles.sheetText_top}>Turn Left in 10m</Text>
-            <Text style={styles.sheetText_top_}>{routedata.streetname}</Text>
+            <Text style={styles.sheetText_top_}>123 Street Name</Text>
           </View>
         </View>
       </View>
 
       <Image
         source={str_icon}
-        style={{width: 543, height: 315, position: 'absolute', bottom: 80}}
+        style={{width: 543, height: 315, position: 'absolute', bottom: 0}}
       />
       <View style={[styles.centeredView]}>
         <View
@@ -197,7 +198,7 @@ const Streetview = routedata => {
       </View>
 
       <FloatingActionButtonGroup />
-      {/* 
+
       <Modal
         animationType="fade"
         transparent={true}
@@ -251,14 +252,14 @@ const Streetview = routedata => {
                         });
                         setStep_7(false);
 
-                        //   let timer;
+                        let timer;
 
-                        //   timer = setTimeout(() => {
-                        //     setStep_8(true);
-                        //     timer = setTimeout(() => {
-                        //       setShowImage(2);
-                        //     }, 800);
-                        //   }, 1000);
+                        timer = setTimeout(() => {
+                          setStep_8(true);
+                          timer = setTimeout(() => {
+                            setShowImage(2);
+                          }, 800);
+                        }, 1000);
                       }}>
                       <Text
                         style={{
@@ -456,7 +457,7 @@ const Streetview = routedata => {
                 style={{}}
                 onPress={() => {
                   setStep_8(false);
-                  // setModalVisible(true);
+                  setModalVisible(true);
                 }}>
                 <View
                   style={{
@@ -542,8 +543,8 @@ const Streetview = routedata => {
                   backgroundColor: '#F08080',
                 }}
                 onPress={() => {
-                  navigation.navigate('Mainpage');
-                  AsyncStorage.setItem('hasSeenTutorial', 'true');
+                  navigation.navigate('Location');
+                  // AsyncStorage.setItem('hasSeenTutorial', 'true');
                 }}>
                 <Text
                   style={{
@@ -558,7 +559,7 @@ const Streetview = routedata => {
             </View>
           </View>
         </View>
-      </Modal> */}
+      </Modal>
     </View>
   );
 };

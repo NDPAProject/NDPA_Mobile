@@ -60,19 +60,21 @@ const Routepage = () => {
   const mapView = useRef(null);
 
   useEffect(() => {
-    // AsyncStorage.getItem('hasSeenTutorial').then(value => {
-    //   if (value === null) {
-    //     // If no data is available in AsyncStorage, show the modal
-    //     let timer;
-    //     timer = setTimeout(() => {
-    //       setStep_5(true);
-    //       timer = setTimeout(() => {
-    //         setShowImage(true);
-    //       }, 800);
-    //     }, 1000);
-    //     return () => clearTimeout(timer);
-    //   }
-    // });
+    AsyncStorage.getItem('hasSeenTutorial').then(value => {
+      if (value === null) {
+        // If no data is available in AsyncStorage, show the modal
+        let timer;
+
+        timer = setTimeout(() => {
+          setStep_5(true);
+          timer = setTimeout(() => {
+            setShowImage(true);
+          }, 800);
+        }, 1000);
+
+        return () => clearTimeout(timer);
+      }
+    });
   }, []);
 
   useEffect(() => {
@@ -180,7 +182,7 @@ const Routepage = () => {
 
       <DistanceCard result_dur_dis={result_dur_dis} />
 
-      {/* <ModalContainer
+      <ModalContainer
         visible={step_5}
         onRequestClose={() => setStep_5(!step_5)}>
         <View style={styles.modalbackground}>
@@ -202,7 +204,7 @@ const Routepage = () => {
             />
           )}
         </View>
-      </ModalContainer> */}
+      </ModalContainer>
     </View>
   );
 };

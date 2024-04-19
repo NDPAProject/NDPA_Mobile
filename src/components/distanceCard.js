@@ -60,9 +60,13 @@ const DistanceCard = ({result_dur_dis}) => {
       </View>
       <TouchableOpacity
         onPress={() => {
-          navigation.navigate('Routeview', {
-            locationaddress: route.params.locationaddress,
-          });
+          // if (route.name.includes('Tutorial'))
+          navigation.navigate(
+            route.name.includes('Tutorial') ? 'RouteviewTutorial' : 'Routeview',
+            {
+              locationaddress: route.params.locationaddress,
+            },
+          );
         }}>
         <View style={styles.routebuttonstyle}>
           <Text style={styles.button_textStyle}>Start Route</Text>

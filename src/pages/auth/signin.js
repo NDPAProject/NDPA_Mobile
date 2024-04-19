@@ -209,7 +209,7 @@ const Signin = () => {
           justifyContent: 'space-between',
           flexDirection: 'row',
           alignItems: 'center',
-          marginTop: 40,
+          marginTop: 20,
         }}>
         <Text style={styles.b4_text}>Don`t have an account? </Text>
         <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
@@ -318,7 +318,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     flexDirection: 'row', // Align items in a row
     alignItems: 'center', // Center items vertically
-    marginTop: 20,
+    // marginTop: 10,
   },
   dividerLine: {
     flex: 1, // Take up equal space

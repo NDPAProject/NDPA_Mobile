@@ -98,8 +98,14 @@ const Mainpage = () => {
   const [tutodata, setTutodata] = useState('');
   const [placeId, setPlaceId] = useState(null);
 
-  const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
-  const [listViewDisplayed, setListViewDisplayed] = useState('auto');
+  useEffect(() => {
+    AsyncStorage.removeItem('hasSeenTutorial');
+    AsyncStorage.getItem('hasSeenTutorial').then(value => {
+      if (value === null) {
+        setModalVisible(true);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (!placeId) return;
@@ -121,11 +127,8 @@ const Mainpage = () => {
   }, [placeId]);
 
   useEffect(() => {
-    console.log('<><><><><><><');
-    if (bottomSheetVisible) {
-      refRBSheet.current.open();
-    }
-  }, [bottomSheetVisible]);
+    ref.current?.setAddressText('');
+  }, []);
 
   useEffect(() => {
     console.log('Updated location:', location);
@@ -161,68 +164,80 @@ const Mainpage = () => {
     return () => clearTimeout(timer); // Cleanup the timer when the component unmounts or step_3 changes
   }, [step_3]);
 
-  // Extract onPress and other inline functions to make code cleaner
+  const handleClick = async () => {
+    setModalVisible(false);
+    setTimeout(() => {
+      setStep_1(true);
+    }, 1000);
+  };
+
+  const handleClickSkip = async () => {
+    navigation.navigate('Location');
+  };
+
+  const handleClickState = async () => {
+    setModalVisible(!modalVisible);
+  };
+  const handleSetStep4 = async () => {
+    setStep_4(!step_4);
+  };
+
   const handleOnPress = (data, details) => {
+    refRBSheet.current.open();
     if (details) {
       setLocation(details.geometry.location);
       console.log('data', data, '\n location', details);
-
       setLocationaddress({
         location: details.address_components[0].short_name,
         address: details.formatted_address,
         location_info: details.geometry.location,
       });
       setFocus_sb(false);
-      refRBSheet.current.open();
-      console.log('Rsheet open1111111');
+      console.log('Rsheet open');
     }
   };
 
-  const handleClickrowdata = () => {
-    setBottomSheetVisible(true);
-    setListViewDisplayed(false);
-    console.log('<><><Bottomsheetvisible');
-  };
+  const [selectedData, setSelectedData] = useState(null);
+
+  useEffect(() => {
+    if (selectedData) {
+      setTutodata(selectedData.description);
+      setPlaceId(selectedData.place_id);
+      console.log('data', selectedData.place_id);
+    }
+  }, [selectedData]);
 
   const handleRenderRow = (data, i) => {
     if (i === 0) {
-      setTutodata(data.description);
-      setPlaceId(data.place_id);
-      console.log('data', data.place_id);
+      setSelectedData(data);
     }
 
     return (
-      <TouchableOpacity onPress={handleClickrowdata}>
-        <View
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          width: screenWidth - 30,
+          paddingTop: 32,
+          paddingBottom: 10,
+        }}>
+        <Image
+          source={img_location}
+          style={{width: 32, height: 32, marginRight: 8}}
+          resizeMode="contain"
+        />
+        <Text
           style={{
-            flexDirection: 'row',
-            justifyContent: 'flex-start',
-            alignItems: 'center',
-            width: screenWidth - 30,
-            paddingTop: 32,
-            paddingBottom: 10,
+            color: '#1E1D20',
+            fontSize: 16,
+            fontFamily: 'OpenSans-Regular',
+            fontWeight: 400,
           }}>
-          <Image
-            source={img_location}
-            style={{width: 32, height: 32, marginRight: 8}}
-            resizeMode="contain"
-          />
-          <Text
-            style={{
-              color: '#1E1D20',
-              fontSize: 16,
-              fontFamily: 'OpenSans-Regular',
-              fontWeight: 400,
-            }}>
-            {data.description}
-          </Text>
-        </View>
-      </TouchableOpacity>
+          {data.description}
+        </Text>
+      </View>
     );
-  };
-
-  const handlebottomvisible = () => {
-    setBottomSheetVisible(false);
   };
 
   // Render buttons separately
@@ -282,7 +297,7 @@ const Mainpage = () => {
     setStep_1(false);
 
     setTimeout(() => {
-      // refRBSheet.current.close();
+      refRBSheet.current.close();
       setTimeout(() => {
         setStep_4(true);
         refRBSheet.current.open();
@@ -313,36 +328,33 @@ const Mainpage = () => {
           <Image source={location_r} style={{width: 28, height: 40}} />
         </Marker>
       </MapView>
-      {listViewDisplayed && (
-        <View
-          style={{
-            // backgroundColor: focus_sb ? '#FFFFFF' : 'transparent',
-            zIndex: 1,
-            height: focus_sb ? 'transparent' : 100,
-          }}>
-          <GooglePlacesAutocomplete
-            ref={ref}
-            onPress={handleOnPress}
-            renderRow={handleRenderRow}
-            renderRightButton={RenderRightButton}
-            renderLeftButton={RenderLeftButton}
-            listViewDisplayed={listViewDisplayed}
-            textInputProps={{
-              onChangeText: handleOnChangeText,
-              onFocus: handleOnFocus,
-              placeholderTextColor: '#1E1D2080',
-            }}
-            query={query}
-            placeholder="Enter Location"
-            minLength={2}
-            autoFocus={false}
-            returnKeyType={'default'}
-            fetchDetails={true}
-            styles={searchStyle}
-            enablePoweredByContainer={false}
-          />
-        </View>
-      )}
+
+      <View
+        style={{
+          zIndex: 1,
+          height: focus_sb ? 'transparent' : 100,
+        }}>
+        <GooglePlacesAutocomplete
+          ref={ref}
+          onPress={handleOnPress}
+          renderRow={handleRenderRow}
+          renderRightButton={RenderRightButton}
+          renderLeftButton={RenderLeftButton}
+          textInputProps={{
+            onChangeText: handleOnChangeText,
+            onFocus: handleOnFocus,
+            placeholderTextColor: '#1E1D2080',
+          }}
+          query={query}
+          placeholder="Enter Location"
+          minLength={2}
+          autoFocus={false}
+          returnKeyType={'default'}
+          fetchDetails={true}
+          styles={searchStyle}
+          enablePoweredByContainer={false}
+        />
+      </View>
 
       <View style={styles.resourcecontainter}>
         {resourcedata.map((data, i) => (
@@ -377,22 +389,22 @@ const Mainpage = () => {
             }}>
             <RsheetButton
               image={left_arrow}
-              navigate={'Routepage'}
+              navigate={'RoutepageTutorial'}
               bgcolor={'#F08080'}
               bocolor={'#FFFFFF'}
               locationaddress={locationaddress}
               text={'Routes'}
-              handlebottomvisible={handlebottomvisible}
+              type={true}
             />
 
             <RsheetButton
               image={send}
-              navigate={'Routeview'}
+              navigate={'RoutepageTutorial'}
               bgcolor={'#FFFFFF'}
               bocolor={'#F08080'}
               locationaddress={locationaddress}
               text={'Start'}
-              handlebottomvisible={handlebottomvisible}
+              type={true}
             />
           </View>
 
@@ -408,6 +420,103 @@ const Mainpage = () => {
           )}
         </View>
       </RBSheet>
+
+      <TutorialModal
+        image={tuto_1}
+        handleClick={handleClick}
+        modalVisible={modalVisible}
+        onRequestClose={handleClickState}
+        handleClickSkip={handleClickSkip}
+      />
+
+      <ModalContainer
+        visible={step_1}
+        onRequestClose={() => setStep_1(!step_1)}>
+        <View style={styles.modalbackground}>
+          <View style={{position: 'absolute', top: 58}}>
+            <GooglePlacesAutocomplete
+              ref={ref}
+              onPress={handleOnPress}
+              renderRow={handleRenderRow}
+              renderRightButton={RenderRightButton}
+              renderLeftButton={RenderLeftButton}
+              textInputProps={{
+                onChangeText: handleOnChangeText,
+                onFocus: handleOnFocus,
+                placeholderTextColor: '#1E1D2080',
+              }}
+              query={query}
+              placeholder="Enter Location"
+              minLength={2}
+              autoFocus={false}
+              returnKeyType={'default'}
+              fetchDetails={true}
+              styles={searchStyle}
+              enablePoweredByContainer={false}
+            />
+
+            {showImage === 1 && (
+              <Image
+                source={hand_ico}
+                style={{
+                  position: 'absolute',
+                  top: 58,
+                  left: 50,
+                }}
+              />
+            )}
+          </View>
+          {showstep_1 && (
+            <StepBox style={{}} step="1" description={stepData.step1} />
+          )}
+          {showstep_2 && (
+            <StepBox style={{}} step="2" description={stepData.step2} />
+          )}
+        </View>
+
+        <ModalContainer
+          visible={step_3}
+          onRequestClose={() => setStep_3(!step_3)}>
+          <View style={styles.modalbackground}>
+            <TouchableOpacity
+              style={styles.step3Container}
+              onPress={handlePress}>
+              <Image
+                source={img_location}
+                style={{width: 32, height: 32, marginRight: 8}}
+                resizeMode="contain"
+              />
+              <Text
+                style={{
+                  color: '#1E1D20',
+                  fontSize: 16,
+                  fontFamily: 'OpenSans-Regular',
+                  fontWeight: 400,
+                }}>
+                {tutodata}
+              </Text>
+            </TouchableOpacity>
+
+            {(tutodata.length > 1 || showImage === 3) && (
+              <Image
+                source={hand_ico}
+                style={{
+                  position: 'absolute',
+                  top: 190,
+                  right: 85,
+                }}
+              />
+            )}
+            <StepBox style={{}} step="3" description={stepData.step3} />
+          </View>
+        </ModalContainer>
+      </ModalContainer>
+
+      <ModalContainer visible={step_4} onRequestClose={handleSetStep4}>
+        <View style={styles.modalbackground}>
+          <StepBox style={{}} step="4" description={stepData.step4} />
+        </View>
+      </ModalContainer>
     </View>
   );
 };

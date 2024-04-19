@@ -12,7 +12,13 @@ import {BlurView} from '@react-native-community/blur';
 
 const screenWidth = Dimensions.get('window').width;
 
-const TutorialModal = ({modalVisible, onRequestClose, image, handleClick}) => {
+const TutorialModal = ({
+  modalVisible,
+  onRequestClose,
+  image,
+  handleClick,
+  handleClickSkip,
+}) => {
   return (
     <Modal
       animationType="slide"
@@ -35,7 +41,9 @@ const TutorialModal = ({modalVisible, onRequestClose, image, handleClick}) => {
             <TouchableOpacity style={styles.startButton} onPress={handleClick}>
               <Text style={styles.startButtonText}>Let's Start</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.skipButton}>
+            <TouchableOpacity
+              style={styles.skipButton}
+              onPress={handleClickSkip}>
               <Text style={styles.skipButtonText}>Skip</Text>
             </TouchableOpacity>
           </View>

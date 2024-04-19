@@ -5,7 +5,7 @@ import FabButton from './fabButton';
 
 const FabGroup = () => {
   const fabButtons = [
-    {image: fab_1, navigate: 'Routepage', bgcolor: '#FFFFFF'},
+    {image: fab_1, navigate: '', bgcolor: '#FFFFFF'},
     {image: fab_2, navigate: 'Streetview', bgcolor: '#FFFFFF'},
     {image: fab_3, navigate: '', bgcolor: '#F08080'},
   ];
@@ -32,6 +32,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 130,
     right: 16,
+    zIndex: 1,
   },
 });
 
