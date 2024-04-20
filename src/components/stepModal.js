@@ -62,6 +62,7 @@ const CustomStepModal = ({
           handleChangeText={handleChangeText}
           handleSend={handleSend}
           messageIcon={messageIcon}
+          bottom={0}
         />
       </View>
     </LinearGradient>

@@ -10,12 +10,10 @@ import {
   Dimensions,
   TouchableOpacity,
   TextInput,
-  Modal,
   ActivityIndicator,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import {Calendar} from 'react-native-calendars';
 import CalendarModal from '../../components/calendaModal';
 import CountryPicker, {Country} from 'react-native-country-picker-modal';
 
@@ -23,7 +21,6 @@ import {useAuth} from '../../contexts/AuthContext';
 import {createProfile} from '../../redux/slices/user';
 
 const calend_ico = require('../../../assets/icons/calend_ico.png');
-const close_ico = require('../../../assets/icons/close_ico.png');
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;

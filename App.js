@@ -24,6 +24,7 @@ import Pwddone from './src/pages/auth/pwdDone';
 import locationTutorial from './src/pages/locationTutorial/index';
 import location from './src/pages/location/index';
 import ProfileSection from './src/pages/profile/index';
+import CommunitySection from './src/pages/community/index';
 
 import {LogBox} from 'react-native';
 
@@ -101,6 +102,11 @@ const App = () => {
             <Stack.Screen
               name="ProfileSection"
               component={ProfileSection}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="CommunitySection"
+              component={CommunitySection}
               options={{headerShown: false}}
             />
           </Stack.Navigator>

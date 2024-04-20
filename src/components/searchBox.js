@@ -11,7 +11,7 @@ import {
 const hand_ico = require('../../assets/icons/hand_ico.png');
 const screenWidth = Dimensions.get('window').width;
 
-const ChatBox = ({
+const SearchBox = ({
   showHand,
   handleInput,
   text,
@@ -20,13 +20,13 @@ const ChatBox = ({
   handleChangeText,
   bottom,
 }) => {
-  console.log('--------ChatBox----------------', showHand, text);
+  console.log('--------SearchBox----------------', showHand, text);
   return (
     <>
-      <View style={[styles.chatBackground, {bottom: bottom}]}>
+      <View style={[styles.chatBackground, {top: bottom}]}>
         <TextInput
           style={[styles.input]}
-          placeholder="Write here..."
+          placeholder=" Search"
           placeholderTextColor="#969596"
           value={text}
           onFocus={handleInput}
@@ -34,9 +34,13 @@ const ChatBox = ({
           autoCapitalize="none"
         />
         <TouchableOpacity
-          style={{position: 'absolute', top: 23, right: 25}}
+          style={{
+            position: 'absolute',
+            top: 27.5,
+            left: 30,
+          }}
           onPress={text.length !== 0 ? handleSend : undefined}>
-          <Image source={messageIcon} />
+          <Image source={messageIcon} style={{width: 24, height: 24}} />
           {showHand && (
             <Image
               animationType="slide"
@@ -59,26 +63,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     alignItems: 'center',
     paddingVertical: 59,
-    borderTopRightRadius: 20,
-    borderTopLeftRadius: 20,
     width: screenWidth,
     height: 135,
     position: 'absolute',
-    // iOS Shadow
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    // Android Shadow
-    elevation: 15,
   },
 
   input: {
     borderWidth: 1,
-    borderColor: '#F08080',
+    borderColor: 'black',
     height: 40,
     width: (screenWidth * 9) / 10,
     marginTop: -40,
@@ -89,4 +81,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ChatBox;
+export default SearchBox;

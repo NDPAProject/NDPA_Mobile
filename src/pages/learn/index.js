@@ -21,7 +21,7 @@ const Stack = createStackNavigator();
 
 const MainLearningSection = () => {
   return (
-    <Stack.Navigator initialRouteName="TypingSection">
+    <Stack.Navigator initialRouteName="StartPersonalSection">
       <Stack.Screen
         name="StartPersonalSection"
         component={StartPersonalSection}

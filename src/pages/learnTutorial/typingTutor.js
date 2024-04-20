@@ -19,7 +19,6 @@ import MoveDialog from '../../components/moveDialog';
 
 import MessageTom from '../../components/tomMsg';
 import MyMessage from '../../components/myMsg';
-import ChatBox from '../../components/chatBox';
 
 const phone_ico = require('../../../assets/icons/phone_ico.png');
 const hand_ico = require('../../../assets/icons/hand_ico.png');

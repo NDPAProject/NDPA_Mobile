@@ -237,12 +237,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'OpenSans-Bold',
   },
-  underline: {
-    height: 2,
-    backgroundColor: '#F08080',
-    width: '100%',
-    // marginTop: 1,
-  },
   errorText: {
     color: 'red',
     marginBottom: 10,

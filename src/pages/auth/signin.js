@@ -65,9 +65,14 @@ const Signin = () => {
   };
 
   useEffect(() => {
-    console.log('-------------isAuthenticated-------------', isAuthenticated);
+    console.log(
+      '-------------isAuthenticated-------------',
+      isAuthenticated,
+      user,
+    );
     if (isAuthenticated) {
-      const destination = user?.parentEmail !== null ? 'Main' : 'Cprofile';
+      const destination =
+        user?.parentEmail !== null || undefined ? 'Main' : 'Cprofile';
       navigation.navigate(destination);
       console.log(`Navigating to ${destination}`);
       // navigation.navigate('Cprofile');

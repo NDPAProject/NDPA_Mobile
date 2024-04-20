@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: 'center',
-    fontFamily: 'OpenSans-Regular',
+    fontFamily: 'OpenSans-Medium',
     fontWeight: '600',
     fontSize: 20,
     position: 'absolute',

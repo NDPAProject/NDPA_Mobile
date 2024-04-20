@@ -11,9 +11,7 @@ import {
   Dimensions,
   Modal,
   TouchableOpacity,
-  TextInput,
 } from 'react-native';
-import {BlurView} from '@react-native-community/blur';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import Header from '../../components/header';
 import CustomStepModal from '../../components/stepModal';
@@ -21,7 +19,6 @@ import CustomDialog from '../../components/dialogModal';
 import CustomGreatModal from '../../components/greatModal';
 import MoveDialog from '../../components/moveDialog';
 
-const close_ico = require('../../../assets/icons/m_close_ico.png');
 const review_ico = require('../../../assets/icons/review_ico.png');
 const hand_ico = require('../../../assets/icons/hand_ico.png');
 const msg_send_passive = require('../../../assets/icons/msg_send_passive.png');

@@ -14,9 +14,7 @@ import {
   StyleSheet,
   Text,
   Dimensions,
-  Modal,
   TouchableOpacity,
-  TextInput,
   Platform,
   PermissionsAndroid,
 } from 'react-native';
@@ -30,7 +28,6 @@ import CustomGreatModal from '../../components/greatModal';
 import MoveDialog from '../../components/moveDialog';
 
 const speaking_ico = require('../../../assets/icons/speaking_ico.png');
-const close_ico = require('../../../assets/icons/m_close_ico.png');
 const hand_ico = require('../../../assets/icons/hand_ico.png');
 const msg_send_passive = require('../../../assets/icons/msg_send_passive.png');
 const msg_send_active = require('../../../assets/icons/msg_send_active.png');
