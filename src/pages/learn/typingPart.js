@@ -14,7 +14,10 @@ import {
   Keyboard,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import {textToSpeech} from '../../redux/slices/audio';
+
+import Sound from 'react-native-sound';
+import RNFS from 'react-native-fs';
+import {setStateFunc, textToSpeech} from '../../redux/slices/audio';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import Header from '../../components/header';
 import CustomDialog from '../../components/dialogModal';
@@ -53,16 +56,18 @@ const identifys = [
 const TypingSection = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const {txtAudio, isloading} = useSelector(state => state.audio);
+  const {txtAudio} = useSelector(state => state.audio);
   const [modalVisible, setModalVisible] = useState(true);
   const [showImage, setShowImage] = useState(false);
   const [sendClick, setSendClick] = useState(false);
   const [showKeyboard, setShowKeyboard] = useState(false);
+  const [progress, setProgress] = useState(0.25);
   const [step_2, setStep_2] = useState(false);
   const [step_3, setStep_3] = useState(false);
   const [step_4, setStep_4] = useState(false);
   const [step_5, setStep_5] = useState(false);
   const [step_6, setStep_6] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [text, setText] = useState('');
   const [age, setAge] = useState('');
@@ -86,22 +91,28 @@ const TypingSection = () => {
       console.log('=-=-=-=-=--', step_2, modalVisible);
     } catch (error) {
       setErrorMsg((error && error.error) || 'Something went wrong.');
-      // setIsLoading(false);
     }
   };
 
   const handleClickMove = async () => {
     try {
-      // navigation.navigate('SpeakingSection', {param: text});
-       navigation.navigate('MainPage', {param: true});
+      const data = {
+        name: text,
+        age: age,
+        symptom: symptom,
+        identify: identify,
+      };
+      setStep_2(true);
+      navigation.navigate('SpeakingSection', {param: data});
+      // navigation.navigate('MainPage', {param: true});
     } catch (error) {
       setErrorMsg((error && error.error) || 'Something went wrong.');
-      // setIsLoading(false);
     }
   };
 
   const handleSendName = async () => {
     try {
+      setProgress(0.5);
       setStep_3(true);
       setStep_2(false);
     } catch (error) {
@@ -111,6 +122,7 @@ const TypingSection = () => {
 
   const handleSendAge = async () => {
     try {
+      setProgress(0.75);
       setStep_4(true);
       setStep_3(false);
     } catch (error) {
@@ -130,13 +142,13 @@ const TypingSection = () => {
       setShowKeyboard(true);
     } catch (error) {
       setErrorMsg((error && error.error) || 'Something went wrong.');
-      // setIsLoading(false);
     }
   };
 
   const handleClickSym = async () => {
     try {
       setStep_4(false);
+      setProgress(1);
       setShowKeyboard(false);
       setStep_5(true);
     } catch (error) {
@@ -156,7 +168,6 @@ const TypingSection = () => {
       setShowKeyboard(true);
     } catch (error) {
       setErrorMsg((error && error.error) || 'Something went wrong.');
-      // setIsLoading(false);
     }
   };
 
@@ -170,51 +181,57 @@ const TypingSection = () => {
     }
   };
 
+  const handleClickSound = async txt => {
+    try {
+      console.log('----------txt----------', txt);
+      await dispatch(textToSpeech(txt));
+      console.log('----------finished-----------------');
+      setIsLoading(true);
+      console.log('------------useEffect', isLoading);
+      // dispatch(setStateFunc);
+    } catch (error) {
+      console.log('-----------error----------', error);
+    }
+  };
+
   useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      'keyboardDidShow',
-      e => {
-        const keyboardHeight = e.endCoordinates.height;
-        const newBottomPadding = initialBottom + keyboardHeight - 465; // Adjust accordingly
-        console.log('......newBottomPadding....', newBottomPadding);
-        setBottomPadding(newBottomPadding);
-      },
-    );
-
-    const keyboardDidHideListener = Keyboard.addListener(
-      'keyboardDidHide',
-      () => {
-        setBottomPadding(initialBottom);
-      },
-    );
-
-    return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
-    };
-  }, []);
-
-  //   useEffect(() => {
-  //     if (modalVisible) {
-  //       const txt = 'Hi! My name is Tom. What is your name?';
-  //       dispatch(textToSpeech(txt));
-  //     }
-  //   }, [modalVisible, dispatch]);
-
-  //   useEffect(() => {
-  //     if (txtAudio) {
-  //       playAudio(txtAudio);
-  //     }
-  //   }, []);
+    if (isLoading) {
+      console.log('-----------audio playing--------------');
+      playAudio(txtAudio);
+    }
+  }, [isLoading, playAudio, txtAudio]);
 
   const playAudio = async audioBase64 => {
     console.log('---------playAudio---------');
 
-    const path = `${RNFS.DocumentDirectoryPath}/ttsAudio.mp3`;
+    const audioPath = `${RNFS.TemporaryDirectoryPath}tempaudio.mp3`;
 
-    await RNFS.writeFile(path, audioBase64, 'base64');
+    const base64String = audioBase64.replace('data:audio/mp3;base64,', '');
 
-    new Player(path).play().on('ended', () => {});
+    await RNFS.writeFile(audioPath, base64String, 'base64')
+      .then(() => {
+        console.log('File written');
+      })
+      .catch(error => {
+        console.error('Error writing file', error);
+      });
+
+    const sound = new Sound(audioPath, '', error => {
+      if (error) {
+        console.log('Failed to load the sound', error);
+        return;
+      }
+      // Play the sound if loaded successfully
+      sound.play(success => {
+        if (success) {
+          console.log('Successfully finished playing');
+          setIsLoading(false);
+        } else {
+          console.log('Playback failed due to audio decoding errors');
+          setIsLoading(false);
+        }
+      });
+    });
   };
 
   const MessageBlock = ({children}) => (
@@ -231,7 +248,9 @@ const TypingSection = () => {
           top: 205,
           right: screenWidth / 20,
         }}>
-        <Image source={sound_ico} />
+        <TouchableOpacity onPress={() => handleClickSound(children)}>
+          <Image source={sound_ico} />
+        </TouchableOpacity>
         <Image source={turtle_ico} />
       </View>
     </>
@@ -270,6 +289,7 @@ const TypingSection = () => {
         text={'Introducing yourself'}
         color={'#FFFBF8'}
         editalbe={false}
+        progress={progress}
       />
 
       <Image
@@ -288,11 +308,11 @@ const TypingSection = () => {
           />
 
           <View style={styles.me_imageContainer}>
-            <Image source={mechat} />
+            <Image source={mechat} style={{width: 240}} />
 
             <>
               <Text style={styles.m_title}>
-                Hi! My name is {text || '___'} .
+                Hi! My name is {text || '___'}.
               </Text>
               <View
                 style={{
@@ -302,7 +322,10 @@ const TypingSection = () => {
                   top: 54,
                   left: 0,
                 }}>
-                <Image source={sound_ico} />
+                <TouchableOpacity
+                  onPress={() => handleClickSound(`Hi! My name is ${text}`)}>
+                  <Image source={sound_ico} />
+                </TouchableOpacity>
                 <Image source={turtle_ico} />
               </View>
             </>
@@ -345,7 +368,10 @@ const TypingSection = () => {
                   top: 54,
                   left: 0,
                 }}>
-                <Image source={sound_ico} />
+                <TouchableOpacity
+                  onPress={() => handleClickSound(`I'm ${age} years old.`)}>
+                  <Image source={sound_ico} />
+                </TouchableOpacity>
                 <Image source={turtle_ico} />
               </View>
             </>
@@ -388,7 +414,10 @@ const TypingSection = () => {
                   top: 54,
                   left: 0,
                 }}>
-                <Image source={sound_ico} />
+                <TouchableOpacity
+                  onPress={() => handleClickSound(`I have ${symptom}`)}>
+                  <Image source={sound_ico} />
+                </TouchableOpacity>
                 <Image source={turtle_ico} />
               </View>
             </>
@@ -445,7 +474,10 @@ const TypingSection = () => {
                   top: 54,
                   left: 0,
                 }}>
-                <Image source={sound_ico} />
+                <TouchableOpacity
+                  onPress={() => handleClickSound(`I identify as ${identify}`)}>
+                  <Image source={sound_ico} />
+                </TouchableOpacity>
                 <Image source={turtle_ico} />
               </View>
             </>

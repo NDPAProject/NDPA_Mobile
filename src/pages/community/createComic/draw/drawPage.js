@@ -13,16 +13,16 @@ import {
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import Header from '../../../components/header';
+import Header from '../../../../components/header';
 
-const hand_ico = require('../../../../assets/icons/community/finger_ico.png');
-const pencil_ico = require('../../../../assets/icons/community/pencil_ico.png');
-const pen_2 = require('../../../../assets/icons/community/pen_2.png');
-const eraser = require('../../../../assets/icons/community/eraser.png');
-const brush_ico = require('../../../../assets/icons/community/brush_ico.png');
-const rule_ico = require('../../../../assets/icons/community/rule_ico.png');
-const inc_pen = require('../../../../assets/icons/community/inc_pen.png');
-const add_ico = require('../../../../assets/icons/community/add_ico.png');
+const hand_ico = require('../../../../../assets/icons/community/finger_ico.png');
+const pencil_ico = require('../../../../../assets/icons/community/pencil_ico.png');
+const pen_2 = require('../../../../../assets/icons/community/pen_2.png');
+const eraser = require('../../../../../assets/icons/community/eraser.png');
+const brush_ico = require('../../../../../assets/icons/community/brush_ico.png');
+const rule_ico = require('../../../../../assets/icons/community/rule_ico.png');
+const inc_pen = require('../../../../../assets/icons/community/inc_pen.png');
+const add_ico = require('../../../../../assets/icons/community/add_ico.png');
 
 const tools = [
   {id: '1', image: pencil_ico, nav: ''},

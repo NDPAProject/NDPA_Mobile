@@ -201,7 +201,6 @@ const styles = StyleSheet.create({
     color: '#F08080',
     fontSize: 16,
     fontFamily: 'OpenSans-Bold',
-    // textDecorationLine: 'underline',
   },
   underline: {
     height: 2,

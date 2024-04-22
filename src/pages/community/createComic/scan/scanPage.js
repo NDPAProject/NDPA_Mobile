@@ -6,7 +6,7 @@ import React, {useState, useEffect} from 'react';
 import {View, StyleSheet, Text, Dimensions} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import Header from '../../../components/header';
+import Header from '../../../../components/header';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;

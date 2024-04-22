@@ -43,6 +43,7 @@ const slice = createSlice({
 
     setisLoading(state) {
       state.isloading = false;
+      state.txtAudio = '';
     },
   },
 });
@@ -117,6 +118,7 @@ export const transcribeAudio = audioPath => async dispatch => {
 // Function to convert text to speech
 export const textToSpeech = text => async dispatch => {
   try {
+    console.log('---------textToSpeech----------', text);
     const response = await axios.post(
       AZURE_TEXT_TO_SPEECH_API.trim(),
       `<speak version='1.0' xml:lang='en-US'><voice xml:lang='en-US' xml:gender='Female' name='en-US-JessaNeural'>${text}</voice></speak>`, // XML body to specify the voice and text
@@ -142,6 +144,10 @@ export const textToSpeech = text => async dispatch => {
 };
 
 export const setStateFunc = () => async dispatch => {
-  console.log('11111111111');
-  dispatch(setisLoading);
+  try {
+    console.log('11111111111');
+    dispatch(setisLoading);
+  } catch (error) {
+    console.error('Error:', error);
+  }
 };

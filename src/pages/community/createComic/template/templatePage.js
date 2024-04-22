@@ -13,16 +13,16 @@ import {
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import Header from '../../../components/header';
-import SearchBox from '../../../components/searchBox';
+import Header from '../../../../components/header';
+import SearchBox from '../../../../components/searchBox';
 
-const searchIcon = require('../../../../assets/icons/mdi_magnify.png');
-const temp_1 = require('../../../../assets/icons/templates/temp_1.png');
-const temp_2 = require('../../../../assets/icons/templates/temp_2.png');
-const temp_3 = require('../../../../assets/icons/templates/temp_3.png');
-const temp_4 = require('../../../../assets/icons/templates/temp_4.png');
-const temp_5 = require('../../../../assets/icons/templates/temp_5.png');
-const temp_6 = require('../../../../assets/icons/templates/temp_6.png');
+const searchIcon = require('../../../../../assets/icons/mdi_magnify.png');
+const temp_1 = require('../../../../../assets/icons/templates/temp_1.png');
+const temp_2 = require('../../../../../assets/icons/templates/temp_2.png');
+const temp_3 = require('../../../../../assets/icons/templates/temp_3.png');
+const temp_4 = require('../../../../../assets/icons/templates/temp_4.png');
+const temp_5 = require('../../../../../assets/icons/templates/temp_5.png');
+const temp_6 = require('../../../../../assets/icons/templates/temp_6.png');
 
 const popularItems = [
   {id: '1', image: temp_1},

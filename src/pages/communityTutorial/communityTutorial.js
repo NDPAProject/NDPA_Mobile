@@ -37,19 +37,20 @@ const boxData = [
   ],
 ];
 
-const MainPage = () => {
+const CommunityTutorial = () => {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(true);
   const [explainModal, setExplainModal] = useState(false);
   const [starRating, setStarRating] = useState(0);
   const [description, setDescription] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
 
   const handleClick = comment => {
     try {
       setDescription(comment);
       console.log('commet', comment);
     } catch (error) {
-      //   setErrorMsg((error && error.error) || 'Something went wrong.');
+      setErrorMsg((error && error.error) || 'Something went wrong.');
       // setIsLoading(false);
     }
   };
@@ -59,7 +60,7 @@ const MainPage = () => {
       setModalVisible(false);
       setExplainModal(false);
     } catch (error) {
-      //   setErrorMsg((error && error.error) || 'Something went wrong.');
+      setErrorMsg((error && error.error) || 'Something went wrong.');
       // setIsLoading(false);
     }
   };
@@ -114,7 +115,7 @@ const MainPage = () => {
   );
 };
 
-export default MainPage;
+export default CommunityTutorial;
 
 const styles = StyleSheet.create({
   container_s: {

@@ -17,7 +17,7 @@ import {useNavigation} from '@react-navigation/native';
 const screenWidth = Dimensions.get('window').width;
 const arrow = require('../../assets/icons/left_ico.png');
 
-const Header = ({visible, text, color, editalbe, setEdit}) => {
+const Header = ({visible, text, color, editalbe, setEdit, progress}) => {
   const navigation = useNavigation();
 
   const handleBackPress = () => {
@@ -51,7 +51,7 @@ const Header = ({visible, text, color, editalbe, setEdit}) => {
       </View>
       {visible && (
         <ProgressBar
-          progress={0.3}
+          progress={progress}
           color="#F08080"
           width={(screenWidth * 9) / 10}
           style={{marginTop: 20}}

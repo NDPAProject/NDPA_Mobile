@@ -6,13 +6,11 @@ import React, {useState, useEffect} from 'react';
 import {View, StyleSheet, Text, Dimensions} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import Header from '../../../components/header';
-import ChatBox from '../../../components/chatBox';
+import Header from '../../../../components/header';
+import ChatBox from '../../../../components/chatBox';
 
-const msg_send_passive = require('../../../../assets/icons/msg_send_passive.png');
-const msg_send_active = require('../../../../assets/icons/msg_send_active.png');
-
-const reward_ico = require('../../../../assets/icons/main/reward.png');
+const msg_send_passive = require('../../../../../assets/icons/msg_send_passive.png');
+const msg_send_active = require('../../../../../assets/icons/msg_send_active.png');
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;

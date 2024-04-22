@@ -6,7 +6,11 @@ import React, {useState, useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import RewardDialog from '../../components/rewardModal';
 
-import {transcribeAudio, setStateFunc} from '../../redux/slices/audio';
+import {
+  transcribeAudio,
+  setStateFunc,
+  setisLoading,
+} from '../../redux/slices/audio';
 
 import {
   Image,
@@ -63,16 +67,20 @@ const SpeakingSection = ({route}) => {
   const [audioPath, setAudioPath] = useState('');
   const [text, setText] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+  const [progress, setProgress] = useState(0.25);
+  const [isLoading, setIsLoading] = useState(false);
+  const [imageSource, setImageSource] = useState(mechat);
+  const [showButton, setShowButton] = useState(false);
 
-  const {audioTxt, isloading} = useSelector(state => state.audio);
+  const {audioTxt} = useSelector(state => state.audio);
 
   const audioRecorderPlayer = new AudioRecorderPlayer();
 
   const messageIcon = text ? msg_send_active : msg_send_passive;
 
-  //   const {param} = route.params;
+  const {param} = route.params;
 
-  const param = 'test';
+  // const param = 'test';
 
   console.log('-----------------audioTxt---------------', audioTxt, param);
 
@@ -125,7 +133,8 @@ const SpeakingSection = ({route}) => {
 
   const handleSend = async () => {
     try {
-      //   await onStartRecord();
+      setIsLoading(true);
+      await onStartRecord();
       console.log('-------audioPath--------', audioPath);
       setStep_2(true);
       // dispatch(transcribeAudio(audioPath));
@@ -192,30 +201,35 @@ const SpeakingSection = ({route}) => {
         console.log('stopped recording', res);
         console.log('Recorded Audio File Path:', path);
         setAudioPath(path);
-        // No need to remove the recorder path since you might want to access the file later.
-      }, 5000); // Stop after 5 seconds
+      }, 5000);
     } catch (error) {
       console.error('Recording error:', error);
     }
   };
 
-  // const onStopRecord = async () => {
-  //   try {
-  //     const result = await audioRecorderPlayer.stopRecorder();
-  //     audioRecorderPlayer.removeRecordBackListener();
-  //     console.log(result);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
+  useEffect(() => {
+    console.log('Updated audioPath:', audioPath);
+    if (audioPath) {
+      dispatch(transcribeAudio(audioPath));
+      setAudioPath('');
+      setIsLoading(false);
+    }
+  }, [audioPath]);
 
-  //   useEffect(() => {
-  //     console.log('Updated audioPath:', audioPath);
-  //     if (audioPath) {
-  //       dispatch(setStateFunc);
-  //       dispatch(transcribeAudio(audioPath));
-  //     }
-  //   }, [audioPath]);
+  useEffect(() => {
+    if (audioTxt !== null) {
+      if (param.name === audioTxt?.DisplayText) {
+        setImageSource(mechat);
+        // setStep_3(true);
+        // setStep_2(false);
+        setShowButton(true);
+      } else {
+        setImageSource(wrong_msg_ico);
+      }
+    } else {
+      setImageSource(mechat);
+    }
+  }, [param.name, audioTxt]);
 
   const MessageBlock = ({children}) => (
     <>
@@ -264,6 +278,7 @@ const SpeakingSection = ({route}) => {
         text={'Introducing yourself'}
         color={'#FFFBF8'}
         editalbe={false}
+        progress={progress}
       />
 
       <Image
@@ -275,26 +290,6 @@ const SpeakingSection = ({route}) => {
         style={{position: 'absolute', right: screenWidth / 20, top: 330}}
       />
 
-      {/* <MessageBlock children={' Hi! My name is Tom. \nWhat is your name?'} />
-
-      <View style={styles.me_imageContainer}>
-        <Image source={mechat} />
-
-        <>
-          <Text style={styles.m_title}>Hi! My name is {text || '___'} .</Text>
-          <View
-            style={{
-              flexDirection: 'row',
-              gap: 9,
-              position: 'absolute',
-              top: 54,
-              left: 0,
-            }}>
-            <Image source={sound_ico} />
-            <Image source={turtle_ico} />
-          </View>
-        </>
-      </View> */}
       {step_2 && (
         <>
           <MessageBlock
@@ -302,11 +297,11 @@ const SpeakingSection = ({route}) => {
           />
 
           <View style={styles.me_imageContainer}>
-            <Image source={mechat} />
+            <Image source={imageSource} />
 
             <>
               <Text style={styles.m_title}>
-                Hi! My name is {text || '___'} .
+                Hi! My name is {audioTxt?.DisplayText || '___'} .
               </Text>
               <View
                 style={{
@@ -321,7 +316,6 @@ const SpeakingSection = ({route}) => {
               </View>
             </>
           </View>
-
           <Image
             source={mic_frame}
             style={{
@@ -330,7 +324,7 @@ const SpeakingSection = ({route}) => {
               width: (screenWidth * 9) / 10,
               marginLeft: screenWidth / 20,
               marginRight: screenWidth / 20,
-              opacity: isloading ? 0 : 1,
+              opacity: isLoading ? 1 : 0,
             }}
           />
           <TouchableOpacity
@@ -346,45 +340,30 @@ const SpeakingSection = ({route}) => {
         </>
       )}
 
-      <View style={styles.me_imageContainer}>
+      {step_3 && (
         <>
-          {isloading ? (
-            <>
-              <Image
-                source={
-                  param === audioTxt?.DisplayText ? mechat : wrong_msg_ico
-                }
-              />
-              <Text style={styles.m_title}>
-                Hi! My name is{' '}
-                {param === audioTxt?.DisplayText
-                  ? audioTxt.DisplayText
-                  : '_____'}
-                .
-              </Text>
-            </>
-          ) : (
-            <>
-              <Image source={mechat} />
-              <Text style={styles.m_title}>Hi! My name is _____.</Text>
-            </>
-          )}
+          <MessageBlock children={' Nice to meet you! \nHow old are you?'} />
 
-          <View
-            style={{
-              flexDirection: 'row',
-              gap: 9,
-              position: 'absolute',
-              top: 54,
-              left: 0,
-            }}>
-            <Image source={sound_ico} />
-            <Image source={turtle_ico} />
+          <View style={styles.me_imageContainer}>
+            <Image source={imageSource} />
+
+            <>
+              <Text style={styles.m_title}>
+                I'm {audioTxt?.DisplayText || '___'} years old.
+              </Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  gap: 9,
+                  position: 'absolute',
+                  top: 54,
+                  left: 0,
+                }}>
+                <Image source={sound_ico} />
+                <Image source={turtle_ico} />
+              </View>
+            </>
           </View>
-        </>
-      </View>
-      {/* {!step_2 ? (
-        <>
           <Image
             source={mic_frame}
             style={{
@@ -393,7 +372,7 @@ const SpeakingSection = ({route}) => {
               width: (screenWidth * 9) / 10,
               marginLeft: screenWidth / 20,
               marginRight: screenWidth / 20,
-              opacity: isloading ? 0 : 1,
+              opacity: isLoading ? 1 : 0,
             }}
           />
           <TouchableOpacity
@@ -407,21 +386,27 @@ const SpeakingSection = ({route}) => {
           </TouchableOpacity>
           <Text style={styles.text_m}>Press to speak</Text>
         </>
-      ) : (
+      )}
+      {showButton && (
         <TouchableOpacity
-          style={styles.startButton}
-          onPress={handleClickContinue}>
-          <Text style={styles.b3_text}>Continue</Text>
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: (screenWidth * 8) / 10,
+            height: 57,
+            position: 'absolute',
+            bottom: 40,
+            borderRadius: 45,
+            backgroundColor: '#F08080',
+          }}
+          onPress={() => handleClickContinue()}>
+          <Text style={styles.b1_text}>Continue</Text>
         </TouchableOpacity>
-      )} */}
-
-      {/* <TouchableOpacity style={styles.startButton} onPress={handleClick}>
-        <Text style={styles.b3_text}>Continue</Text>
-      </TouchableOpacity> */}
+      )}
 
       {/* {param === audioTxt?.DisplayText ? (
         <CustomGreatModal
-          visible={isloading && !step_3}
+          visible={step_2}
           hand_ico={hand_ico}
           icon={thumb_icon}
           showImage={showImage}
@@ -432,7 +417,7 @@ const SpeakingSection = ({route}) => {
         />
       ) : (
         <CustomGreatModal
-          visible={isloading && !step_3}
+          visible={step_2}
           hand_ico={hand_ico}
           icon={try_again_ico}
           showImage={showImage}
@@ -457,10 +442,11 @@ const styles = StyleSheet.create({
     width: screenWidth,
     height: screenHeight,
   },
-  overlay: {
-    flex: 1,
-    // justifyContent: 'center',
-    // alignItems: 'center',
+
+  b1_text: {
+    color: 'white',
+    fontSize: 19,
+    fontFamily: 'OpenSans-Bold',
   },
   startButton: {
     justifyContent: 'center',
