@@ -9,10 +9,10 @@ import {View} from 'react-native';
 //
 // Import Screens
 import MainPage from './mainPage';
-import TypingSection from '../learnTutorial/typingTutor';
-import SpeakingSection from '../learnTutorial/speakingTutor';
-import ReviewSection from '../learnTutorial/reviewTutor';
-import MainLearningSection from '../learn';
+import TypingTutorSection from '../learnTutorial/typingTutor';
+import SpeakingTutorSection from '../learnTutorial/speakingTutor';
+import ReviewTutorSection from '../learnTutorial/reviewTutor';
+import MainLearningSection from '../learn/index';
 import Location from '../location';
 
 import {LogBox} from 'react-native';
@@ -32,18 +32,18 @@ const Main = () => {
         initialParams={{param: false}}
       />
       <Stack.Screen
-        name="TypingSection"
-        component={TypingSection}
+        name="TypingTutorSection"
+        component={TypingTutorSection}
         options={{headerShown: false}}
       />
       <Stack.Screen
-        name="SpeakingSection"
-        component={SpeakingSection}
+        name="SpeakingTutorSection"
+        component={SpeakingTutorSection}
         options={{headerShown: false}}
       />
       <Stack.Screen
-        name="ReviewSection"
-        component={ReviewSection}
+        name="ReviewTutorSection"
+        component={ReviewTutorSection}
         options={{headerShown: false}}
       />
       <Stack.Screen
