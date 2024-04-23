@@ -41,9 +41,10 @@ const slice = createSlice({
       state.txtAudio = action.payload;
     },
 
-    setisLoading(state) {
+    setisLoading(state, action) {
       state.isloading = false;
-      state.txtAudio = '';
+      state.audioTxt = action.payload;
+      state.txtAudio = action.payload;
     },
   },
 });
@@ -143,10 +144,10 @@ export const textToSpeech = text => async dispatch => {
   }
 };
 
-export const setStateFunc = () => async dispatch => {
+export const setStateFunc = data => async dispatch => {
   try {
-    console.log('11111111111');
-    dispatch(setisLoading);
+    console.log('---=======setStateFunc=====-------', data);
+    dispatch(setisLoading(data));
   } catch (error) {
     console.error('Error:', error);
   }

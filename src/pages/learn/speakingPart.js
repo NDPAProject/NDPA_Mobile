@@ -1,15 +1,15 @@
 import 'react-native-gesture-handler';
 import 'react-native-get-random-values';
 import RNFS from 'react-native-fs';
+import Sound from 'react-native-sound';
 // Import React and Component
 import React, {useState, useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import RewardDialog from '../../components/rewardModal';
-
 import {
+  textToSpeech,
   transcribeAudio,
   setStateFunc,
-  setisLoading,
 } from '../../redux/slices/audio';
 
 import {
@@ -21,6 +21,7 @@ import {
   TouchableOpacity,
   Platform,
   PermissionsAndroid,
+  ActivityIndicator,
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import AudioRecorderPlayer from 'react-native-audio-recorder-player';
@@ -29,12 +30,9 @@ import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 import Header from '../../components/header';
 import CustomDialog from '../../components/dialogModal';
 import CustomGreatModal from '../../components/greatModal';
-import MoveDialog from '../../components/moveDialog';
 
 const speaking_ico = require('../../../assets/icons/speaking_ico.png');
 const hand_ico = require('../../../assets/icons/hand_ico.png');
-const msg_send_passive = require('../../../assets/icons/msg_send_passive.png');
-const msg_send_active = require('../../../assets/icons/msg_send_active.png');
 
 const mic_ico = require('../../../assets/icons/mic_ico.png');
 const mic_frame = require('../../../assets/icons/mic_frame.png');
@@ -45,7 +43,6 @@ const sound_ico = require('../../../assets/icons/charm_sound-up.png');
 const message = require('../../../assets/icons/message.png');
 const mechat = require('../../../assets/icons/mechat.png');
 const thumb_icon = require('../../../assets/icons/great_ico.png');
-const try_again_ico = require('../../../assets/icons/try_again_ico.png');
 const reward_ico = require('../../../assets/icons/main/reward.png');
 const wrong_msg_ico = require('../../../assets/icons/wrong_msg.png');
 
@@ -64,19 +61,18 @@ const SpeakingSection = ({route}) => {
   const [step_4, setStep_4] = useState(false);
   const [step_5, setStep_5] = useState(false);
   const [step_6, setStep_6] = useState(false);
+  const [step_7, setStep_7] = useState(false);
   const [audioPath, setAudioPath] = useState('');
-  const [text, setText] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [progress, setProgress] = useState(0.25);
   const [isLoading, setIsLoading] = useState(false);
+  const [sound, setSound] = useState(false);
   const [imageSource, setImageSource] = useState(mechat);
   const [showButton, setShowButton] = useState(false);
 
-  const {audioTxt} = useSelector(state => state.audio);
+  const {audioTxt, txtAudio} = useSelector(state => state.audio);
 
   const audioRecorderPlayer = new AudioRecorderPlayer();
-
-  const messageIcon = text ? msg_send_active : msg_send_passive;
 
   const {param} = route.params;
 
@@ -90,44 +86,52 @@ const SpeakingSection = ({route}) => {
       setModalVisible(false);
     } catch (error) {
       setErrorMsg((error && error.error) || 'Something went wrong.');
-      // setIsLoading(false);
     }
   };
 
   const handleClickContinue = async () => {
     try {
-      setStep_2(false);
-      setStep_3(true);
+      if (step_2) {
+        setStep_2(false);
+        setShowButton(false);
+        setProgress(0.5);
+        setStep_3(true);
+      }
+      if (step_3) {
+        setStep_3(false);
+        setShowButton(false);
+        setProgress(0.75);
+        setStep_4(true);
+      }
+      if (step_4) {
+        setStep_4(false);
+        setShowButton(false);
+        setProgress(1);
+        setStep_5(true);
+      }
+      if (step_5) {
+        // setStep_5(false);
+        setShowButton(false);
+        setStep_6(true);
+      }
+      if (step_6) {
+        console.log('-----------============------------');
+        setStep_6(false);
+        setShowButton(false);
+        setStep_7(true);
+      }
     } catch (error) {
       setErrorMsg((error && error.error) || 'Something went wrong.');
-      // setIsLoading(false);
     }
   };
 
   const handleClickMove = async () => {
     try {
-      navigation.navigate('ReviewSection', {param: text});
-    } catch (error) {
-      setErrorMsg((error && error.error) || 'Something went wrong.');
-      // setIsLoading(false);
-    }
-  };
+      setStep_2(true);
 
-  const handleContinue = async () => {
-    try {
-      setStep_5(true);
+      navigation.navigate('ReviewSection', {param: param});
     } catch (error) {
       setErrorMsg((error && error.error) || 'Something went wrong.');
-      // setIsLoading(false);
-    }
-  };
-
-  const handleClickTry = async () => {
-    try {
-      setStep_3(true);
-    } catch (error) {
-      setErrorMsg((error && error.error) || 'Something went wrong.');
-      // setIsLoading(false);
     }
   };
 
@@ -137,24 +141,6 @@ const SpeakingSection = ({route}) => {
       await onStartRecord();
       console.log('-------audioPath--------', audioPath);
       setStep_2(true);
-      // dispatch(transcribeAudio(audioPath));
-      //   setStep_4(true);
-      //   setStep_3(false);
-
-      // setModalVisible(false);
-    } catch (error) {
-      setErrorMsg((error && error.error) || 'Something went wrong.');
-      // setIsLoading(false);
-    }
-  };
-
-  const handleInput = async () => {
-    try {
-      // setModalVisible(false);
-      setShowHand(false);
-      setStep_3(true);
-      setStep_2(false);
-      setShowImage(false);
     } catch (error) {
       setErrorMsg((error && error.error) || 'Something went wrong.');
       // setIsLoading(false);
@@ -207,6 +193,58 @@ const SpeakingSection = ({route}) => {
     }
   };
 
+  const handleClickSound = async txt => {
+    try {
+      console.log('----------txt----------', txt);
+      await dispatch(textToSpeech(txt));
+      console.log('----------finished-----------------');
+      setSound(true);
+      console.log('------------useEffect', isLoading);
+    } catch (error) {
+      console.log('-----------error----------', error);
+    }
+  };
+
+  useEffect(() => {
+    if (sound) {
+      console.log('-----------audio playing--------------');
+      playAudio(txtAudio);
+    }
+  }, [sound]);
+
+  const playAudio = async audioBase64 => {
+    console.log('---------playAudio---------');
+
+    const audioPath = `${RNFS.TemporaryDirectoryPath}tempaudio.mp3`;
+
+    const base64String = audioBase64.replace('data:audio/mp3;base64,', '');
+
+    await RNFS.writeFile(audioPath, base64String, 'base64')
+      .then(() => {
+        console.log('File written');
+      })
+      .catch(error => {
+        console.error('Error writing file', error);
+      });
+
+    const sound = new Sound(audioPath, '', error => {
+      if (error) {
+        console.log('Failed to load the sound', error);
+        return;
+      }
+      // Play the sound if loaded successfully
+      sound.play(success => {
+        if (success) {
+          console.log('Successfully finished playing');
+          setIsLoading(false);
+        } else {
+          console.log('Playback failed due to audio decoding errors');
+          setIsLoading(false);
+        }
+      });
+    });
+  };
+
   useEffect(() => {
     console.log('Updated audioPath:', audioPath);
     if (audioPath) {
@@ -231,6 +269,13 @@ const SpeakingSection = ({route}) => {
     }
   }, [param.name, audioTxt]);
 
+  useEffect(() => {
+    console.log('------------step_7------------:', step_6);
+    if (step_6) {
+      dispatch(setStateFunc(null));
+    }
+  }, [step_6]);
+
   const MessageBlock = ({children}) => (
     <>
       <View style={styles.imageContainer}>
@@ -245,7 +290,9 @@ const SpeakingSection = ({route}) => {
           top: 205,
           right: screenWidth / 20,
         }}>
-        <Image source={sound_ico} />
+        <TouchableOpacity onPress={() => handleClickSound(children)}>
+          <Image source={sound_ico} />
+        </TouchableOpacity>
         <Image source={turtle_ico} />
       </View>
     </>
@@ -264,7 +311,7 @@ const SpeakingSection = ({route}) => {
       />
 
       <RewardDialog
-        modalVisible={step_6}
+        modalVisible={step_7}
         setModalVisible={setModalVisible}
         handleClick={handleClickMove}
         title="Great job!"
@@ -327,16 +374,20 @@ const SpeakingSection = ({route}) => {
               opacity: isLoading ? 1 : 0,
             }}
           />
-          <TouchableOpacity
-            onPress={handleSend}
-            style={{
-              position: 'absolute',
-              bottom: 40,
-              right: screenWidth / 2 - 50,
-            }}>
-            <Image source={mic_ico} />
-          </TouchableOpacity>
-          <Text style={styles.text_m}>Press to speak</Text>
+          {!showButton && (
+            <>
+              <TouchableOpacity
+                onPress={handleSend}
+                style={{
+                  position: 'absolute',
+                  bottom: 40,
+                  right: screenWidth / 2 - 50,
+                }}>
+                <Image source={mic_ico} />
+              </TouchableOpacity>
+              <Text style={styles.text_m}>Press to speak</Text>
+            </>
+          )}
         </>
       )}
 
@@ -375,18 +426,128 @@ const SpeakingSection = ({route}) => {
               opacity: isLoading ? 1 : 0,
             }}
           />
-          <TouchableOpacity
-            onPress={handleSend}
-            style={{
-              position: 'absolute',
-              bottom: 40,
-              right: screenWidth / 2 - 50,
-            }}>
-            <Image source={mic_ico} />
-          </TouchableOpacity>
-          <Text style={styles.text_m}>Press to speak</Text>
+          {!showButton && (
+            <>
+              <TouchableOpacity
+                onPress={handleSend}
+                style={{
+                  position: 'absolute',
+                  bottom: 40,
+                  right: screenWidth / 2 - 50,
+                }}>
+                <Image source={mic_ico} />
+              </TouchableOpacity>
+              <Text style={styles.text_m}>Press to speak</Text>
+            </>
+          )}
         </>
       )}
+
+      {step_4 && (
+        <>
+          <MessageBlock children={'I have ADHD. \nWhat about you?'} />
+
+          <View style={styles.me_imageContainer}>
+            <Image source={imageSource} />
+
+            <>
+              <Text style={styles.m_title}>
+                I have {audioTxt?.DisplayText || '___'}.
+              </Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  gap: 9,
+                  position: 'absolute',
+                  top: 54,
+                  left: 0,
+                }}>
+                <Image source={sound_ico} />
+                <Image source={turtle_ico} />
+              </View>
+            </>
+          </View>
+          <Image
+            source={mic_frame}
+            style={{
+              position: 'absolute',
+              bottom: 150,
+              width: (screenWidth * 9) / 10,
+              marginLeft: screenWidth / 20,
+              marginRight: screenWidth / 20,
+              opacity: isLoading ? 1 : 0,
+            }}
+          />
+          {!showButton && (
+            <>
+              <TouchableOpacity
+                onPress={handleSend}
+                style={{
+                  position: 'absolute',
+                  bottom: 40,
+                  right: screenWidth / 2 - 50,
+                }}>
+                <Image source={mic_ico} />
+              </TouchableOpacity>
+              <Text style={styles.text_m}>Press to speak</Text>
+            </>
+          )}
+        </>
+      )}
+
+      {step_5 && (
+        <>
+          <MessageBlock children={"What's your gender \nidentity?"} />
+
+          <View style={styles.me_imageContainer}>
+            <Image source={imageSource} />
+
+            <>
+              <Text style={styles.m_title}>
+                I identify as {audioTxt?.DisplayText || '___'}.
+              </Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  gap: 9,
+                  position: 'absolute',
+                  top: 54,
+                  left: 0,
+                }}>
+                <Image source={sound_ico} />
+                <Image source={turtle_ico} />
+              </View>
+            </>
+          </View>
+          <Image
+            source={mic_frame}
+            style={{
+              position: 'absolute',
+              bottom: 150,
+              width: (screenWidth * 9) / 10,
+              marginLeft: screenWidth / 20,
+              marginRight: screenWidth / 20,
+              opacity: isLoading ? 1 : 0,
+            }}
+          />
+          {!showButton && (
+            <>
+              <TouchableOpacity
+                onPress={handleSend}
+                disabled={isLoading}
+                style={{
+                  position: 'absolute',
+                  bottom: 40,
+                  right: screenWidth / 2 - 50,
+                }}>
+                <Image source={mic_ico} />
+              </TouchableOpacity>
+              <Text style={styles.text_m}>Press to speak</Text>
+            </>
+          )}
+        </>
+      )}
+
       {showButton && (
         <TouchableOpacity
           style={{
@@ -404,30 +565,16 @@ const SpeakingSection = ({route}) => {
         </TouchableOpacity>
       )}
 
-      {/* {param === audioTxt?.DisplayText ? (
-        <CustomGreatModal
-          visible={step_2}
-          hand_ico={hand_ico}
-          icon={thumb_icon}
-          showImage={showImage}
-          buttonType={true}
-          handleClick={handleContinue}
-          onRequestClose={() => setStep_2(false)}
-          message="Great job!"
-        />
-      ) : (
-        <CustomGreatModal
-          visible={step_2}
-          hand_ico={hand_ico}
-          icon={try_again_ico}
-          showImage={showImage}
-          buttonType={false}
-          handleClick={handleContinue}
-          // handleClick={handleClickTry}
-          onRequestClose={() => setStep_2(false)}
-          message="Don't give up"
-        />
-      )} */}
+      <CustomGreatModal
+        visible={step_6}
+        hand_ico={hand_ico}
+        icon={thumb_icon}
+        showImage={showImage}
+        buttonType={true}
+        handleClick={() => handleClickContinue()}
+        onRequestClose={() => handleClickContinue()}
+        message="Great job!"
+      />
     </View>
   );
 };

@@ -9,7 +9,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 // Import Screens
 import TypingSection from './typingPart';
 import SpeakingSection from './speakingPart';
-// import ReviewSection from './reviewPart';
+import ReviewSection from './reviewPart';
 import StartPersonalSection from './personalIdPart';
 
 import {LogBox} from 'react-native';
@@ -36,6 +36,11 @@ const MainLearningSection = () => {
       <Stack.Screen
         name="SpeakingSection"
         component={SpeakingSection}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="ReviewSection"
+        component={ReviewSection}
         options={{headerShown: false}}
       />
     </Stack.Navigator>
