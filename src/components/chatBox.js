@@ -35,7 +35,7 @@ const ChatBox = ({
         />
         <TouchableOpacity
           style={{position: 'absolute', top: 23, right: 25}}
-          onPress={text.length !== 0 ? handleSend : undefined}>
+          onPress={text?.length !== 0 ? handleSend : undefined}>
           <Image source={messageIcon} />
           {showHand && (
             <Image
