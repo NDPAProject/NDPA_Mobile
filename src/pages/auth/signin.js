@@ -21,7 +21,6 @@ const screenHeight = Dimensions.get('window').height;
 
 const Signin = () => {
   const {login, isAuthenticated, user, clearData, users} = useAuth();
-  const {message} = useSelector(state => state.user);
 
   const [email, setEmail] = useState('');
   const [isValidEmail, setIsValidEmail] = useState(false);
@@ -68,16 +67,16 @@ const Signin = () => {
     console.log(
       '-------------isAuthenticated-------------',
       isAuthenticated,
-      user,
+      users,
     );
     if (isAuthenticated) {
       const destination =
-        user?.parentEmail !== null || undefined ? 'Main' : 'Cprofile';
+        users?.parentEmail !== null || undefined ? 'Main' : 'Cprofile';
       navigation.navigate(destination);
       console.log(`Navigating to ${destination}`);
       // navigation.navigate('Cprofile');
     }
-  }, [isAuthenticated, users, navigation, clearData]);
+  }, [isAuthenticated, users, navigation]);
 
   const navigation = useNavigation();
 

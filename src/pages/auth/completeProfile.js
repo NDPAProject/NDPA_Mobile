@@ -38,34 +38,57 @@ const Completeprofile = () => {
   const [countryCode, setCountryCode] = useState('US');
   const [pickerVisible, setPickerVisible] = useState(false);
   const [isValidEmail, setIsValidEmail] = useState(false);
+  const [isValid, setIsValid] = useState(true);
 
   const [isLoading, setIsLoading] = useState(false);
 
   const {message, error} = useSelector(state => state.user);
 
   useEffect(() => {
-    const userData = {
-      fullName: name,
-      pEmail: pemail,
-      phoneNumber: number,
-      country: country,
-      bday: date,
-    };
-    console.log('isLoading:', isLoading, userData, users.id);
-    if (isLoading) {
-      dispatch(createProfile(userData, users.id));
-    }
-  }, [isLoading]);
+    async function fetchData() {
+      if (isLoading) {
+        console.log('Preparing to fetch data...');
+        const userData = {
+          fullName: name,
+          pEmail: pemail,
+          phoneNumber: number,
+          country: country,
+          bday: date,
+        };
 
-  useEffect(() => {
-    console.log('message:', message, error);
-    if (message?.code === 200) {
-      setIsLoading(false);
-      navigation.navigate('Profiledone');
-    } else if (error) {
-      setIsLoading(false);
+        try {
+          const result = await dispatch(createProfile(userData, users.id));
+          console.log('Dispatch result:', result);
+
+          if (message.code === 200) {
+            setIsLoading(false);
+            navigation.navigate('Profiledone');
+          }
+        } catch (error) {
+          console.error('Error during fetch:', error);
+          setIsLoading(false);
+        }
+      }
     }
-  }, [message, error]);
+
+    fetchData();
+    // Potentially problematic cleanup if used incorrectly elsewhere
+    return () => {
+      console.log('Cleanup function');
+      // Make sure this is a function and does nothing harmful or incorrect
+    };
+  }, [
+    isLoading,
+    name,
+    pemail,
+    number,
+    country,
+    date,
+    users.id,
+    dispatch,
+    message,
+    navigation,
+  ]);
 
   const handleSave = async () => {
     try {
@@ -80,15 +103,16 @@ const Completeprofile = () => {
     return /\S+@\S+\.\S+/.test(email);
   };
 
-  const handleClose = async () => {
-    try {
-      setOpen(false);
-    } catch (error) {
-      setErrorMsg((error && error.error) || 'Something went wrong.');
-    }
-  };
+  const isSaveDisabled =
+    isLoading ||
+    name.trim().length === 0 ||
+    pemail.trim().length === 0 ||
+    number.trim().length === 0 ||
+    country.trim().length === 0 ||
+    !isValidEmailT(pemail) ||
+    !isValid;
 
-  const handleSelect = async () => {
+  const handleClose = async () => {
     try {
       setOpen(false);
     } catch (error) {
@@ -110,34 +134,63 @@ const Completeprofile = () => {
   };
 
   const validateDate = inputDate => {
-    // Regex to match YYYY-MM-DD format
-    const datePattern =
-      /^(19|20)\d{2}-((0[1-9]|1[0-2]))-((0[1-9]|[12][0-9]|3[01]))$/;
+    const dateParts = inputDate.split('-').map(Number);
+    if (dateParts.length === 3) {
+      let [year, month, day] = dateParts;
+      if (
+        year < 1000 ||
+        year > 9999 ||
+        month < 1 ||
+        month > 12 ||
+        day < 1 ||
+        day > 31
+      ) {
+        return false;
+      }
 
-    // If you want to allow progressive input (e.g., "2020-", "2020-04-", "2020-04-0")
-    const progressiveDatePattern =
-      /^(19|20)\d{0,2}(-((0[1-9]|1[0-2])?(-((0[1-9]|[12][0-9]|3[01])?)?)?)?)?$/;
-
-    // Check if the full date is valid
-    if (datePattern.test(inputDate)) {
-      console.log('Full date is valid.');
-      return datePattern.test(inputDate);
-    } else if (progressiveDatePattern.test(inputDate)) {
-      console.log('Progressive date input is valid.');
-      // return false;  // Return false but indicate it's still a valid progression
-    } else {
-      console.log('Invalid date input.');
-      // return false;
+      const monthLengths = [
+        31,
+        (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0 ? 29 : 28,
+        31,
+        30,
+        31,
+        30,
+        31,
+        31,
+        30,
+        31,
+        30,
+        31,
+      ];
+      return day <= monthLengths[month - 1];
     }
+    return false;
   };
 
-  const handleDateChange = inputDate => {
-    if (validateDate(inputDate)) {
-      setDate(inputDate);
-      // Proceed with any further actions after validation
-    } else {
-      // Handle invalid date format
-      console.warn('Invalid date format');
+  const handleDateChange = newInput => {
+    if (newInput.length <= 10) {
+      // Limit input length to 10 characters
+      let updatedInput = newInput.replace(/[^0-9]/g, ''); // Remove any non-numeric characters
+      if (updatedInput.length > 4 && updatedInput.length <= 6) {
+        updatedInput = updatedInput.slice(0, 4) + '-' + updatedInput.slice(4);
+      }
+      if (updatedInput.length > 6) {
+        updatedInput =
+          updatedInput.slice(0, 4) +
+          '-' +
+          updatedInput.slice(4, 6) +
+          '-' +
+          updatedInput.slice(6);
+      }
+
+      setDate(updatedInput);
+
+      // Validate date when length reaches 10 characters (YYYY-MM-DD)
+      if (updatedInput.length === 10) {
+        setIsValid(validateDate(updatedInput));
+      } else {
+        setIsValid(true); // Assume valid until proven otherwise
+      }
     }
   };
 
@@ -147,7 +200,7 @@ const Completeprofile = () => {
       <View style={styles.container_in}>
         <Text style={styles.b0_text}>Full Name</Text>
         <TextInput
-          style={[styles.input]}
+          style={[styles.input, styles.validValue]}
           placeholder="Full Name"
           placeholderTextColor="#969596"
           value={name}
@@ -159,10 +212,11 @@ const Completeprofile = () => {
 
         <Text style={styles.b0_text}>Phone Number</Text>
         <TextInput
-          style={[styles.input]}
+          style={[styles.input, styles.validValue]}
           placeholder="Phone Number"
           placeholderTextColor="#969596"
           value={number}
+          keyboardType="numeric"
           onChangeText={text => {
             setNumber(text);
           }}
@@ -173,7 +227,7 @@ const Completeprofile = () => {
         <TextInput
           style={[
             styles.input,
-            isValidEmail && pemail.length > 0 ? styles.validEmail : {},
+            isValidEmail && pemail.length > 0 ? styles.validValue : {},
           ]}
           placeholder="Parents Email"
           placeholderTextColor="#969596"
@@ -195,22 +249,25 @@ const Completeprofile = () => {
             alignItems: 'center',
           }}>
           <TextInput
-            style={{
-              borderWidth: 1,
-              borderColor: '#F08080',
-              padding: 10,
-              paddingLeft: 30,
-              marginTop: 15,
-              marginBottom: 10,
-              borderRadius: 40,
-              fontFamily: 'OpenSans-Regular',
-              width: (screenWidth * 9) / 10,
-            }}
-            placeholder="dd/mm/yyyy"
+            style={[
+              styles.validValue,
+              {
+                borderWidth: 1,
+                borderColor: '#F08080',
+                padding: 10,
+                paddingLeft: 30,
+                marginTop: 15,
+                marginBottom: 10,
+                borderRadius: 40,
+                fontFamily: 'OpenSans-Regular',
+                width: (screenWidth * 9) / 10,
+              },
+            ]}
+            placeholder="yyyy-mm-dd"
             placeholderTextColor="#969596"
             value={date}
             onChangeText={handleDateChange}
-            keyboardType="numeric" // Ensures only numeric keyboard is shown
+            keyboardType="numeric"
             autoCapitalize="none"
           />
           <TouchableOpacity
@@ -225,9 +282,12 @@ const Completeprofile = () => {
           <CalendarModal
             visible={open}
             onClose={handleClose}
-            onDateSelected={handleDateChange}
+            onDateSelected={selectedDate => {
+              handleDateChange(selectedDate);
+            }}
           />
         </View>
+        {!isValid && <Text style={styles.errorText}>Invalid Date</Text>}
         <Text style={styles.b0_text}>Country</Text>
         <View
           style={{
@@ -235,17 +295,20 @@ const Completeprofile = () => {
             alignItems: 'center',
           }}>
           <TextInput
-            style={{
-              borderWidth: 1,
-              borderColor: '#F08080',
-              padding: 10,
-              paddingLeft: 30,
-              marginTop: 15,
-              marginBottom: 10,
-              borderRadius: 40,
-              fontFamily: 'OpenSans-Regular',
-              width: (screenWidth * 9) / 10,
-            }}
+            style={[
+              styles.validValue,
+              {
+                borderWidth: 1,
+                borderColor: '#F08080',
+                padding: 10,
+                paddingLeft: 30,
+                marginTop: 15,
+                marginBottom: 10,
+                borderRadius: 40,
+                fontFamily: 'OpenSans-Regular',
+                width: (screenWidth * 9) / 10,
+              },
+            ]}
             placeholder="Country"
             placeholderTextColor="#969596"
             value={country}
@@ -288,13 +351,13 @@ const Completeprofile = () => {
           alignItems: 'center',
           width: (screenWidth * 9) / 10,
           height: 57,
-          marginTop: 51,
+          marginTop: 40,
           borderRadius: 45,
           backgroundColor: '#F08080',
-          opacity: isLoading ? 0.5 : 1,
+          opacity: isSaveDisabled ? 0.5 : 1,
         }}
         onPress={handleSave}
-        disabled={isLoading}>
+        disabled={isSaveDisabled}>
         {isLoading ? (
           <ActivityIndicator size="small" color="#FFFFFF" />
         ) : (
@@ -337,7 +400,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 40,
   },
-  validEmail: {
+  validValue: {
     color: '#F08080', // Change text color to red when email is valid
   },
   b0_text: {

@@ -218,7 +218,8 @@ const AuthProvider = ({children}) => {
             user: response.data.message,
           },
         });
-      } else {
+      }
+      if (response.data.code === 200) {
         const {accessToken, user} = response.data.data;
         setSession(accessToken);
         const {exp} = jwtDecode(accessToken);
