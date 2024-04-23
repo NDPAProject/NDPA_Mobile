@@ -121,7 +121,11 @@ const Mainpage = () => {
   }, [placeId]);
 
   useEffect(() => {
-    console.log('<><><><><><><');
+    console.log(
+      'data_google_map_API key',
+
+      GOOGLE_API_KEY_ANDROID___,
+    );
     if (bottomSheetVisible) {
       refRBSheet.current.open();
     }
@@ -188,7 +192,6 @@ const Mainpage = () => {
     if (i === 0) {
       setTutodata(data.description);
       setPlaceId(data.place_id);
-      console.log('data', data.place_id);
     }
 
     return (

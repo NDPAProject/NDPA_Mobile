@@ -1,12 +1,15 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
   StyleSheet,
   Dimensions,
   TouchableOpacity,
+  ScrollView,
+  Image,
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
+import {bicycle, bus, car, walk} from '../constants/images';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -31,11 +34,61 @@ const AddressView = ({title, subtitle}) => (
   </View>
 );
 
-const DistanceCard = ({result_dur_dis}) => {
+const DistanceCard = ({result_dur_dis, setModefunc, allinfo}) => {
   const navigation = useNavigation();
   const route = useRoute();
+  const [selectedIndex, setSelectedIndex] = useState(null);
+  const modes = [
+    {name: 'Car', value: 'driving', icon: car},
+    {name: 'Walking', value: 'walking', icon: walk},
+    {name: 'Bus', value: 'transit', icon: bus},
+    {name: 'Bicycle', value: 'bicycling', icon: bicycle},
+  ];
   return (
     <View style={styles.centeredView}>
+      <View style={{}}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          {modes.map((mode, index) => {
+            const duration =
+              allinfo.find(item => item.mode === mode.value)?.duration || 'N/A';
+            return (
+              <TouchableOpacity
+                key={index}
+                style={{
+                  backgroundColor:
+                    selectedIndex === index ? '#F0808080' : 'white',
+                  padding: 10,
+                  borderRadius: 20,
+                  marginHorizontal: 10,
+                }}
+                onPress={() => {
+                  setModefunc(mode.value);
+                  setSelectedIndex(index); // Set the selected index on press
+                }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: 4,
+                  }}>
+                  <Image source={mode.icon} style={{width: 24, height: 24}} />
+                  <Text
+                    style={{
+                      color: '#000',
+                      fontSize: 14,
+                      fontWeight: '400',
+                      lineHeight: 19,
+                      textAlign: 'center',
+                    }}>
+                    {duration}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+      </View>
       <Text style={styles.sheetText}>
         {`${result_dur_dis.duration} min`}{' '}
         <Text
