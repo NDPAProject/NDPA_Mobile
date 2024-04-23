@@ -11,7 +11,7 @@ import {
   Modal,
   Image,
 } from 'react-native';
-import MapView, {Marker} from 'react-native-maps';
+import MapView, {Polyline, Marker} from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -42,15 +42,25 @@ const Routepage = () => {
       longitude: -0.1784764,
     },
     {
+      latitude: 51.52656759999999,
+      longitude: -0.1884764,
+    },
+    {
       latitude: route.params.locationaddress.location_info.lat,
       longitude: route.params.locationaddress.location_info.lng,
     },
   ]);
 
+  const [coordsOptimized, setCoordsOptimized] = useState([]);
+  const [coordsNonOptimized, setCoordsNonOptimized] = useState([]);
+
   const [result_dur_dis, setResult_dur_dis] = useState({
     duration: 0,
     distance: 0,
   });
+
+  const [mode, setMode] = useState('WALKING');
+  const [allinfo, setAllinfo] = useState([]);
 
   console.log(
     'locao',
@@ -60,20 +70,37 @@ const Routepage = () => {
   const mapView = useRef(null);
 
   useEffect(() => {
-    // AsyncStorage.getItem('hasSeenTutorial').then(value => {
-    //   if (value === null) {
-    //     // If no data is available in AsyncStorage, show the modal
-    //     let timer;
-    //     timer = setTimeout(() => {
-    //       setStep_5(true);
-    //       timer = setTimeout(() => {
-    //         setShowImage(true);
-    //       }, 800);
-    //     }, 1000);
-    //     return () => clearTimeout(timer);
-    //   }
-    // });
-  }, []);
+    let modes = ['driving', 'walking', 'transit', 'bicycling'];
+
+    modes.forEach(mode => {
+      fetch(
+        `https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=${coordinates[0].latitude},${coordinates[0].longitude}&destinations=${coordinates[1].latitude},${coordinates[1].longitude}&mode=${mode}&key=${GOOGLE_API_KEY_ANDROID___}`,
+      )
+        .then(response => response.json())
+        .then(data => {
+          if (data) {
+            console.log(
+              '<><><><><><><><><><><><><><><><> data route',
+              data.rows[0].elements[0].duration.text,
+            );
+            let route = data.rows[0].elements[0];
+            console.log(
+              `The ${mode} distance is ${route.distance.text} and will take approximately ${route.duration.text}.`,
+            );
+            setAllinfo(prev => [
+              ...prev,
+              {
+                mode: mode,
+                distance: route.distance.text,
+                duration: route.duration.text,
+              },
+            ]);
+          }
+        })
+
+        .catch(err => console.log(err));
+    });
+  }, [coordinates]);
 
   useEffect(() => {
     console.log('Updated duration and distance:', result_dur_dis);
@@ -81,6 +108,10 @@ const Routepage = () => {
 
   const onMapPress = e => {
     setCoordinates([...coordinates, e.nativeEvent.coordinate]);
+  };
+
+  const handleclick = mode => {
+    setMode(mode);
   };
 
   return (
@@ -96,24 +127,27 @@ const Routepage = () => {
         ref={mapView}
         onPress={onMapPress}
         customMapStyle={mapStyle}>
-        {coordinates.map((coordinate, index) => (
-          <Marker key={`coordinate_${index}`} draggable coordinate={coordinate}>
-            <View style={styles.markerstyle}></View>
-          </Marker>
-        ))}
+        {coordinates.map((coordinate, index) => {
+          if (index != 1)
+            return (
+              <Marker
+                key={`coordinate_${index}`}
+                draggable
+                coordinate={coordinate}>
+                <View style={styles.markerstyle}></View>
+              </Marker>
+            );
+        })}
         {coordinates.length >= 2 && (
           <MapViewDirections
             origin={coordinates[0]}
-            waypoints={
-              coordinates.length > 2 ? coordinates.slice(1, -1) : undefined
-            }
-            destination={coordinates[coordinates.length - 1]}
+            destination={coordinates[2]}
             apikey={GOOGLE_API_KEY_ANDROID___}
             strokeWidth={5}
             strokeColor="#F08080"
             lineDashPattern={[0, 0]}
-            mode="WALKING"
-            optimizeWaypoints
+            mode={mode}
+            optimizeWaypoints={true}
             onStart={params => {
               console.log(
                 `Started routing between "${params.origin}" and "${params.destination}"`,
@@ -152,6 +186,8 @@ const Routepage = () => {
             apikey={GOOGLE_API_KEY_ANDROID___}
             strokeWidth={5}
             lineDashPattern={[0, 0]}
+            mode={mode}
+            optimizeWaypoints={false}
             strokeColor="#0000004D"
             onStart={params => {
               console.log(
@@ -176,33 +212,24 @@ const Routepage = () => {
             }}
           />
         )}
+
+        <Polyline
+          coordinates={coordsOptimized}
+          strokeWidth={3}
+          strokeColor={'F08080'}
+        />
+        <Polyline
+          coordinates={coordsNonOptimized}
+          strokeWidth={3}
+          strokeColor={'0000004D'}
+        />
       </MapView>
 
-      <DistanceCard result_dur_dis={result_dur_dis} />
-
-      {/* <ModalContainer
-        visible={step_5}
-        onRequestClose={() => setStep_5(!step_5)}>
-        <View style={styles.modalbackground}>
-          <StepBox
-            style={{flex: 1, position: 'absolute', bottom: 500}}
-            step={'5'}
-            description={stepData.step5}
-          />
-          <DistanceCard result_dur_dis={result_dur_dis} />
-
-          {showImage && (
-            <Image
-              source={hand_ico}
-              style={{
-                position: 'absolute',
-                bottom: 64,
-                left: screenWidth / 2 - 30,
-              }}
-            />
-          )}
-        </View>
-      </ModalContainer> */}
+      <DistanceCard
+        result_dur_dis={result_dur_dis}
+        setModefunc={handleclick}
+        allinfo={allinfo}
+      />
     </View>
   );
 };

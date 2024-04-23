@@ -22,3 +22,7 @@ export const tuto_1 = require('../../assets/icons/location/tuto_1.png');
 export const hand_ico = require('../../assets/icons/hand_ico.png');
 export const arrow_up = require('../../assets/icons/location/arrow-up.png');
 export const tuto_2 = require('../../assets/icons/location/tuto_2.png');
+export const bus = require('../../assets/icons/location/mdi_bus.png');
+export const car = require('../../assets/icons/location/mdi_car.png');
+export const walk = require('../../assets/icons/location/mdi_walk.png');
+export const bicycle = require('../../assets/icons/location/mdi_bicycle.png');
