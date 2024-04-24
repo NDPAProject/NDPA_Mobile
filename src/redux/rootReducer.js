@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // slices
 import audioReducer from './slices/audio';
 import userReducer from './slices/user';
+import azureReducer from './slices/ocrApi';
 // ----------------------------------------------------------------------
 
 export const createNoopStorage = () => ({
@@ -31,6 +32,7 @@ export const rootPersistConfig = {
 const rootReducer = combineReducers({
   audio: audioReducer,
   user: userReducer,
+  azure: azureReducer,
 });
 
 export default rootReducer;

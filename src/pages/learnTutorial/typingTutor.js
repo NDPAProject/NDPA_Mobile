@@ -228,7 +228,7 @@ const TypingSection = () => {
         visible={step_3}
         onRequestClose={handleClickSkip}
         stepText="3/5"
-        message="Use the keyboard to write your name.NNYou can also select from the options."
+        message="Use the keyboard to write your name.NN You can also select from the options."
         handleInput={handleInput}
         handleChangeText={handleChangeText}
         text={text}

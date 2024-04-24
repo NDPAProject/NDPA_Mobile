@@ -45,7 +45,7 @@ const boxData = [
     {icon: fship_ico, text: 'Friendship', nav: ''},
   ],
   [
-    {icon: choice_ico, text: 'Choice', nav: ''},
+    {icon: choice_ico, text: 'Choice', nav: 'MainChoiceSection'},
     {icon: indep_ico, text: 'Independence', nav: ''},
   ],
   [
@@ -117,9 +117,7 @@ const MainPage = ({route}) => {
         animationType="fade"
         transparent={true}
         visible={step_1}
-        onRequestClose={() => {
-          setStep_1(!step_1);
-        }}>
+        onRequestClose={() => handleClickSkip}>
         <LinearGradient
           style={{flex: 1}}
           colors={['rgba(0, 0, 0, 0.2)', 'rgba(255, 218, 185, 0.4)']}
@@ -134,7 +132,7 @@ const MainPage = ({route}) => {
             }}>
             <View style={{position: 'absolute', top: 150, left: 20}}>
               <TouchableOpacity
-                onPress={() => navigation.navigate('TypingSection')}>
+                onPress={() => navigation.navigate('TypingTutorSection')}>
                 <View style={styles.boxBackground}>
                   <Image source={boxData[0][0].icon} style={styles.icon} />
                   <Text style={styles.text}>{boxData[0][0].text}</Text>

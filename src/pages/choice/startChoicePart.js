@@ -14,27 +14,45 @@ import {
 
 import {useNavigation, useRoute} from '@react-navigation/native';
 import Footer from '../../components/footer';
+const arrow = require('../../../assets/icons/left_ico.png');
 
-const intro_ico = require('../../../assets/icons/learn/person_ico.png');
+const intro_ico = require('../../../assets/icons/learn/choice_ico.png');
 const check_pos_ico = require('../../../assets/icons/learn/check_pos_ico.png');
 const be_pos_ico = require('../../../assets/icons/learn/be_pos_ico.png');
 const pos_ico = require('../../../assets/icons/learn/pos_ico.png');
-const road_ico = require('../../../assets/icons/learn/road.png');
+const road_ico = require('../../../assets/icons/learn/choice/road.png');
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-const StartPersonalSection = () => {
+const StartChoiceSection = () => {
   const navigation = useNavigation();
+  const handleBackPress = () => {
+    console.log('clicked');
+    navigation.goBack();
+  };
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity
+        onPress={handleBackPress}
+        style={{
+          position: 'absolute',
+          left: screenWidth / 20,
+          top: 10,
+          flexDirection: 'row',
+          alignItems: 'center',
+          zIndex: 2,
+        }}>
+        <Image source={arrow} />
+        <Text style={styles.text}>Back</Text>
+      </TouchableOpacity>
       <View style={styles.textBackground}>
         <Image source={intro_ico} />
-        <Text style={styles.title}>Personal Identity</Text>
+        <Text style={styles.title}>Choice</Text>
       </View>
       <Image style={styles.road} source={road_ico} />
-      <Image
+      <TouchableOpacity
         style={[
           styles.checkPos,
           {
@@ -42,8 +60,10 @@ const StartPersonalSection = () => {
             left: (screenWidth * 2) / 3 - 80,
           },
         ]}
-        source={check_pos_ico}
-      />
+        onPress={() => navigation.navigate('WeeklyActSection')}>
+        <Image source={pos_ico} />
+      </TouchableOpacity>
+
       <Image
         style={[
           styles.checkPos,
@@ -52,19 +72,18 @@ const StartPersonalSection = () => {
             left: (screenWidth * 2) / 5 - 40,
           },
         ]}
-        source={check_pos_ico}
+        source={be_pos_ico}
       />
-      <TouchableOpacity
+      <Image
         style={[
           styles.checkPos,
           {
             top: (screenHeight * 2) / 3 - 150,
-            left: (screenWidth * 5) / 7 - 10,
+            left: (screenWidth * 5) / 7 + 10,
           },
         ]}
-        onPress={() => navigation.navigate('TypingSection')}>
-        <Image source={pos_ico} />
-      </TouchableOpacity>
+        source={be_pos_ico}
+      />
       <Image
         style={[
           styles.checkPos,
@@ -90,7 +109,7 @@ const StartPersonalSection = () => {
   );
 };
 
-export default StartPersonalSection;
+export default StartChoiceSection;
 
 const styles = StyleSheet.create({
   container: {
@@ -101,6 +120,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFBF8',
   },
   title: {
+    textAlign: 'center',
+    position: 'absolute',
+    left: 0,
+    right: 0,
     color: 'black',
     fontSize: 20,
     fontFamily: 'OpenSans-Bold',
@@ -123,10 +146,12 @@ const styles = StyleSheet.create({
     // width: 50,
   },
   text: {
-    color: 'black',
-    fontSize: 20,
-    fontFamily: 'OpenSans-Medium',
-    // textAlign: 'left',
+    fontFamily: 'OpenSans-Regular',
+    // marginTop: 0.7,
+    fontWeight: '600',
+    textDecorationLine: 'underline',
+    fontSize: 16,
+    color: '#F08080',
   },
   icon: {
     justifyContent: 'center',
@@ -137,7 +162,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: 'white',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
     padding: 30,
     marginTop: 40,
     borderRadius: 20,

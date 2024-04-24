@@ -13,6 +13,7 @@ import TypingTutorSection from '../learnTutorial/typingTutor';
 import SpeakingTutorSection from '../learnTutorial/speakingTutor';
 import ReviewTutorSection from '../learnTutorial/reviewTutor';
 import MainLearningSection from '../learn/index';
+import MainChoiceSection from '../choice/index';
 import Location from '../location';
 
 import {LogBox} from 'react-native';
@@ -49,6 +50,11 @@ const Main = () => {
       <Stack.Screen
         name="MainLearningSection"
         component={MainLearningSection}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="MainChoiceSection"
+        component={MainChoiceSection}
         options={{headerShown: false}}
       />
       <Stack.Screen

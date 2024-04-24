@@ -13,6 +13,7 @@ const CustomDialog = ({
   modalVisible,
   setModalVisible,
   handleClick,
+  description,
   icon,
   title,
   hand_ico,
@@ -33,6 +34,7 @@ const CustomDialog = ({
       <View style={styles.modalView}>
         <Image source={icon} style={styles.icon} />
         <Text style={styles.text_m}>{title}</Text>
+        <Text style={styles.text}>{description}</Text>
         <TouchableOpacity style={styles.startButton} onPress={handleClick}>
           <Text style={styles.b3_text}>Let's Start</Text>
         </TouchableOpacity>
@@ -88,7 +90,16 @@ const styles = StyleSheet.create({
   },
   text_m: {
     color: 'black',
-    fontSize: 18,
+    fontSize: 20,
+    fontFamily: 'OpenSans-Medium',
+    fontWeight: '600',
+    textAlign: 'center',
+    marginTop: 6,
+    // alignItems: 'center',
+  },
+  text: {
+    color: '#8E8E8E',
+    fontSize: 16,
     fontFamily: 'OpenSans-Medium',
     textAlign: 'center',
     marginTop: 6,

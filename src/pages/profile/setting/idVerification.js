@@ -1,7 +1,7 @@
 // https://aboutreact.com/react-native-login-and-signup/
-
 // Import React and Component
-import React, {useState} from 'react';
+import RNFS from 'react-native-fs';
+import React, {useState, useEffect, useRef} from 'react';
 import {
   Image,
   View,
@@ -10,8 +10,15 @@ import {
   Dimensions,
   TouchableOpacity,
 } from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
+import {analyzeImage} from '../../../redux/slices/ocrApi';
 import {useNavigation} from '@react-navigation/native';
-import {RNCamera} from 'react-native-camera';
+import {
+  Camera,
+  useCameraPermission,
+  useCameraDevice,
+} from 'react-native-vision-camera';
+
 import Header from '../../../components/header';
 
 const screenWidth = Dimensions.get('window').width;
@@ -22,17 +29,43 @@ const passport_ico = require('../../../../assets/icons/profile/setting/passport_
 
 const IdVerificationPage = () => {
   const navigation = useNavigation();
+  const {hasPermission, requestPermission} = useCameraPermission();
+  const dispatch = useDispatch();
+  const device = useCameraDevice('back');
 
   const [success, setSuccess] = useState(false);
+  const [click, setClick] = useState(false);
+  const camera = useRef(null);
+  const [imageBase64, setImageBase64] = useState('');
 
-  const handleCreatePass = async () => {
+  const handleScanPass = async () => {
     try {
       console.log('clicked');
+      const photo = await camera.current.takePhoto();
+      console.log('--------photo---------', photo);
+      RNFS.readFile(photo.path, 'base64')
+        .then(base64String => {
+          setImageBase64(base64String);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+
+      // Log or use base64String as needed
+      await dispatch(analyzeImage(imageBase64));
       setSuccess(true);
     } catch (error) {
       console.log(error);
       // setErrorMsg((error && error.error) || 'Something went wrong.');
       // setIsLoading(false);
+    }
+  };
+
+  const handleStart = async () => {
+    try {
+      setClick(true);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -44,11 +77,13 @@ const IdVerificationPage = () => {
     }
   };
 
-  const takePicture = async camera => {
-    const options = {quality: 0.5, base64: true};
-    const data = await camera.takePictureAsync(options);
-    console.log(data.uri);
-  };
+  if (device == null || !hasPermission) {
+    return (
+      <View style={styles.container}>
+        <Text>No camera access or device found.</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -59,68 +94,41 @@ const IdVerificationPage = () => {
         editalbe={false}
       />
       <View style={styles.container_in}>
-        <Image source={success ? passport_ico : lucide_scan} />
-        {/* <RNCamera
-          style={styles.preview}
-          type={RNCamera.Constants.Type.back}
-          flashMode={RNCamera.Constants.FlashMode.on}
-          captureAudio={false}>
-          {({camera, status}) => {
-            if (status !== 'READY') return <View />;
-            return (
-              <View
-                style={{
-                  flex: 0,
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                }}>
-                <TouchableOpacity
-                  onPress={() => takePicture(camera)}
-                  style={styles.capture}>
-                  <Text style={{fontSize: 14}}> SNAP </Text>
-                </TouchableOpacity>
-              </View>
-            );
-          }}
-        </RNCamera> */}
-        {success && <Text style={styles.b2_text}>Success</Text>}
+        {click ? (
+          <>
+            <Camera
+              ref={camera}
+              style={{width: (screenWidth * 9) / 10, height: screenHeight / 2}}
+              device={device}
+              isActive={true}
+              photo={true}
+            />
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => handleScanPass()}>
+              <Text style={styles.b3_text}>Scan</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <>
+            <Image source={success ? passport_ico : lucide_scan} />
+            <Text style={styles.text}>Use your phone to scan passport</Text>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => handleStart()}>
+              <Text style={styles.b3_text}>Start</Text>
+            </TouchableOpacity>
+          </>
+        )}
+        {/* {success && <Text style={styles.b2_text}>Success</Text>}
         {success ? (
           <Text style={styles.text}>
             You have successfully {'\n'}verified your passport
           </Text>
         ) : (
-          <Text style={styles.text}>Use your phone to scan passport</Text>
-        )}
+        
+        )} */}
       </View>
-      {success ? (
-        <TouchableOpacity
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: 286,
-            height: 57,
-            marginTop: 51,
-            borderRadius: 45,
-            backgroundColor: '#F08080',
-          }}
-          onPress={handleClickOk}>
-          <Text style={styles.b3_text}>OK</Text>
-        </TouchableOpacity>
-      ) : (
-        <TouchableOpacity
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: 286,
-            height: 57,
-            marginTop: 51,
-            borderRadius: 45,
-            backgroundColor: '#F08080',
-          }}
-          onPress={handleCreatePass}>
-          <Text style={styles.b3_text}>Start</Text>
-        </TouchableOpacity>
-      )}
     </View>
   );
 };
@@ -137,9 +145,10 @@ const styles = StyleSheet.create({
   container_in: {
     width: (screenWidth * 9) / 10,
     alignItems: 'center',
-    marginTop: screenHeight / 5,
+    flex: 1,
+    justifyContent: 'center',
+    marginTop: -200,
   },
-  preview: {flex: 1},
   text: {
     marginTop: 20,
     textAlign: 'left',
@@ -158,6 +167,12 @@ const styles = StyleSheet.create({
     fontSize: 19,
     fontFamily: 'OpenSans-Bold',
   },
+  camera: {
+    width: 300,
+    height: 400,
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
   preview: {flex: 1, justifyContent: 'flex-end', alignItems: 'center'},
   capture: {
     flex: 0,
@@ -167,5 +182,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     alignSelf: 'center',
     margin: 20,
+  },
+  button: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 286,
+    height: 57,
+    marginTop: 51,
+    borderRadius: 45,
+    backgroundColor: '#F08080',
   },
 });

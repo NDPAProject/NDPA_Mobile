@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     color: 'black',
     fontSize: 18,
     fontFamily: 'OpenSans-Medium',
-    textAlign: 'center',
+    // textAlign: 'center',
     marginTop: 6,
     zIndex: 1,
     // alignItems: 'center',
