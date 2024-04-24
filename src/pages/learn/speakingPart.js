@@ -179,7 +179,7 @@ const SpeakingSection = ({route}) => {
     try {
       console.log('Preparing to record');
       const result = await audioRecorderPlayer.startRecorder(path, audioSet);
-      console.log('Recording started', result);
+      console.log('Recording started here  >>>>>>>', result);
 
       setTimeout(async () => {
         console.log('Stopping recording...');
@@ -248,9 +248,11 @@ const SpeakingSection = ({route}) => {
   useEffect(() => {
     console.log('Updated audioPath:', audioPath);
     if (audioPath) {
-      dispatch(transcribeAudio(audioPath));
-      setAudioPath('');
-      setIsLoading(false);
+      setTimeout(async () => {
+        dispatch(transcribeAudio(audioPath));
+        setAudioPath('');
+        setIsLoading(false);
+      }, 500);
     }
   }, [audioPath]);
 
