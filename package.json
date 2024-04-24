@@ -21,6 +21,7 @@
     "axios": "^1.6.7",
     "base-64": "^1.0.0",
     "buffer": "^6.0.3",
+    "ffmpeg-kit-react-native": "^6.0.2",
     "geolib": "^3.3.4",
     "jwt-decode": "^4.0.0",
     "microsoft-cognitiveservices-speech-sdk": "^1.36.0",
