@@ -13,7 +13,7 @@ import TypingTutorSection from '../learnTutorial/typingTutor';
 import SpeakingTutorSection from '../learnTutorial/speakingTutor';
 import ReviewTutorSection from '../learnTutorial/reviewTutor';
 import MainLearningSection from '../learn/index';
-import MainChoiceSection from '../choice/index';
+import MainChoiceSection from '../learnModel/choice/index';
 import Location from '../location';
 
 import {LogBox} from 'react-native';

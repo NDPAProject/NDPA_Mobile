@@ -1,4 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit';
+import axios from 'axios';
 
 // utils
 import {AZURE_OCR_API_ENDPOINT, AZURE_OCR_API_KEY} from '@env';
@@ -44,17 +45,23 @@ export const analyzeImage = imageData => async dispatch => {
   try {
     console.log(
       '--------------------',
-      AZURE_OCR_API_ENDPOINT,
-      AZURE_OCR_API_KEY,
+      AZURE_OCR_API_ENDPOINT.trim(),
+      AZURE_OCR_API_KEY.trim(),
     );
-    const response = await fetch(AZURE_OCR_API_ENDPOINT.trim(), {
-      method: 'POST',
+    const response = await axios.post(AZURE_OCR_API_ENDPOINT, imageData, {
       headers: {
         'Ocp-Apim-Subscription-Key': AZURE_OCR_API_KEY.trim(),
         'Content-Type': 'application/octet-stream',
       },
-      body: imageData,
     });
+    // const response = await fetch(AZURE_OCR_API_ENDPOINT.trim(), {
+    //   method: 'POST',
+    //   headers: {
+    //     'Ocp-Apim-Subscription-Key': AZURE_OCR_API_KEY.trim(),
+    //     'Content-Type': 'application/octet-stream',
+    //   },
+    //   body: imageData,
+    // });
     const data = await response.json();
     console.log('------------data--------', data);
     dispatch(getScanResult(data));

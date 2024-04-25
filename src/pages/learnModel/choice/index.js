@@ -8,7 +8,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 //
 // Import Screens
 import WeeklyActSection from './weeklyActPart';
-// import WeeklyActPlanSection from './weeklyPlanPart';
+import WeeklyActPlanSection from './weeklyPlanPart';
 // import ReviewActSection from './reviewPart';
 import StartChoiceSection from './startChoicePart';
 
@@ -33,13 +33,13 @@ const MainChoiceSection = () => {
         component={WeeklyActSection}
         options={{headerShown: false}}
       />
-      {/*
+
       <Stack.Screen
         name="WeeklyActPlanSection"
         component={WeeklyActPlanSection}
         options={{headerShown: false}}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="ReviewActSection"
         component={ReviewActSection}
         options={{headerShown: false}}
