@@ -78,6 +78,9 @@ const SpeakingSection = ({route}) => {
   const [sound, setSound] = useState(false);
   const [imageSource, setImageSource] = useState(mechat);
   const [showButton, setShowButton] = useState(false);
+  const [content, setContent] = useState("");
+  const [count, setCount] = useState(0);
+
 
   const {audioTxt, txtAudio} = useSelector(state => state.audio);
 
@@ -100,6 +103,8 @@ const SpeakingSection = ({route}) => {
 
   const handleClickContinue = async () => {
     try {
+      setContent("");
+      setCount(0);
       if (step_2) {
         setStep_2(false);
         setShowButton(false);
@@ -160,7 +165,6 @@ const SpeakingSection = ({route}) => {
     console.log('startRecord');
 
     const path = `${RNFS.DocumentDirectoryPath}/hello.wav`;
-    const verifiedPath = `${RNFS.DocumentDirectoryPath}/verified.wav`;
     const wavFilePath = `${RNFS.DocumentDirectoryPath}/converted.wav`;
 
     if (Platform.OS === 'android') {
@@ -189,13 +193,6 @@ const SpeakingSection = ({route}) => {
       OutputFormatAndroid: OutputFormatAndroidType.AAC_ADTS,
     };
 
-    // const audioSet = {
-    //   SampleRate: 44100,
-    //   Channels: 1,
-    //   AudioQuality: 'High',
-    //   AudioEncoding: 'wav',
-    // };
-
     try {
       console.log('Preparing to record');
       const result = await audioRecorderPlayer.startRecorder(path, audioSet);
@@ -206,6 +203,7 @@ const SpeakingSection = ({route}) => {
         const res = await audioRecorderPlayer.stopRecorder();
         console.log('stopped recording', res);
         console.log('Recorded Audio File Path:', path);
+        RNFS.unlink(wavFilePath);
 
         const command = `-i ${path} -vn -acodec pcm_s16le -ar 16000 -ac 1 -b:a 256k ${wavFilePath}`;
         const session = await FFmpegKit.execute(command);
@@ -285,18 +283,43 @@ const SpeakingSection = ({route}) => {
         dispatch(transcribeAudio(audioPath));
         setAudioPath('');
         setIsLoading(false);
-      }, 500);
+      }, 200);
     }
   }, [audioPath]);
 
   useEffect(() => {
     if (audioTxt !== null) {
-      if (param.name === audioTxt?.DisplayText) {
+      console.log('name>>>', param.name);
+      console.log('text>>>', audioTxt?.DisplayText);
+      const strName = param.name.toLowerCase().replaceAll('.', '');
+      const strAge = param.age.toLowerCase().replaceAll('.', '');
+      const strIdentify = param.identify.toLowerCase().replaceAll('.', '');
+      const strSymptom = param.symptom.toLowerCase().replaceAll('.', '');
+      const strText = audioTxt?.DisplayText.toLowerCase().replaceAll('.', '');
+      setContent(audioTxt?.DisplayText);
+      const tryCount = count;
+      setCount(tryCount + 1);
+      if (step_2 && strName === strText) {
+        console.log('here 2 >>>');
         setImageSource(mechat);
-        // setStep_3(true);
-        // setStep_2(false);
         setShowButton(true);
-      } else {
+      } 
+      if (step_3 && strAge === strText) {
+        console.log('here 3 >>>');
+        setImageSource(mechat);
+        setShowButton(true);
+      }
+      if (step_4 && strIdentify === strText) {
+        console.log('here 4 >>>');
+        setImageSource(mechat);
+        setShowButton(true);
+      } 
+      if (step_5 && strSymptom === strText) {
+        console.log('here 5 >>>');
+        setImageSource(mechat);
+        setShowButton(true);
+      }  
+      else {
         setImageSource(wrong_msg_ico);
       }
     } else {
@@ -310,6 +333,43 @@ const SpeakingSection = ({route}) => {
       dispatch(setStateFunc(null));
     }
   }, [step_6]);
+
+  useEffect(() => {
+    console.log('count >>>', count);
+    if(count == 2) {
+      setContent("");
+      setCount(0);
+      if (step_2) {
+        setStep_2(false);
+        setShowButton(false);
+        setProgress(0.5);
+        setStep_3(true);
+      }
+      if (step_3) {
+        setStep_3(false);
+        setShowButton(false);
+        setProgress(0.75);
+        setStep_4(true);
+      }
+      if (step_4) {
+        setStep_4(false);
+        setShowButton(false);
+        setProgress(1);
+        setStep_5(true);
+      }
+      if (step_5) {
+        // setStep_5(false);
+        setShowButton(false);
+        setStep_6(true);
+      }
+      if (step_6) {
+        console.log('-----------============------------');
+        setStep_6(false);
+        setShowButton(false);
+        setStep_7(true);
+      }
+    }
+  }, [count]);
 
   const MessageBlock = ({children}) => (
     <>
@@ -383,7 +443,7 @@ const SpeakingSection = ({route}) => {
 
             <>
               <Text style={styles.m_title}>
-                Hi! My name is {audioTxt?.DisplayText || '___'} .
+                Hi! My name is {content || '___'} .
               </Text>
               <View
                 style={{
@@ -436,7 +496,7 @@ const SpeakingSection = ({route}) => {
 
             <>
               <Text style={styles.m_title}>
-                I'm {audioTxt?.DisplayText || '___'} years old.
+                I'm {content || '___'} years old.
               </Text>
               <View
                 style={{
@@ -489,7 +549,7 @@ const SpeakingSection = ({route}) => {
 
             <>
               <Text style={styles.m_title}>
-                I have {audioTxt?.DisplayText || '___'}.
+                I have {content || '___'}.
               </Text>
               <View
                 style={{
@@ -542,7 +602,7 @@ const SpeakingSection = ({route}) => {
 
             <>
               <Text style={styles.m_title}>
-                I identify as {audioTxt?.DisplayText || '___'}.
+                I identify as {content || '___'}.
               </Text>
               <View
                 style={{
