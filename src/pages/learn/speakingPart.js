@@ -25,6 +25,14 @@ import {
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import AudioRecorderPlayer from 'react-native-audio-recorder-player';
+import {
+  AudioEncoderAndroidType,
+  AudioSourceAndroidType,
+  AVEncoderAudioQualityIOSType,
+  AVEncodingOption,
+  OutputFormatAndroidType,
+} from 'react-native-audio-recorder-player';
+import {FFmpegKit, ReturnCode} from 'ffmpeg-kit-react-native';
 
 //
 import Header from '../../components/header';
@@ -48,6 +56,7 @@ const wrong_msg_ico = require('../../../assets/icons/wrong_msg.png');
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
+
 
 const SpeakingSection = ({route}) => {
   const dispatch = useDispatch();
@@ -151,6 +160,8 @@ const SpeakingSection = ({route}) => {
     console.log('startRecord');
 
     const path = `${RNFS.DocumentDirectoryPath}/hello.wav`;
+    const verifiedPath = `${RNFS.DocumentDirectoryPath}/verified.wav`;
+    const wavFilePath = `${RNFS.DocumentDirectoryPath}/converted.wav`;
 
     if (Platform.OS === 'android') {
       const granted = await PermissionsAndroid.request(
@@ -170,11 +181,20 @@ const SpeakingSection = ({route}) => {
     }
 
     const audioSet = {
-      SampleRate: 44100,
-      Channels: 1,
-      AudioQuality: 'High',
-      AudioEncoding: 'wav',
+      AudioEncoderAndroid: AudioEncoderAndroidType.AAC,
+      AudioSourceAndroid: AudioSourceAndroidType.MIC,
+      AVEncoderAudioQualityKeyIOS: AVEncoderAudioQualityIOSType.high,
+      AVNumberOfChannelsKeyIOS: 2,
+      AVFormatIDKeyIOS: AVEncodingOption.aac,
+      OutputFormatAndroid: OutputFormatAndroidType.AAC_ADTS,
     };
+
+    // const audioSet = {
+    //   SampleRate: 44100,
+    //   Channels: 1,
+    //   AudioQuality: 'High',
+    //   AudioEncoding: 'wav',
+    // };
 
     try {
       console.log('Preparing to record');
@@ -186,7 +206,20 @@ const SpeakingSection = ({route}) => {
         const res = await audioRecorderPlayer.stopRecorder();
         console.log('stopped recording', res);
         console.log('Recorded Audio File Path:', path);
-        setAudioPath(path);
+
+        const command = `-i ${path} -vn -acodec pcm_s16le -ar 16000 -ac 1 -b:a 256k ${wavFilePath}`;
+        const session = await FFmpegKit.execute(command);
+        const returnCode = await session.getReturnCode();
+        if (ReturnCode.isSuccess(returnCode)) {
+          const exists = await RNFS.exists(wavFilePath);
+          console.log('exists ', exists);
+          if (exists) {
+            setAudioPath(wavFilePath);
+          }
+          else {
+            setAudioPath(path);
+          }
+        }
       }, 5000);
     } catch (error) {
       console.error('Recording error:', error);
@@ -380,6 +413,7 @@ const SpeakingSection = ({route}) => {
             <>
               <TouchableOpacity
                 onPress={handleSend}
+                disabled={isLoading}
                 style={{
                   position: 'absolute',
                   bottom: 40,
@@ -432,6 +466,7 @@ const SpeakingSection = ({route}) => {
             <>
               <TouchableOpacity
                 onPress={handleSend}
+                disabled={isLoading}
                 style={{
                   position: 'absolute',
                   bottom: 40,
@@ -484,6 +519,7 @@ const SpeakingSection = ({route}) => {
             <>
               <TouchableOpacity
                 onPress={handleSend}
+                disabled={isLoading}
                 style={{
                   position: 'absolute',
                   bottom: 40,
