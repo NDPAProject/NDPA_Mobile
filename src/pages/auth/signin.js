@@ -14,7 +14,6 @@ import {
 } from 'react-native';
 import {useAuth} from '../../contexts/AuthContext';
 import {useNavigation} from '@react-navigation/native';
-import {useSelector} from 'react-redux';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -29,8 +28,6 @@ const Signin = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [reason, setReason] = useState('');
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [isError, setIsError] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
   const handlePress = () => {

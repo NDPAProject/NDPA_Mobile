@@ -42,25 +42,29 @@ const boxData = [
       text: 'Personal\n Identity',
       nav: 'MainLearningSection',
     },
-    {icon: fship_ico, text: 'Friendship', nav: ''},
+    {icon: fship_ico, text: 'Friendship', nav: 'MainFriendShipSection'},
   ],
   [
     {icon: choice_ico, text: 'Choice', nav: 'MainChoiceSection'},
-    {icon: indep_ico, text: 'Independence', nav: ''},
+    {icon: indep_ico, text: 'Independence', nav: 'MainIndependenceSection'},
   ],
   [
-    {icon: sep_ico, text: 'Separation', nav: ''},
-    {icon: loss_ico, text: 'Loss', nav: ''},
+    {icon: sep_ico, text: 'Separation', nav: 'MainSeparationSection'},
+    {icon: loss_ico, text: 'Loss', nav: 'MainLossSection'},
   ],
   [
-    {icon: withdrawal_ico, text: 'Withdrawal', nav: ''},
-    {icon: sadness_ico, text: 'Sadness', nav: ''},
+    {icon: withdrawal_ico, text: 'Withdrawal', nav: 'MainWithdrawalSection'},
+    {icon: sadness_ico, text: 'Sadness', nav: 'MainSadnessSection'},
   ],
   [
-    {icon: worry_ico, text: 'Worry', nav: ''},
-    {icon: emotional_ico, text: 'Emotional\nOutbursts', nav: ''},
+    {icon: worry_ico, text: 'Worry', nav: 'MainWorrySection'},
+    {
+      icon: emotional_ico,
+      text: 'Emotional\nOutbursts',
+      nav: 'MainEmotionalSection',
+    },
   ],
-  [{icon: peer_ico, text: '     Peer Difficulties', nav: ''}],
+  [{icon: peer_ico, text: '     Peer Difficulties', nav: 'MainPeerSection'}],
 ];
 
 const MainPage = ({route}) => {

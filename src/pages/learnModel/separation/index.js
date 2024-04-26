@@ -8,7 +8,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 //
 // Import Screens
 // import ReviewActSection from './reviewPart';
-import StartEmotionalSection from './startEmotionalPart';
+import StartSeparationSection from './startSeparationPart';
 
 import {LogBox} from 'react-native';
 
@@ -17,12 +17,12 @@ LogBox.ignoreAllLogs(); //Ignore all log notifications
 
 const Stack = createStackNavigator();
 
-const MainEmotionalSection = () => {
+const MainSeparationSection = () => {
   return (
-    <Stack.Navigator initialRouteName="StartEmotionalSection">
+    <Stack.Navigator initialRouteName="StartSeparationSection">
       <Stack.Screen
-        name="StartEmotionalSection"
-        component={StartEmotionalSection}
+        name="StartSeparationSection"
+        component={StartSeparationSection}
         options={{headerShown: false}}
         initialParams={{param: false}}
       />
@@ -35,4 +35,4 @@ const MainEmotionalSection = () => {
   );
 };
 
-export default MainEmotionalSection;
+export default MainSeparationSection;

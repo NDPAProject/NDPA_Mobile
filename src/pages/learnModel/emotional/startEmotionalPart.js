@@ -13,19 +13,19 @@ import {
 } from 'react-native';
 
 import {useNavigation, useRoute} from '@react-navigation/native';
-import Footer from '../../components/footer';
-const arrow = require('../../../assets/icons/left_ico.png');
+import Footer from '../../../components/footer';
+const arrow = require('../../../../assets/icons/left_ico.png');
 
-const intro_ico = require('../../../assets/icons/learn/choice_ico.png');
-const check_pos_ico = require('../../../assets/icons/learn/check_pos_ico.png');
-const be_pos_ico = require('../../../assets/icons/learn/be_pos_ico.png');
-const pos_ico = require('../../../assets/icons/learn/pos_ico.png');
-const road_ico = require('../../../assets/icons/learn/choice/road.png');
+const intro_ico = require('../../../../assets/icons/learn/emotional_ico.png');
+const check_pos_ico = require('../../../../assets/icons/learn/check_pos_ico.png');
+const be_pos_ico = require('../../../../assets/icons/learn/be_pos_ico.png');
+const pos_ico = require('../../../../assets/icons/learn/pos_ico.png');
+const road_ico = require('../../../../assets/icons/learn/choice/road.png');
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-const StartChoiceSection = () => {
+const StartEmotionalSection = () => {
   const navigation = useNavigation();
   const handleBackPress = () => {
     console.log('clicked');
@@ -49,7 +49,7 @@ const StartChoiceSection = () => {
       </TouchableOpacity>
       <View style={styles.textBackground}>
         <Image source={intro_ico} />
-        <Text style={styles.title}>Choice</Text>
+        <Text style={styles.title}>Emotional</Text>
       </View>
       <Image style={styles.road} source={road_ico} />
       <TouchableOpacity
@@ -109,7 +109,7 @@ const StartChoiceSection = () => {
   );
 };
 
-export default StartChoiceSection;
+export default StartEmotionalSection;
 
 const styles = StyleSheet.create({
   container: {

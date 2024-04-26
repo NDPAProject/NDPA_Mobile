@@ -7,11 +7,9 @@ import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 //
 // Import Screens
-import WeeklyActSection from './weeklyActPart';
-import WeeklyActPlanSection from './weeklyPlanPart';
-// import ReviewActSection from './reviewPart';
-import StartChoiceSection from './startChoicePart';
-
+import AppearanceSection from './appearancePart';
+import StartFriendShipSection from './startFriendShipPart';
+import QualitiesSection from './qualitiesPart';
 import {LogBox} from 'react-native';
 
 LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
@@ -19,24 +17,22 @@ LogBox.ignoreAllLogs(); //Ignore all log notifications
 
 const Stack = createStackNavigator();
 
-const MainChoiceSection = () => {
+const MainFriendShipSection = () => {
   return (
-    <Stack.Navigator initialRouteName="StartChoiceSection">
+    <Stack.Navigator initialRouteName="StartFriendShipSection">
       <Stack.Screen
-        name="StartChoiceSection"
-        component={StartChoiceSection}
-        options={{headerShown: false}}
-        initialParams={{param: false}}
-      />
-      <Stack.Screen
-        name="WeeklyActSection"
-        component={WeeklyActSection}
+        name="StartFriendShipSection"
+        component={StartFriendShipSection}
         options={{headerShown: false}}
       />
-
       <Stack.Screen
-        name="WeeklyActPlanSection"
-        component={WeeklyActPlanSection}
+        name="AppearanceSection"
+        component={AppearanceSection}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="QualitiesSection"
+        component={QualitiesSection}
         options={{headerShown: false}}
       />
       {/* <Stack.Screen
@@ -48,4 +44,4 @@ const MainChoiceSection = () => {
   );
 };
 
-export default MainChoiceSection;
+export default MainFriendShipSection;

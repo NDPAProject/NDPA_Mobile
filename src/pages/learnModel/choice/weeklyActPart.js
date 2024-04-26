@@ -103,6 +103,16 @@ const WeeklyActSection = () => {
   const [errorMsg, setErrorMsg] = useState('');
 
   console.log('-----handleClickItem-------', selectedItems);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      setMove(false);
+      setShowModal(false);
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
   const handleClickContinue = () => {
     setShowModal(true);
   };

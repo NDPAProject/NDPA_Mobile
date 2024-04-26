@@ -19,13 +19,20 @@ const ChatBox = ({
   messageIcon,
   handleChangeText,
   bottom,
+  mico,
 }) => {
   console.log('--------ChatBox----------------', showHand, text);
   return (
     <>
       <View style={[styles.chatBackground, {bottom: bottom}]}>
         <TextInput
-          style={[styles.input]}
+          style={[
+            styles.input,
+            {
+              right: mico ? 20 : 0,
+              width: mico ? (screenWidth * 8.5) / 10 : (screenWidth * 9) / 10,
+            },
+          ]}
           placeholder="Write here..."
           placeholderTextColor="#969596"
           value={text}
@@ -34,8 +41,9 @@ const ChatBox = ({
           autoCapitalize="none"
         />
         <TouchableOpacity
-          style={{position: 'absolute', top: 23, right: 25}}
-          onPress={text?.length !== 0 ? handleSend : undefined}>
+          style={{position: 'absolute', top: 23, right: mico ? 55 : 25}}
+          onPress={text?.length !== 0 ? handleSend : undefined}
+          disabled={text?.length !== 0 ? false : true}>
           <Image source={messageIcon} />
           {showHand && (
             <Image
@@ -62,7 +70,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,
     width: screenWidth,
-    height: 135,
+    height: 100,
     position: 'absolute',
     // iOS Shadow
     shadowColor: '#000',
@@ -80,7 +88,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#F08080',
     height: 40,
-    width: (screenWidth * 9) / 10,
+
     marginTop: -40,
     padding: 1,
     paddingLeft: 30,

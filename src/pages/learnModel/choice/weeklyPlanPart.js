@@ -42,12 +42,10 @@ const WeeklyActPlanSection = ({route}) => {
   const [showReward, setShowReward] = useState(false);
   const [progress, setProgress] = useState(0.125);
   const [currentStep, setCurrentStep] = useState(0);
-  const totalSteps = 8;
+  const totalSteps = 7;
 
   const [isLoading, setIsLoading] = useState(false);
   const [showButton, setShowButton] = useState(false);
-
-  const [text, setText] = useState('');
 
   const [selectedActivity, setSelectedActivity] = useState('');
   const [activities, setActivities] = useState([
@@ -74,10 +72,12 @@ const WeeklyActPlanSection = ({route}) => {
   };
 
   const handleClickContinue = () => {
+    console.log('------currentStep-----', currentStep);
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
       setShowButton(false);
       setSelectedActivity('');
+      setProgress(0.125 * (currentStep + 1));
     } else {
       setShowReward(true);
     }
@@ -334,7 +334,7 @@ const WeeklyActPlanSection = ({route}) => {
       )}
       {currentStep === 3 && (
         <>
-          <MessageBlock children={'What about Wednesday?'} />
+          <MessageBlock children={'What about \nWednesday?'} />
 
           <View style={styles.me_imageContainer}>
             <Image source={mechat_b} />
