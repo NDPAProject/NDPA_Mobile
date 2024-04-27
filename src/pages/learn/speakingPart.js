@@ -152,6 +152,7 @@ const SpeakingSection = ({route}) => {
   const handleSend = async () => {
     try {
       setIsLoading(true);
+      setContent('');
       await onStartRecord();
       console.log('-------audioPath--------', audioPath);
       setStep_2(true);
@@ -162,7 +163,6 @@ const SpeakingSection = ({route}) => {
   };
 
   const onStartRecord = async () => {
-    console.log('startRecord');
 
     const path = `${RNFS.DocumentDirectoryPath}/hello.wav`;
     const wavFilePath = `${RNFS.DocumentDirectoryPath}/converted.wav`;
@@ -194,15 +194,10 @@ const SpeakingSection = ({route}) => {
     };
 
     try {
-      console.log('Preparing to record');
       const result = await audioRecorderPlayer.startRecorder(path, audioSet);
-      console.log('Recording started here  >>>>>>>', result);
 
       setTimeout(async () => {
-        console.log('Stopping recording...');
         const res = await audioRecorderPlayer.stopRecorder();
-        console.log('stopped recording', res);
-        console.log('Recorded Audio File Path:', path);
         RNFS.unlink(wavFilePath);
 
         const command = `-i ${path} -vn -acodec pcm_s16le -ar 16000 -ac 1 -b:a 256k ${wavFilePath}`;
@@ -226,11 +221,8 @@ const SpeakingSection = ({route}) => {
 
   const handleClickSound = async txt => {
     try {
-      console.log('----------txt----------', txt);
       await dispatch(textToSpeech(txt));
-      console.log('----------finished-----------------');
       setSound(true);
-      console.log('------------useEffect', isLoading);
     } catch (error) {
       console.log('-----------error----------', error);
     }
@@ -289,13 +281,11 @@ const SpeakingSection = ({route}) => {
 
   useEffect(() => {
     if (audioTxt !== null) {
-      console.log('name>>>', param.name);
-      console.log('text>>>', audioTxt?.DisplayText);
-      const strName = param.name.toLowerCase().replaceAll('.', '');
-      const strAge = param.age.toLowerCase().replaceAll('.', '');
-      const strIdentify = param.identify.toLowerCase().replaceAll('.', '');
-      const strSymptom = param.symptom.toLowerCase().replaceAll('.', '');
-      const strText = audioTxt?.DisplayText.toLowerCase().replaceAll('.', '');
+      const strName = param.name.toLowerCase().replaceAll('.', '').replaceAll('!', '').replaceAll(',', '').replaceAll(' ', '');
+      const strAge = param.age.toLowerCase().replaceAll('.', '').replaceAll('!', '').replaceAll(',', '').replaceAll(' ', '');
+      const strIdentify = param.identify.toLowerCase().replaceAll('.', '').replaceAll('!', '').replaceAll(',', '').replaceAll(' ', '');
+      const strSymptom = param.symptom.toLowerCase().replaceAll('.', '').replaceAll('!', '').replaceAll(',', '').replaceAll(' ', '');
+      const strText = audioTxt?.DisplayText.toLowerCase().replaceAll('.', '').replaceAll('!', '').replaceAll(',', '').replaceAll(' ', '');
       setContent(audioTxt?.DisplayText);
       const tryCount = count;
       setCount(tryCount + 1);

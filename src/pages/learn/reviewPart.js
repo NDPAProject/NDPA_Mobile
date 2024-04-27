@@ -17,6 +17,7 @@ import {
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import AudioRecorderPlayer from 'react-native-audio-recorder-player';
+import {FFmpegKit, ReturnCode} from 'ffmpeg-kit-react-native';
 import {textToSpeech, transcribeAudio} from '../../redux/slices/audio';
 import Header from '../../components/header';
 import CustomDialog from '../../components/dialogModal';
@@ -99,8 +100,8 @@ const ReviewSection = ({route}) => {
     try {
       if (step_2 && !step_4) {
         setShowModal(false);
-        setStep_4(true);
-        // setStep_2(false);
+        // setStep_4(true);
+        setStep_7(true);
         return;
       }
       if (step_2 && step_4) {
@@ -140,6 +141,7 @@ const ReviewSection = ({route}) => {
     console.log('startRecord');
 
     const path = `${RNFS.DocumentDirectoryPath}/hello.wav`;
+    const wavFilePath = `${RNFS.DocumentDirectoryPath}/converted.wav`;
 
     if (Platform.OS === 'android') {
       const granted = await PermissionsAndroid.request(
@@ -166,16 +168,24 @@ const ReviewSection = ({route}) => {
     };
 
     try {
-      console.log('Preparing to record');
       const result = await audioRecorderPlayer.startRecorder(path, audioSet);
-      console.log('Recording started', result);
 
       setTimeout(async () => {
-        console.log('Stopping recording...');
         const res = await audioRecorderPlayer.stopRecorder();
-        console.log('stopped recording', res);
-        console.log('Recorded Audio File Path:', path);
-        setAudioPath(path);
+
+        RNFS.unlink(wavFilePath);
+        const command = `-i ${path} -vn -acodec pcm_s16le -ar 16000 -ac 1 -b:a 256k ${wavFilePath}`;
+        const session = await FFmpegKit.execute(command);
+        const returnCode = await session.getReturnCode();
+        if (ReturnCode.isSuccess(returnCode)) {
+          const exists = await RNFS.exists(wavFilePath);
+          if (exists) {
+            setAudioPath(wavFilePath);
+          }
+          else {
+            setAudioPath(path);
+          }
+        }
       }, 5000);
     } catch (error) {
       console.error('Recording error:', error);
@@ -193,7 +203,13 @@ const ReviewSection = ({route}) => {
 
   useEffect(() => {
     if (audioTxt !== null) {
-      if (step_2 && param.name === audioTxt?.DisplayText) {
+
+      const strText = audioTxt?.DisplayText.toLowerCase().replaceAll('.', '').replaceAll('!', '').replaceAll(',', '').replaceAll(' ', '');
+      const strOriginName = "Hi! My name is " + param.name;
+      const strName = strOriginName.toLowerCase().replaceAll('.', '').replaceAll('!', '').replaceAll(',', '').replaceAll(' ', '');
+      console.log('strText >>> ', strText);
+      console.log('strName >>> ', strName);
+      if (step_2 && strText === strName) {
         setImageSource(verify_msg);
         // setStep_4(true);
         setShowButton(true);
@@ -532,6 +548,7 @@ const ReviewSection = ({route}) => {
       />
       <TouchableOpacity
         onPress={() => handleSend()}
+        disabled={isLoading}
         style={{
           position: 'absolute',
           bottom: 40,
