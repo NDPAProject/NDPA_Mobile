@@ -14,14 +14,12 @@ import {
 } from 'react-native';
 import {useAuth} from '../../contexts/AuthContext';
 import {useNavigation} from '@react-navigation/native';
-import {useSelector} from 'react-redux';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
 const Signin = () => {
   const {login, isAuthenticated, user, clearData, users} = useAuth();
-  const {message} = useSelector(state => state.user);
 
   const [email, setEmail] = useState('');
   const [isValidEmail, setIsValidEmail] = useState(false);
@@ -30,8 +28,6 @@ const Signin = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [reason, setReason] = useState('');
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [isError, setIsError] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
   const handlePress = () => {
@@ -68,16 +64,16 @@ const Signin = () => {
     console.log(
       '-------------isAuthenticated-------------',
       isAuthenticated,
-      user,
+      users,
     );
     if (isAuthenticated) {
       const destination =
-        user?.parentEmail !== null || undefined ? 'Main' : 'Cprofile';
+        users?.parentEmail !== null || undefined ? 'Main' : 'Cprofile';
       navigation.navigate(destination);
       console.log(`Navigating to ${destination}`);
       // navigation.navigate('Cprofile');
     }
-  }, [isAuthenticated, users, navigation, clearData]);
+  }, [isAuthenticated, users, navigation]);
 
   const navigation = useNavigation();
 

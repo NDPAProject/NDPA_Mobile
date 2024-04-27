@@ -1,7 +1,6 @@
 import axios from 'axios';
 import {HOST_API_KEY} from '@env';
 
-console.log(HOST_API_KEY);
 const axiosInstance = axios.create({baseURL: HOST_API_KEY});
 
 axiosInstance.interceptors.response.use(

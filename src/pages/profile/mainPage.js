@@ -27,7 +27,7 @@ const boxData = [
     {
       icon: edit_avatar,
       text: 'Edit Avatar',
-      nav: 'MainLearningSection',
+      nav: '',
     },
     {icon: call_keyworker, text: '       Call\nKey Worker', nav: ''},
   ],

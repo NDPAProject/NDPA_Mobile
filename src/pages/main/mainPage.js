@@ -42,25 +42,29 @@ const boxData = [
       text: 'Personal\n Identity',
       nav: 'MainLearningSection',
     },
-    {icon: fship_ico, text: 'Friendship', nav: ''},
+    {icon: fship_ico, text: 'Friendship', nav: 'MainFriendShipSection'},
   ],
   [
-    {icon: choice_ico, text: 'Choice', nav: ''},
-    {icon: indep_ico, text: 'Independence', nav: ''},
+    {icon: choice_ico, text: 'Choice', nav: 'MainChoiceSection'},
+    {icon: indep_ico, text: 'Independence', nav: 'MainIndependenceSection'},
   ],
   [
-    {icon: sep_ico, text: 'Separation', nav: ''},
-    {icon: loss_ico, text: 'Loss', nav: ''},
+    {icon: sep_ico, text: 'Separation', nav: 'MainSeparationSection'},
+    {icon: loss_ico, text: 'Loss', nav: 'MainLossSection'},
   ],
   [
-    {icon: withdrawal_ico, text: 'Withdrawal', nav: ''},
-    {icon: sadness_ico, text: 'Sadness', nav: ''},
+    {icon: withdrawal_ico, text: 'Withdrawal', nav: 'MainWithdrawalSection'},
+    {icon: sadness_ico, text: 'Sadness', nav: 'MainSadnessSection'},
   ],
   [
-    {icon: worry_ico, text: 'Worry', nav: ''},
-    {icon: emotional_ico, text: 'Emotional\nOutbursts', nav: ''},
+    {icon: worry_ico, text: 'Worry', nav: 'MainWorrySection'},
+    {
+      icon: emotional_ico,
+      text: 'Emotional\nOutbursts',
+      nav: 'MainEmotionalSection',
+    },
   ],
-  [{icon: peer_ico, text: '     Peer Difficulties', nav: ''}],
+  [{icon: peer_ico, text: '     Peer Difficulties', nav: 'MainPeerSection'}],
 ];
 
 const MainPage = ({route}) => {
@@ -117,9 +121,7 @@ const MainPage = ({route}) => {
         animationType="fade"
         transparent={true}
         visible={step_1}
-        onRequestClose={() => {
-          setStep_1(!step_1);
-        }}>
+        onRequestClose={() => handleClickSkip}>
         <LinearGradient
           style={{flex: 1}}
           colors={['rgba(0, 0, 0, 0.2)', 'rgba(255, 218, 185, 0.4)']}
@@ -134,7 +136,7 @@ const MainPage = ({route}) => {
             }}>
             <View style={{position: 'absolute', top: 150, left: 20}}>
               <TouchableOpacity
-                onPress={() => navigation.navigate('TypingSection')}>
+                onPress={() => navigation.navigate('TypingTutorSection')}>
                 <View style={styles.boxBackground}>
                   <Image source={boxData[0][0].icon} style={styles.icon} />
                   <Text style={styles.text}>{boxData[0][0].text}</Text>

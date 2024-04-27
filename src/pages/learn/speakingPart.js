@@ -25,6 +25,14 @@ import {
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import AudioRecorderPlayer from 'react-native-audio-recorder-player';
+import {
+  AudioEncoderAndroidType,
+  AudioSourceAndroidType,
+  AVEncoderAudioQualityIOSType,
+  AVEncodingOption,
+  OutputFormatAndroidType,
+} from 'react-native-audio-recorder-player';
+import {FFmpegKit, ReturnCode} from 'ffmpeg-kit-react-native';
 
 //
 import Header from '../../components/header';
@@ -49,6 +57,7 @@ const wrong_msg_ico = require('../../../assets/icons/wrong_msg.png');
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
+
 const SpeakingSection = ({route}) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -69,6 +78,9 @@ const SpeakingSection = ({route}) => {
   const [sound, setSound] = useState(false);
   const [imageSource, setImageSource] = useState(mechat);
   const [showButton, setShowButton] = useState(false);
+  const [content, setContent] = useState("");
+  const [count, setCount] = useState(0);
+
 
   const {audioTxt, txtAudio} = useSelector(state => state.audio);
 
@@ -91,6 +103,8 @@ const SpeakingSection = ({route}) => {
 
   const handleClickContinue = async () => {
     try {
+      setContent("");
+      setCount(0);
       if (step_2) {
         setStep_2(false);
         setShowButton(false);
@@ -151,6 +165,7 @@ const SpeakingSection = ({route}) => {
     console.log('startRecord');
 
     const path = `${RNFS.DocumentDirectoryPath}/hello.wav`;
+    const wavFilePath = `${RNFS.DocumentDirectoryPath}/converted.wav`;
 
     if (Platform.OS === 'android') {
       const granted = await PermissionsAndroid.request(
@@ -170,23 +185,39 @@ const SpeakingSection = ({route}) => {
     }
 
     const audioSet = {
-      SampleRate: 44100,
-      Channels: 1,
-      AudioQuality: 'High',
-      AudioEncoding: 'wav',
+      AudioEncoderAndroid: AudioEncoderAndroidType.AAC,
+      AudioSourceAndroid: AudioSourceAndroidType.MIC,
+      AVEncoderAudioQualityKeyIOS: AVEncoderAudioQualityIOSType.high,
+      AVNumberOfChannelsKeyIOS: 2,
+      AVFormatIDKeyIOS: AVEncodingOption.aac,
+      OutputFormatAndroid: OutputFormatAndroidType.AAC_ADTS,
     };
 
     try {
       console.log('Preparing to record');
       const result = await audioRecorderPlayer.startRecorder(path, audioSet);
-      console.log('Recording started', result);
+      console.log('Recording started here  >>>>>>>', result);
 
       setTimeout(async () => {
         console.log('Stopping recording...');
         const res = await audioRecorderPlayer.stopRecorder();
         console.log('stopped recording', res);
         console.log('Recorded Audio File Path:', path);
-        setAudioPath(path);
+        RNFS.unlink(wavFilePath);
+
+        const command = `-i ${path} -vn -acodec pcm_s16le -ar 16000 -ac 1 -b:a 256k ${wavFilePath}`;
+        const session = await FFmpegKit.execute(command);
+        const returnCode = await session.getReturnCode();
+        if (ReturnCode.isSuccess(returnCode)) {
+          const exists = await RNFS.exists(wavFilePath);
+          console.log('exists ', exists);
+          if (exists) {
+            setAudioPath(wavFilePath);
+          }
+          else {
+            setAudioPath(path);
+          }
+        }
       }, 5000);
     } catch (error) {
       console.error('Recording error:', error);
@@ -248,20 +279,47 @@ const SpeakingSection = ({route}) => {
   useEffect(() => {
     console.log('Updated audioPath:', audioPath);
     if (audioPath) {
-      dispatch(transcribeAudio(audioPath));
-      setAudioPath('');
-      setIsLoading(false);
+      setTimeout(async () => {
+        dispatch(transcribeAudio(audioPath));
+        setAudioPath('');
+        setIsLoading(false);
+      }, 200);
     }
   }, [audioPath]);
 
   useEffect(() => {
     if (audioTxt !== null) {
-      if (param.name === audioTxt?.DisplayText) {
+      console.log('name>>>', param.name);
+      console.log('text>>>', audioTxt?.DisplayText);
+      const strName = param.name.toLowerCase().replaceAll('.', '');
+      const strAge = param.age.toLowerCase().replaceAll('.', '');
+      const strIdentify = param.identify.toLowerCase().replaceAll('.', '');
+      const strSymptom = param.symptom.toLowerCase().replaceAll('.', '');
+      const strText = audioTxt?.DisplayText.toLowerCase().replaceAll('.', '');
+      setContent(audioTxt?.DisplayText);
+      const tryCount = count;
+      setCount(tryCount + 1);
+      if (step_2 && strName === strText) {
+        console.log('here 2 >>>');
         setImageSource(mechat);
-        // setStep_3(true);
-        // setStep_2(false);
         setShowButton(true);
-      } else {
+      } 
+      if (step_3 && strAge === strText) {
+        console.log('here 3 >>>');
+        setImageSource(mechat);
+        setShowButton(true);
+      }
+      if (step_4 && strIdentify === strText) {
+        console.log('here 4 >>>');
+        setImageSource(mechat);
+        setShowButton(true);
+      } 
+      if (step_5 && strSymptom === strText) {
+        console.log('here 5 >>>');
+        setImageSource(mechat);
+        setShowButton(true);
+      }  
+      else {
         setImageSource(wrong_msg_ico);
       }
     } else {
@@ -275,6 +333,43 @@ const SpeakingSection = ({route}) => {
       dispatch(setStateFunc(null));
     }
   }, [step_6]);
+
+  useEffect(() => {
+    console.log('count >>>', count);
+    if(count == 2) {
+      setContent("");
+      setCount(0);
+      if (step_2) {
+        setStep_2(false);
+        setShowButton(false);
+        setProgress(0.5);
+        setStep_3(true);
+      }
+      if (step_3) {
+        setStep_3(false);
+        setShowButton(false);
+        setProgress(0.75);
+        setStep_4(true);
+      }
+      if (step_4) {
+        setStep_4(false);
+        setShowButton(false);
+        setProgress(1);
+        setStep_5(true);
+      }
+      if (step_5) {
+        // setStep_5(false);
+        setShowButton(false);
+        setStep_6(true);
+      }
+      if (step_6) {
+        console.log('-----------============------------');
+        setStep_6(false);
+        setShowButton(false);
+        setStep_7(true);
+      }
+    }
+  }, [count]);
 
   const MessageBlock = ({children}) => (
     <>
@@ -348,7 +443,7 @@ const SpeakingSection = ({route}) => {
 
             <>
               <Text style={styles.m_title}>
-                Hi! My name is {audioTxt?.DisplayText || '___'} .
+                Hi! My name is {content || '___'} .
               </Text>
               <View
                 style={{
@@ -378,6 +473,7 @@ const SpeakingSection = ({route}) => {
             <>
               <TouchableOpacity
                 onPress={handleSend}
+                disabled={isLoading}
                 style={{
                   position: 'absolute',
                   bottom: 40,
@@ -400,7 +496,7 @@ const SpeakingSection = ({route}) => {
 
             <>
               <Text style={styles.m_title}>
-                I'm {audioTxt?.DisplayText || '___'} years old.
+                I'm {content || '___'} years old.
               </Text>
               <View
                 style={{
@@ -430,6 +526,7 @@ const SpeakingSection = ({route}) => {
             <>
               <TouchableOpacity
                 onPress={handleSend}
+                disabled={isLoading}
                 style={{
                   position: 'absolute',
                   bottom: 40,
@@ -452,7 +549,7 @@ const SpeakingSection = ({route}) => {
 
             <>
               <Text style={styles.m_title}>
-                I have {audioTxt?.DisplayText || '___'}.
+                I have {content || '___'}.
               </Text>
               <View
                 style={{
@@ -482,6 +579,7 @@ const SpeakingSection = ({route}) => {
             <>
               <TouchableOpacity
                 onPress={handleSend}
+                disabled={isLoading}
                 style={{
                   position: 'absolute',
                   bottom: 40,
@@ -504,7 +602,7 @@ const SpeakingSection = ({route}) => {
 
             <>
               <Text style={styles.m_title}>
-                I identify as {audioTxt?.DisplayText || '___'}.
+                I identify as {content || '___'}.
               </Text>
               <View
                 style={{
