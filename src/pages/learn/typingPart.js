@@ -22,6 +22,7 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import Header from '../../components/header';
 import CustomDialog from '../../components/dialogModal';
 import RewardDialog from '../../components/rewardModal';
+import ChatBox from '../../components/chatBox';
 
 const phone_ico = require('../../../assets/icons/phone_ico.png');
 const hand_ico = require('../../../assets/icons/hand_ico.png');
@@ -94,6 +95,16 @@ const TypingSection = () => {
     }
   };
 
+  const handleChangeText = text => {
+    try {
+      if (text.length < 9) {
+        setText(text);
+      }
+    } catch (error) {
+      setErrorMsg((error && error.error) || 'Something went wrong.');
+    }
+  };
+
   const handleClickMove = async () => {
     try {
       const data = {
@@ -138,6 +149,7 @@ const TypingSection = () => {
         setShowKeyboard(false);
         setStep_4(false);
         setStep_5(true);
+        return;
       }
       setShowKeyboard(true);
     } catch (error) {
@@ -151,6 +163,7 @@ const TypingSection = () => {
       setProgress(1);
       setShowKeyboard(false);
       setStep_5(true);
+      return;
     } catch (error) {
       setErrorMsg((error && error.error) || 'Something went wrong.');
     }
@@ -164,6 +177,7 @@ const TypingSection = () => {
         setStep_5(false);
         setStep_6(true);
         setShowKeyboard(false);
+        return;
       }
       setShowKeyboard(true);
     } catch (error) {
@@ -330,8 +344,17 @@ const TypingSection = () => {
               </View>
             </>
           </View>
+          <ChatBox
+            // handleInput={handleInput}
+            text={text}
+            handleChangeText={handleChangeText}
+            handleSend={handleSendName}
+            messageIcon={messageIcon}
+            bottom={0}
+            mico={false}
+          />
 
-          <View style={[styles.chatBackground]}>
+          {/* <View style={[styles.chatBackground]}>
             <TextInput
               style={[styles.input]}
               placeholder="Write here..."
@@ -340,15 +363,19 @@ const TypingSection = () => {
               onChangeText={text => {
                 setText(text);
               }}
+              // onChangeText={() => handleChangeText(text)}
               autoCapitalize="none"
             />
 
             <TouchableOpacity
               style={{position: 'absolute', top: 23, right: 25}}
-              onPress={handleSendName}>
+              onPress={text?.length !== 0 ? handleSendName : undefined}
+              disabled={text?.length !== 0 ? false : true}
+              // onPress={handleSendName}
+            >
               <Image source={messageIcon} />
             </TouchableOpacity>
-          </View>
+          </View> */}
         </>
       )}
       {step_3 && (
@@ -391,6 +418,7 @@ const TypingSection = () => {
 
             <TouchableOpacity
               style={{position: 'absolute', top: 23, right: 25}}
+              disabled={age?.length !== 0 ? false : true}
               onPress={handleSendAge}>
               <Image source={sendIcon} />
             </TouchableOpacity>
@@ -483,7 +511,7 @@ const TypingSection = () => {
             </>
           </View>
 
-          {!showKeyboard ? (
+          {showKeyboard ? (
             <View style={[styles.chatBackground]}>
               <TextInput
                 style={[styles.input]}

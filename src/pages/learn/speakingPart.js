@@ -57,7 +57,6 @@ const wrong_msg_ico = require('../../../assets/icons/wrong_msg.png');
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-
 const SpeakingSection = ({route}) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -78,9 +77,8 @@ const SpeakingSection = ({route}) => {
   const [sound, setSound] = useState(false);
   const [imageSource, setImageSource] = useState(mechat);
   const [showButton, setShowButton] = useState(false);
-  const [content, setContent] = useState("");
+  const [content, setContent] = useState('');
   const [count, setCount] = useState(0);
-
 
   const {audioTxt, txtAudio} = useSelector(state => state.audio);
 
@@ -103,7 +101,7 @@ const SpeakingSection = ({route}) => {
 
   const handleClickContinue = async () => {
     try {
-      setContent("");
+      setContent('');
       setCount(0);
       if (step_2) {
         setStep_2(false);
@@ -142,8 +140,8 @@ const SpeakingSection = ({route}) => {
   const handleClickMove = async () => {
     try {
       setStep_2(true);
-
-      navigation.navigate('ReviewSection', {param: param});
+      navigation.navigate('Main');
+      // navigation.navigate('ReviewSection', {param: param});
     } catch (error) {
       setErrorMsg((error && error.error) || 'Something went wrong.');
     }
@@ -213,8 +211,7 @@ const SpeakingSection = ({route}) => {
           console.log('exists ', exists);
           if (exists) {
             setAudioPath(wavFilePath);
-          }
-          else {
+          } else {
             setAudioPath(path);
           }
         }
@@ -282,7 +279,6 @@ const SpeakingSection = ({route}) => {
       setTimeout(async () => {
         dispatch(transcribeAudio(audioPath));
         setAudioPath('');
-        setIsLoading(false);
       }, 200);
     }
   }, [audioPath]);
@@ -303,25 +299,32 @@ const SpeakingSection = ({route}) => {
         console.log('here 2 >>>');
         setImageSource(mechat);
         setShowButton(true);
-      } 
+        setIsLoading(false);
+        return;
+      }
       if (step_3 && strAge === strText) {
         console.log('here 3 >>>');
         setImageSource(mechat);
         setShowButton(true);
+        setIsLoading(false);
+        return;
       }
       if (step_4 && strIdentify === strText) {
         console.log('here 4 >>>');
         setImageSource(mechat);
         setShowButton(true);
-      } 
+        setIsLoading(false);
+        return;
+      }
       if (step_5 && strSymptom === strText) {
         console.log('here 5 >>>');
         setImageSource(mechat);
         setShowButton(true);
-      }  
-      else {
-        setImageSource(wrong_msg_ico);
+        setIsLoading(false);
+        return;
       }
+      setIsLoading(false);
+      setImageSource(wrong_msg_ico);
     } else {
       setImageSource(mechat);
     }
@@ -336,26 +339,32 @@ const SpeakingSection = ({route}) => {
 
   useEffect(() => {
     console.log('count >>>', count);
-    if(count == 2) {
-      setContent("");
+    if (count == 2) {
+      setContent('');
       setCount(0);
       if (step_2) {
         setStep_2(false);
         setShowButton(false);
         setProgress(0.5);
         setStep_3(true);
+        setImageSource(mechat);
+        return;
       }
       if (step_3) {
         setStep_3(false);
         setShowButton(false);
         setProgress(0.75);
         setStep_4(true);
+        setImageSource(mechat);
+        return;
       }
       if (step_4) {
         setStep_4(false);
         setShowButton(false);
         setProgress(1);
         setStep_5(true);
+        setImageSource(mechat);
+        return;
       }
       if (step_5) {
         // setStep_5(false);
@@ -390,6 +399,36 @@ const SpeakingSection = ({route}) => {
         </TouchableOpacity>
         <Image source={turtle_ico} />
       </View>
+    </>
+  );
+
+  const RecordButton = () => (
+    <>
+      <TouchableOpacity
+        onPress={handleSend}
+        disabled={isLoading}
+        style={{
+          position: 'absolute',
+          bottom: 40,
+          right: screenWidth / 2 - 50,
+        }}>
+        {isLoading ? (
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginRight: 40,
+            }}>
+            <ActivityIndicator size="large" color="#F08080" />
+          </View>
+        ) : (
+          <>
+            <Image source={mic_ico} />
+            <Text style={styles.text_m}>Press to speak</Text>
+          </>
+        )}
+      </TouchableOpacity>
     </>
   );
 
@@ -469,21 +508,7 @@ const SpeakingSection = ({route}) => {
               opacity: isLoading ? 1 : 0,
             }}
           />
-          {!showButton && (
-            <>
-              <TouchableOpacity
-                onPress={handleSend}
-                disabled={isLoading}
-                style={{
-                  position: 'absolute',
-                  bottom: 40,
-                  right: screenWidth / 2 - 50,
-                }}>
-                <Image source={mic_ico} />
-              </TouchableOpacity>
-              <Text style={styles.text_m}>Press to speak</Text>
-            </>
-          )}
+          {!showButton && <RecordButton />}
         </>
       )}
 
@@ -522,21 +547,7 @@ const SpeakingSection = ({route}) => {
               opacity: isLoading ? 1 : 0,
             }}
           />
-          {!showButton && (
-            <>
-              <TouchableOpacity
-                onPress={handleSend}
-                disabled={isLoading}
-                style={{
-                  position: 'absolute',
-                  bottom: 40,
-                  right: screenWidth / 2 - 50,
-                }}>
-                <Image source={mic_ico} />
-              </TouchableOpacity>
-              <Text style={styles.text_m}>Press to speak</Text>
-            </>
-          )}
+          {!showButton && <RecordButton />}
         </>
       )}
 
@@ -548,9 +559,7 @@ const SpeakingSection = ({route}) => {
             <Image source={imageSource} />
 
             <>
-              <Text style={styles.m_title}>
-                I have {content || '___'}.
-              </Text>
+              <Text style={styles.m_title}>I have {content || '___'}.</Text>
               <View
                 style={{
                   flexDirection: 'row',
@@ -575,21 +584,7 @@ const SpeakingSection = ({route}) => {
               opacity: isLoading ? 1 : 0,
             }}
           />
-          {!showButton && (
-            <>
-              <TouchableOpacity
-                onPress={handleSend}
-                disabled={isLoading}
-                style={{
-                  position: 'absolute',
-                  bottom: 40,
-                  right: screenWidth / 2 - 50,
-                }}>
-                <Image source={mic_ico} />
-              </TouchableOpacity>
-              <Text style={styles.text_m}>Press to speak</Text>
-            </>
-          )}
+          {!showButton && <RecordButton />}
         </>
       )}
 
@@ -628,21 +623,7 @@ const SpeakingSection = ({route}) => {
               opacity: isLoading ? 1 : 0,
             }}
           />
-          {!showButton && (
-            <>
-              <TouchableOpacity
-                onPress={handleSend}
-                disabled={isLoading}
-                style={{
-                  position: 'absolute',
-                  bottom: 40,
-                  right: screenWidth / 2 - 50,
-                }}>
-                <Image source={mic_ico} />
-              </TouchableOpacity>
-              <Text style={styles.text_m}>Press to speak</Text>
-            </>
-          )}
+          {!showButton && <RecordButton />}
         </>
       )}
 

@@ -93,6 +93,7 @@ const WeeklyActPlanSection = ({route}) => {
   };
 
   const handleClickMove = async () => {
+    navigation.navigate('MainPage', {param: true});
     // try {
     //   const data = {
     //     name: text,

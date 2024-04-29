@@ -220,7 +220,8 @@ const MainPage = ({route}) => {
                 borderRadius: 45,
                 backgroundColor: '#F08080',
               }}
-              onPress={handleClick}>
+              // onPress={handleClick}
+            >
               <Text style={styles.b3_text}>Let's Start</Text>
             </TouchableOpacity>
             <TouchableOpacity
