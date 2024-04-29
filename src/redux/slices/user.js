@@ -67,23 +67,18 @@ export const createProfile = (userData, id) => async dispatch => {
 
     console.log('Put profile Result:', response.data);
 
-    // Assuming getAudioTextSuccess is an action that handles the successful transcription
     dispatch(PutUserSuccess(response.data));
 
     return response;
   } catch (error) {
-    console.error('Error during transcription:', error);
+    console.error('Error during User:', error);
     if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
       console.log(error.response.data);
       console.log(error.response.status);
       console.log(error.response.headers);
     } else if (error.request) {
-      // The request was made but no response was received
       console.log(error.request);
     } else {
-      // Something happened in setting up the request that triggered an Error
       console.log('Error', error.message);
     }
     dispatch(slice.actions.hasError(error));
@@ -102,23 +97,18 @@ export const getUserInfo = id => async dispatch => {
 
     console.log('Put profile Result:', response.data);
 
-    // Assuming getAudioTextSuccess is an action that handles the successful transcription
     dispatch(GetUserSuccess(response.data));
 
     return response;
   } catch (error) {
-    console.error('Error during transcription:', error);
+    console.error('Error during User:', error);
     if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
       console.log(error.response.data);
       console.log(error.response.status);
       console.log(error.response.headers);
     } else if (error.request) {
-      // The request was made but no response was received
       console.log(error.request);
     } else {
-      // Something happened in setting up the request that triggered an Error
       console.log('Error', error.message);
     }
     dispatch(slice.actions.hasError(error));
@@ -140,23 +130,18 @@ export const updateUserInfo = (userData, id) => async dispatch => {
 
     console.log('Put profile Result:', response.data);
 
-    // Assuming getAudioTextSuccess is an action that handles the successful transcription
     dispatch(UpdateUserSuccess(response.data));
 
     return response;
   } catch (error) {
-    console.error('Error during transcription:', error);
+    console.error('Error during User:', error);
     if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
       console.log(error.response.data);
       console.log(error.response.status);
       console.log(error.response.headers);
     } else if (error.request) {
-      // The request was made but no response was received
       console.log(error.request);
     } else {
-      // Something happened in setting up the request that triggered an Error
       console.log('Error', error.message);
     }
     dispatch(slice.actions.hasError(error));

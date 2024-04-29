@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   Platform,
   PermissionsAndroid,
+  ScrollView,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation, useRoute} from '@react-navigation/native';
@@ -41,6 +42,7 @@ const thumb_icon = require('../../../assets/icons/great_ico.png');
 const welcome_ico = require('../../../assets/icons/welcome_ico.png');
 const verify_msg = require('../../../assets/icons/verify_msg.png');
 const wrong_msg_ico = require('../../../assets/icons/wrong_msg.png');
+const try_again_ico = require('../../../assets/icons/try_again_ico.png');
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -50,24 +52,25 @@ const ReviewSection = ({route}) => {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [againModal, setAgainModal] = useState(false);
   const [showImage, setShowImage] = useState(false);
   const [sendClick, setSendClick] = useState(false);
-  const [step_2, setStep_2] = useState(false);
-  const [step_3, setStep_3] = useState(false);
+  const [step_2, setStep_2] = useState(true);
   const [step_4, setStep_4] = useState(false);
   const [step_5, setStep_5] = useState(false);
   const [step_6, setStep_6] = useState(false);
   const [step_7, setStep_7] = useState(false);
   const [sound, setSound] = useState(false);
-  const [nameSuccess, setNameSuccess] = useState(false);
-  const [ageSuccess, setAgeSuccess] = useState(false);
-  const [identifySuccess, setIdentifySuccess] = useState(false);
-  const [symptomSuccess, setSymptomSuccess] = useState(false);
+  const [nameSuccess, setNameSuccess] = useState(0);
+  const [ageSuccess, setAgeSuccess] = useState(0);
+  const [identifySuccess, setIdentifySuccess] = useState(0);
+  const [symptomSuccess, setSymptomSuccess] = useState(0);
   const [audioPath, setAudioPath] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [showButton, setShowButton] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [imageSource, setImageSource] = useState(mechat);
+  const [count, setCount] = useState(0);
   const {audioTxt, txtAudio} = useSelector(state => state.audio);
 
   const audioRecorderPlayer = new AudioRecorderPlayer();
@@ -76,15 +79,11 @@ const ReviewSection = ({route}) => {
 
   console.log('-----------ReviewPart---------------------', param, audioTxt);
 
-  const handleClick = async () => {
-    try {
-      setStep_2(true);
-      setModalVisible(false);
-      console.log('=-=-=-=-=--', step_2, modalVisible);
-    } catch (error) {
-      setErrorMsg((error && error.error) || 'Something went wrong.');
-      // setIsLoading(false);
-    }
+  const handleClick = () => {
+    console.log('handleClick');
+    setStep_2(true);
+    setModalVisible(false);
+    console.log('=-=-=-=-=--', step_2, modalVisible);
   };
 
   const handleClickMove = async () => {
@@ -125,6 +124,10 @@ const ReviewSection = ({route}) => {
       setErrorMsg((error && error.error) || 'Something went wrong.');
       // setIsLoading(false);
     }
+  };
+
+  const handleTry = () => {
+    setAgainModal(false);
   };
 
   const handleSend = async () => {
@@ -181,12 +184,11 @@ const ReviewSection = ({route}) => {
           const exists = await RNFS.exists(wavFilePath);
           if (exists) {
             setAudioPath(wavFilePath);
-          }
-          else {
+          } else {
             setAudioPath(path);
           }
         }
-      }, 5000);
+      }, 1000);
     } catch (error) {
       console.error('Recording error:', error);
     }
@@ -197,61 +199,151 @@ const ReviewSection = ({route}) => {
     if (audioPath) {
       dispatch(transcribeAudio(audioPath));
       setAudioPath('');
-      setIsLoading(false);
     }
   }, [audioPath]);
 
   useEffect(() => {
-    if (audioTxt !== null) {
-
-      const strText = audioTxt?.DisplayText.toLowerCase().replaceAll('.', '').replaceAll('!', '').replaceAll(',', '').replaceAll(' ', '');
-      const strOriginName = "Hi! My name is " + param.name;
-      const strName = strOriginName.toLowerCase().replaceAll('.', '').replaceAll('!', '').replaceAll(',', '').replaceAll(' ', '');
+    if (audioTxt !== null && count !== 2) {
+      const strText = audioTxt?.DisplayText.toLowerCase()
+        .replaceAll('.', '')
+        .replaceAll('!', '')
+        .replaceAll(',', '')
+        .replaceAll(' ', '');
+      const strOriginName = 'Hi! My name is ' + param.name;
+      const strOriginAge = "I'm" + param.age + 'years old';
+      const strOriginIdentify = 'I have' + param.identify;
+      const strOriginSymptom = 'I identify as' + param.symptom;
+      const strName = strOriginName
+        .toLowerCase()
+        .replaceAll('.', '')
+        .replaceAll('!', '')
+        .replaceAll(',', '')
+        .replaceAll(' ', '');
+      const strAge = strOriginAge
+        .toLowerCase()
+        .replaceAll('.', '')
+        .replaceAll('!', '')
+        .replaceAll(',', '')
+        .replaceAll(' ', '');
+      const strIdentify = strOriginIdentify
+        .toLowerCase()
+        .replaceAll('.', '')
+        .replaceAll('!', '')
+        .replaceAll(',', '')
+        .replaceAll(' ', '');
+      const strSymptom = strOriginSymptom
+        .toLowerCase()
+        .replaceAll('.', '')
+        .replaceAll('!', '')
+        .replaceAll(',', '')
+        .replaceAll(' ', '');
       console.log('strText >>> ', strText);
       console.log('strName >>> ', strName);
-      if (step_2 && strText === strName) {
-        setImageSource(verify_msg);
-        // setStep_4(true);
-        setShowButton(true);
-        setNameSuccess(true);
-        setShowModal(true);
-        return;
+      const tryCount = count + 1;
+      setCount(tryCount);
+      if (step_2 && !step_4) {
+        console.log('1111111111111111111111');
+        if (strText === strName) {
+          setStep_4(true);
+          setShowButton(true);
+          setNameSuccess(1);
+          setShowModal(true);
+          setCount(0);
+          return;
+        } else {
+          setIsLoading(false);
+          setShowButton(false);
+          setNameSuccess(2);
+          setAgainModal(true);
+          return;
+        }
       }
-      if (step_4 && param.age === audioTxt?.DisplayText) {
-        setImageSource(verify_msg);
-        // setStep_5(true);
-        // setStep_2(false);
-        // setStep_4(false);
-        setShowButton(true);
-        setAgeSuccess(true);
-        setShowModal(true);
-        return;
+      if (step_2 && step_4) {
+        console.log('22222222222222222222222');
+        if (strText === strAge) {
+          setStep_5(true);
+          setShowButton(true);
+          setAgeSuccess(1);
+          setShowModal(true);
+          setCount(0);
+          setStep_2(false);
+          return;
+        } else {
+          setIsLoading(false);
+          setShowButton(false);
+          setAgeSuccess(2);
+          setAgainModal(true);
+          return;
+        }
       }
-      if (step_5 && param.symptom === audioTxt?.DisplayText) {
-        setImageSource(verify_msg);
-        // setStep_6(true);
-        setShowButton(true);
-        setSymptomSuccess(true);
-        setShowModal(true);
-        return;
+      if (step_5 && !step_6) {
+        console.log('33333333333333333333');
+        if (strText === strSymptom) {
+          setStep_6(true);
+          setShowButton(true);
+          setSymptomSuccess(1);
+          setShowModal(true);
+          setCount(0);
+          return;
+        } else {
+          setIsLoading(false);
+          setShowButton(false);
+          setSymptomSuccess(2);
+          setAgainModal(true);
+          return;
+        }
       }
-      if (step_6 && param.identify === audioTxt?.DisplayText) {
-        setImageSource(verify_msg);
-        // setStep_7(true);
-        setShowButton(true);
-        setIdentifySuccess(true);
-        setShowModal(true);
-        return;
+      if (step_5 && step_6) {
+        console.log('44444444444444444444444');
+        if (strText === strIdentify) {
+          setStep_7(true);
+          setShowButton(true);
+          setIdentifySuccess(1);
+          setShowModal(true);
+          setCount(0);
+          return;
+        } else {
+          setIsLoading(false);
+          setShowButton(false);
+          setIdentifySuccess(2);
+          setAgainModal(true);
+          return;
+        }
       }
-      setImageSource(wrong_msg_ico);
-      setShowButton(false);
-      setShowModal(false);
-      return;
-    } else {
-      setImageSource(mechat);
-      return;
     }
   }, [param.name, audioTxt]);
+
+  useEffect(() => {
+    console.log('count >>>', count);
+    if (count == 2) {
+      setAgainModal(false);
+      setCount(0);
+      if (step_2 && !step_4) {
+        setShowButton(false);
+        setStep_4(true);
+        setNameSuccess(2);
+        return;
+      }
+      if (step_2 && step_4) {
+        setShowButton(false);
+        setStep_5(true);
+        setAgeSuccess(2);
+        setStep_2(false);
+        return;
+      }
+      if (step_5 && !step_6) {
+        // setStep_5(false);
+        setShowButton(false);
+        setStep_6(true);
+      }
+      if (step_5 && step_6) {
+        console.log('-----------============------------');
+        setStep_6(false);
+        setShowButton(false);
+        setStep_7(true);
+      }
+    }
+  }, [count]);
 
   const handleClickSound = async txt => {
     try {
@@ -297,10 +389,8 @@ const ReviewSection = ({route}) => {
       sound.play(success => {
         if (success) {
           console.log('Successfully finished playing');
-          setIsLoading(false);
         } else {
           console.log('Playback failed due to audio decoding errors');
-          setIsLoading(false);
         }
       });
     });
@@ -377,7 +467,6 @@ const ReviewSection = ({route}) => {
         color={'#FFFBF8'}
         editalbe={false}
       />
-
       {step_2 && (
         <>
           <Image
@@ -392,11 +481,27 @@ const ReviewSection = ({route}) => {
             children={' Hi! My name is Tom. \nWhat is your name?'}
           />
           <View style={styles.me_imageContainer}>
-            <Image source={imageSource} />
+            <Image
+              source={
+                nameSuccess === 0
+                  ? mechat
+                  : nameSuccess === 1
+                  ? verify_msg
+                  : wrong_msg_ico
+              }
+            />
+
             <Text
               style={[
                 styles.s_title,
-                {color: nameSuccess ? '#23B80C' : 'black'},
+                {
+                  color:
+                    nameSuccess === 0
+                      ? 'black'
+                      : nameSuccess === 1
+                      ? '#23B80C'
+                      : '#FFC700',
+                },
               ]}>
               Hi! My name is {param.name}.
             </Text>
@@ -417,7 +522,11 @@ const ReviewSection = ({route}) => {
             <>
               <Image
                 source={tom_s_ico}
-                style={{position: 'absolute', left: screenWidth / 20, top: 350}}
+                style={{
+                  position: 'absolute',
+                  left: screenWidth / 20,
+                  top: 350,
+                }}
               />
               <Image
                 source={me_icon}
@@ -432,11 +541,26 @@ const ReviewSection = ({route}) => {
               />
 
               <View style={styles.me_imageContainer_t}>
-                <Image source={ageSuccess ? imageSource : mechat} />
+                <Image
+                  source={
+                    ageSuccess === 0
+                      ? mechat
+                      : ageSuccess === 1
+                      ? verify_msg
+                      : wrong_msg_ico
+                  }
+                />
                 <Text
                   style={[
                     styles.s_title,
-                    {color: ageSuccess ? '#23B80C' : 'black'},
+                    {
+                      color:
+                        ageSuccess === 0
+                          ? 'black'
+                          : ageSuccess === 1
+                          ? '#23B80C'
+                          : '#FFC700',
+                    },
                   ]}>
                   I'm {param.age} years old.
                 </Text>
@@ -471,11 +595,26 @@ const ReviewSection = ({route}) => {
           <MessageBlock children={'I have ADHD. \nWhat about you?'} />
 
           <View style={styles.me_imageContainer}>
-            <Image source={symptomSuccess ? imageSource : mechat} />
+            <Image
+              source={
+                symptomSuccess === 0
+                  ? mechat
+                  : symptomSuccess === 1
+                  ? verify_msg
+                  : wrong_msg_ico
+              }
+            />
             <Text
               style={[
                 styles.s_title,
-                {color: symptomSuccess ? '#23B80C' : 'black'},
+                {
+                  color:
+                    symptomSuccess === 0
+                      ? 'black'
+                      : symptomSuccess === 1
+                      ? '#23B80C'
+                      : '#FFC700',
+                },
               ]}>
               I have {param.symptom}.
             </Text>
@@ -496,7 +635,11 @@ const ReviewSection = ({route}) => {
             <>
               <Image
                 source={tom_s_ico}
-                style={{position: 'absolute', left: screenWidth / 20, top: 350}}
+                style={{
+                  position: 'absolute',
+                  left: screenWidth / 20,
+                  top: 350,
+                }}
               />
               <Image
                 source={me_icon}
@@ -509,11 +652,26 @@ const ReviewSection = ({route}) => {
               <MessageBlockT children={"What's your gender \nidentity?"} />
 
               <View style={styles.me_imageContainer_t}>
-                <Image source={identifySuccess ? imageSource : mechat} />
+                <Image
+                  source={
+                    identifySuccess === 0
+                      ? mechat
+                      : identifySuccess === 1
+                      ? verify_msg
+                      : wrong_msg_ico
+                  }
+                />
                 <Text
                   style={[
                     styles.s_title,
-                    {color: identifySuccess ? '#23B80C' : 'black'},
+                    {
+                      color:
+                        identifySuccess === 0
+                          ? 'black'
+                          : identifySuccess === 1
+                          ? '#23B80C'
+                          : '#FFC700',
+                    },
                   ]}>
                   I identify as {param.identify}.
                 </Text>
@@ -534,7 +692,6 @@ const ReviewSection = ({route}) => {
           )}
         </>
       )}
-
       <Image
         source={mic_frame}
         style={{
@@ -560,13 +717,19 @@ const ReviewSection = ({route}) => {
 
       <CustomGreatModal
         visible={showModal}
-        hand_ico={hand_ico}
         icon={thumb_icon}
-        showImage={showImage}
         handleClick={() => handleContinue()}
         buttonType={showButton}
         onRequestClose={() => setStep_2(false)}
         message="Great job!"
+      />
+      <CustomGreatModal
+        visible={againModal}
+        icon={try_again_ico}
+        handleClick={() => handleTry()}
+        buttonType={showButton}
+        onRequestClose={() => setStep_2(false)}
+        message="Don't give up"
       />
     </View>
   );

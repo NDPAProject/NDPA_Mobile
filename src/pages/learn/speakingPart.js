@@ -62,6 +62,7 @@ const SpeakingSection = ({route}) => {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(true);
   const [showImage, setShowImage] = useState(false);
+
   const [sendClick, setSendClick] = useState(false);
   const [showHand, setShowHand] = useState(false);
   const [step_2, setStep_2] = useState(false);
@@ -140,8 +141,8 @@ const SpeakingSection = ({route}) => {
   const handleClickMove = async () => {
     try {
       setStep_2(true);
-      navigation.navigate('Main');
-      // navigation.navigate('ReviewSection', {param: param});
+      // navigation.navigate('Main');
+      navigation.navigate('ReviewSection', {param: param});
     } catch (error) {
       setErrorMsg((error && error.error) || 'Something went wrong.');
     }
@@ -153,7 +154,7 @@ const SpeakingSection = ({route}) => {
       setContent('');
       await onStartRecord();
       console.log('-------audioPath--------', audioPath);
-      setStep_2(true);
+      // setStep_2(true);
     } catch (error) {
       setErrorMsg((error && error.error) || 'Something went wrong.');
       // setIsLoading(false);
@@ -161,7 +162,6 @@ const SpeakingSection = ({route}) => {
   };
 
   const onStartRecord = async () => {
-
     const path = `${RNFS.DocumentDirectoryPath}/hello.wav`;
     const wavFilePath = `${RNFS.DocumentDirectoryPath}/converted.wav`;
 
@@ -210,7 +210,7 @@ const SpeakingSection = ({route}) => {
             setAudioPath(path);
           }
         }
-      }, 5000);
+      }, 1000);
     } catch (error) {
       console.error('Recording error:', error);
     }
@@ -277,11 +277,35 @@ const SpeakingSection = ({route}) => {
 
   useEffect(() => {
     if (audioTxt !== null) {
-      const strName = param.name.toLowerCase().replaceAll('.', '').replaceAll('!', '').replaceAll(',', '').replaceAll(' ', '');
-      const strAge = param.age.toLowerCase().replaceAll('.', '').replaceAll('!', '').replaceAll(',', '').replaceAll(' ', '');
-      const strIdentify = param.identify.toLowerCase().replaceAll('.', '').replaceAll('!', '').replaceAll(',', '').replaceAll(' ', '');
-      const strSymptom = param.symptom.toLowerCase().replaceAll('.', '').replaceAll('!', '').replaceAll(',', '').replaceAll(' ', '');
-      const strText = audioTxt?.DisplayText.toLowerCase().replaceAll('.', '').replaceAll('!', '').replaceAll(',', '').replaceAll(' ', '');
+      const strName = param.name
+        .toLowerCase()
+        .replaceAll('.', '')
+        .replaceAll('!', '')
+        .replaceAll(',', '')
+        .replaceAll(' ', '');
+      const strAge = param.age
+        .toLowerCase()
+        .replaceAll('.', '')
+        .replaceAll('!', '')
+        .replaceAll(',', '')
+        .replaceAll(' ', '');
+      const strIdentify = param.identify
+        .toLowerCase()
+        .replaceAll('.', '')
+        .replaceAll('!', '')
+        .replaceAll(',', '')
+        .replaceAll(' ', '');
+      const strSymptom = param.symptom
+        .toLowerCase()
+        .replaceAll('.', '')
+        .replaceAll('!', '')
+        .replaceAll(',', '')
+        .replaceAll(' ', '');
+      const strText = audioTxt?.DisplayText.toLowerCase()
+        .replaceAll('.', '')
+        .replaceAll('!', '')
+        .replaceAll(',', '')
+        .replaceAll(' ', '');
       setContent(audioTxt?.DisplayText);
       const tryCount = count;
       setCount(tryCount + 1);
