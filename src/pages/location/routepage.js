@@ -1,4 +1,5 @@
 import 'react-native-gesture-handler';
+// import * as turf from '@turf/turf';
 import {GOOGLE_API_KEY_ANDROID___} from '@env';
 
 import React, {useState, useEffect, useRef} from 'react';
@@ -35,6 +36,10 @@ const Routepage = () => {
   //modal
   const [step_5, setStep_5] = useState(false);
   const [showImage, setShowImage] = useState(false);
+
+  const [routecolor, setRoutecolor] = useState(false);
+  const [switchroute, setSwitchroute] = useState(false);
+
   //modal_end
   const [coordinates, setCoordinates] = useState([
     {
@@ -51,13 +56,31 @@ const Routepage = () => {
     },
   ]);
 
-  const [coordsOptimized, setCoordsOptimized] = useState([]);
-  const [coordsNonOptimized, setCoordsNonOptimized] = useState([]);
+  const coordinates_ = [
+    {
+      latitude: 51.51656759999999,
+      longitude: -0.1784764,
+    },
+    {
+      latitude: 51.52656759999999,
+      longitude: -0.1884764,
+    },
+    {
+      latitude: route.params.locationaddress.location_info.lat,
+      longitude: route.params.locationaddress.location_info.lng,
+    },
+  ];
 
-  const [result_dur_dis, setResult_dur_dis] = useState({
-    duration: 0,
-    distance: 0,
-  });
+  const [result_dur_dis, setResult_dur_dis] = useState([
+    {
+      duration: 0,
+      distance: 0,
+    },
+    {
+      duration: 0,
+      distance: 0,
+    },
+  ]);
 
   const [mode, setMode] = useState('WALKING');
   const [allinfo, setAllinfo] = useState([]);
@@ -70,17 +93,18 @@ const Routepage = () => {
   const mapView = useRef(null);
 
   useEffect(() => {
-    let modes = ['driving', 'walking', 'transit', 'bicycling'];
-
+    let modes = ['DRIVING', 'BICYCLING', 'TRANSIT', 'WALKING'];
+    // let modes = ['bus'];
     modes.forEach(mode => {
       fetch(
-        `https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=${coordinates[0].latitude},${coordinates[0].longitude}&destinations=${coordinates[1].latitude},${coordinates[1].longitude}&mode=${mode}&key=${GOOGLE_API_KEY_ANDROID___}`,
+        `https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=${coordinates[0].latitude},${coordinates[0].longitude}&destinations=${coordinates[1].latitude},${coordinates[1].longitude}&mode=${mode.toLowerCase()}&key=${GOOGLE_API_KEY_ANDROID___}`,
       )
         .then(response => response.json())
         .then(data => {
           if (data) {
             console.log(
-              '<><><><><><><><><><><><><><><><> data route',
+              '``````````````````',
+              mode,
               data.rows[0].elements[0].duration.text,
             );
             let route = data.rows[0].elements[0];
@@ -107,11 +131,21 @@ const Routepage = () => {
   }, [result_dur_dis]);
 
   const onMapPress = e => {
-    setCoordinates([...coordinates, e.nativeEvent.coordinate]);
+    // setCoordinates([...coordinates, e.nativeEvent.coordinate]);
+    setRoutecolor(true);
   };
+
+  useEffect(() => {
+    console.log('Updated duration and distance:', result_dur_dis);
+  }, [switchroute]);
 
   const handleclick = mode => {
     setMode(mode);
+  };
+
+  const handleSwichroute = () => {
+    console.log('route changed');
+    setSwitchroute(!switchroute);
   };
 
   return (
@@ -125,7 +159,7 @@ const Routepage = () => {
         }}
         style={StyleSheet.absoluteFill}
         ref={mapView}
-        onPress={onMapPress}
+        // onPress={onMapPress}
         customMapStyle={mapStyle}>
         {coordinates.map((coordinate, index) => {
           if (index != 1)
@@ -134,7 +168,10 @@ const Routepage = () => {
                 key={`coordinate_${index}`}
                 draggable
                 coordinate={coordinate}>
-                <View style={styles.markerstyle}></View>
+                <View
+                  style={
+                    index == 2 ? styles.markerstyle : styles.markerstyle_
+                  }></View>
               </Marker>
             );
         })}
@@ -144,8 +181,18 @@ const Routepage = () => {
             destination={coordinates[2]}
             apikey={GOOGLE_API_KEY_ANDROID___}
             strokeWidth={5}
-            strokeColor="#F08080"
-            lineDashPattern={[0, 0]}
+            strokeColor={
+              switchroute
+                ? mode === 'TRANSIT'
+                  ? '#F08080'
+                  : '#0000004D'
+                  ? mode === 'BICYCLING'
+                    ? '#23B80C'
+                    : ''
+                  : ''
+                : '#F08080'
+            }
+            // lineDashPattern={[0, 0]}
             mode={mode}
             optimizeWaypoints={true}
             onStart={params => {
@@ -157,10 +204,13 @@ const Routepage = () => {
               console.log(`Distance: ${result.distance} km`);
               console.log(`Duration: ${result.duration} min.`);
 
-              setResult_dur_dis({
-                duration: Math.round(result.duration * 10) / 10,
-                distance: Math.round(result.distance * 10) / 10,
-              });
+              setResult_dur_dis(prevState => [
+                {
+                  duration: Math.round(result.duration * 10) / 10,
+                  distance: Math.round(result.distance * 10) / 10,
+                },
+                prevState[1], // keep the existing second object
+              ]);
 
               mapView.current.fitToCoordinates(result.coordinates, {
                 edgePadding: {
@@ -188,7 +238,13 @@ const Routepage = () => {
             lineDashPattern={[0, 0]}
             mode={mode}
             optimizeWaypoints={false}
-            strokeColor="#0000004D"
+            strokeColor={
+              switchroute
+                ? mode === 'TRANSIT'
+                  ? '#F08080'
+                  : '#F08080'
+                : '#0000004D'
+            }
             onStart={params => {
               console.log(
                 `Started routing between "${params.origin}" and "${params.destination}"`,
@@ -198,6 +254,13 @@ const Routepage = () => {
               console.log(`Distance: ${result.distance} km`);
               console.log(`Duration: ${result.duration} min.`);
 
+              setResult_dur_dis(prevState => [
+                prevState[0], // keep the existing first object
+                {
+                  duration: Math.round(result.duration * 10) / 10,
+                  distance: Math.round(result.distance * 10) / 10,
+                },
+              ]);
               mapView.current.fitToCoordinates(result.coordinates, {
                 edgePadding: {
                   right: screenWidth / 20,
@@ -212,23 +275,15 @@ const Routepage = () => {
             }}
           />
         )}
-
-        <Polyline
-          coordinates={coordsOptimized}
-          strokeWidth={3}
-          strokeColor={'F08080'}
-        />
-        <Polyline
-          coordinates={coordsNonOptimized}
-          strokeWidth={3}
-          strokeColor={'0000004D'}
-        />
       </MapView>
 
       <DistanceCard
-        result_dur_dis={result_dur_dis}
+        result_dur_dis={switchroute ? result_dur_dis[0] : result_dur_dis[1]}
         setModefunc={handleclick}
         allinfo={allinfo}
+        switchroute={handleSwichroute}
+        type={mode !== 'TRANSIT' ? true : false}
+        coordinates={coordinates_}
       />
     </View>
   );
@@ -252,9 +307,23 @@ const styles = StyleSheet.create({
       width: 0,
       height: 0,
     },
-    shadowOpacity: 0.5,
+    shadowOpacity: 1,
     shadowRadius: 16,
     elevation: 20,
+  },
+
+  markerstyle_: {
+    width: 24,
+    height: 24,
+    borderColor: '#FFFFFF',
+    backgroundColor: '#F08080',
+    borderWidth: 2.4,
+    borderRadius: 24,
+    shadowColor: '#FE8572',
+    shadowOffset: {width: 0, height: 0},
+    shadowOpacity: 1,
+    shadowRadius: 16,
+    elevation: 24,
   },
 
   modalbackground: {
@@ -266,3 +335,5 @@ const styles = StyleSheet.create({
 });
 
 export default Routepage;
+
+// border: 5px solid #23B80C
