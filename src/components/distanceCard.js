@@ -17,6 +17,7 @@ import {
   bus_,
   car,
   ferry,
+  location_r,
   right,
   subway,
   tram,
@@ -32,8 +33,17 @@ const CircleView = ({color, bgcolor}) => (
   />
 );
 
-const VerticalLine = ({color}) => (
-  <View style={[styles.verticalLine, {borderColor: color}]} />
+const VerticalLine = ({color, height}) => (
+  <View style={[styles.verticalLine, {height: height, borderColor: color}]} />
+);
+
+const VerticalLine_dash = ({color, height}) => (
+  <View
+    style={[
+      styles.verticalLine,
+      {height: height, borderColor: color, borderStyle: 'solid'},
+    ]}
+  />
 );
 
 const AddressText = ({children, style}) => (
@@ -44,6 +54,12 @@ const AddressView = ({title, subtitle}) => (
   <View style={styles.addressView}>
     <AddressText style={styles.addressTitle}>{title}</AddressText>
     <AddressText style={styles.addressSubtitle}>{subtitle}</AddressText>
+  </View>
+);
+
+const AddressView_ = ({title, subtitle}) => (
+  <View style={styles.addressView}>
+    <AddressText style={styles.addressSubtitle_}>{subtitle}</AddressText>
   </View>
 );
 
@@ -72,12 +88,11 @@ const DistanceCard = ({
   const [transit2, setTransit2] = useState([]);
 
   const modes = [
-    {name: 'Walking', value: 'WALKING', icon: walk},
-    {name: 'Car', value: 'DRIVING', icon: car},
-    {name: 'Bicycle', value: 'BICYCLING', icon: bicycle},
-    {name: 'bus', value: 'TRANSIT', icon: bus_},
-    {name: 'tram', value: 'TRANSIT', icon: tram},
-    {name: 'subway', value: 'TRANSIT', icon: subway},
+    {name: 'Walking', value: 'WALKING', transit: 'walking', icon: walk},
+    {name: 'Car', value: 'DRIVING', transit: 'driving', icon: car},
+    {name: 'Bicycle', value: 'BICYCLING', transit: 'bicycling', icon: bicycle},
+    {name: 'bus', value: 'TRANSIT', transit: 'bus', icon: bus_},
+    {name: 'subway', value: 'TRANSIT', transit: 'subway', icon: subway},
   ];
 
   useEffect(() => {
@@ -85,10 +100,22 @@ const DistanceCard = ({
   }, []);
 
   useEffect(() => {
+    console.log(mode);
+  }, [mode]);
+
+  useEffect(() => {
     if (transitInfo?.routes?.[0]?.legs?.[0]?.steps) {
       setTransitData(transitInfo.routes[0].legs[0].steps);
     }
   }, [transitInfo]);
+
+  const handle = (mode, index) => {
+    setTransitData([]);
+    setMode(mode.value);
+    if (mode.value == 'TRANSIT') setTransitMode(mode.name);
+    setSelectedIndex(index);
+    setVisibletransit(false);
+  };
 
   const Transititem = ({transit, text, transit_, text_, index}) => {
     return (
@@ -105,11 +132,13 @@ const DistanceCard = ({
             transit.travel_mode == 'TRANSIT'
               ? transit.html_instructions.includes('Bus')
                 ? bus_
-                : transit.html_instructions.includes('Ferry')
-                ? ferry
                 : transit.html_instructions.includes('Tram')
                 ? tram
-                : subway
+                : transit.html_instructions.includes('Ferry')
+                ? ferry
+                : transit.html_instructions.includes('Subway')
+                ? subway
+                : bus
               : transit.travel_mode == 'DRIVING'
               ? car
               : walk
@@ -137,7 +166,9 @@ const DistanceCard = ({
                 ? ferry
                 : transit_.html_instructions.includes('Tram')
                 ? tram
-                : subway
+                : transit_.html_instructions.includes('Subway')
+                ? subway
+                : bus
               : transit_.travel_mode == 'DRIVING'
               ? car
               : walk
@@ -161,50 +192,55 @@ const DistanceCard = ({
     <View style={styles.centeredView}>
       <View style={{borderBottomWidth: 1, borderBottomColor: '#0000001A'}}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {modes.map((mode, index) => {
-            const duration =
-              allinfo.find(item => item.mode === mode.value)?.duration || 'N/A';
-            return (
-              <TouchableOpacity
-                key={index}
-                style={{
-                  backgroundColor:
-                    selectedIndex === index ? '#F0808080' : 'white',
-                  padding: 10,
-                  borderRadius: 20,
-                  marginHorizontal: 10,
-                }}
-                onPress={() => {
-                  setModefunc(mode.value);
-                  setMode(mode.value);
-                  setTransitMode(mode.name);
-                  setSelectedIndex(index);
-                  setVisibletransit(false);
-                  dispatch(GetTransit(coordinates, mode.name));
-                }}
-                disabled={result_dur_dis ? false : true}>
-                <View
+          {allinfo &&
+            modes.map((mode, index) => {
+              const duration =
+                allinfo.find(item => item.mode === mode.transit)?.duration ||
+                'N/A';
+              return (
+                <TouchableOpacity
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    gap: 4,
-                  }}>
-                  <Image source={mode.icon} style={{width: 24, height: 24}} />
-                  <Text
+                    backgroundColor:
+                      selectedIndex === index ? '#F0808080' : 'white',
+                    padding: 10,
+                    borderRadius: 20,
+                    marginHorizontal: 10,
+                  }}
+                  onPress={() => {
+                    setModefunc(mode.value);
+                    handle(mode, index);
+                    if (mode.value == 'TRANSIT')
+                      dispatch(GetTransit(coordinates, mode.name));
+                  }}
+                  disabled={
+                    result_dur_dis
+                      ? route.name.includes('Tutorial')
+                        ? true
+                        : false
+                      : true
+                  }>
+                  <View
                     style={{
-                      color: '#000',
-                      fontSize: 14,
-                      fontWeight: '400',
-                      lineHeight: 19,
-                      textAlign: 'center',
+                      flexDirection: 'row',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      gap: 4,
                     }}>
-                    {duration}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            );
-          })}
+                    <Image source={mode.icon} style={{width: 24, height: 24}} />
+                    <Text
+                      style={{
+                        color: '#000',
+                        fontSize: 14,
+                        fontWeight: '400',
+                        lineHeight: 19,
+                        textAlign: 'center',
+                      }}>
+                      {duration}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
         </ScrollView>
       </View>
       {mode != 'TRANSIT' ? (
@@ -234,8 +270,9 @@ const DistanceCard = ({
           <View style={styles.mainRow}>
             <View style={styles.iconColumn}>
               <CircleView color="#F08080" bgcolor={'#FFFFFF'} />
-              <VerticalLine color="#F08080" />
-              <CircleView color="#F08080" bgcolor={'#F08080'} />
+              <VerticalLine color="#F08080" height={84} />
+              <Image source={location_r} style={{width: 16, height: 22.86}} />
+              {/* <CircleView color="#F08080" bgcolor={'#F08080'} /> */}
             </View>
             <View style={styles.addressColumn}>
               <AddressView
@@ -251,12 +288,17 @@ const DistanceCard = ({
           <TouchableOpacity
             onPress={() => {
               // if (route.name.includes('Tutorial'))
+              console.log({
+                locationaddress: route.params.locationaddress,
+                mode: mode,
+              });
               navigation.navigate(
                 route.name.includes('Tutorial')
                   ? 'RouteviewTutorial'
                   : 'Routeview',
                 {
                   locationaddress: route.params.locationaddress,
+                  mode: mode ? mode : 'WALKING',
                 },
               );
             }}>
@@ -269,16 +311,30 @@ const DistanceCard = ({
         <View>
           <View style={styles.mainRow}>
             <View style={styles.iconColumn}>
-              <CircleView color="#F08080" bgcolor={'#FFFFFF'} />
-              <VerticalLine color="#F08080" />
-              <Image source={icon1} style={{width: 24, height: 24}} />
-              <VerticalLine color="#F08080" />
-              <Image source={icon2} style={{width: 24, height: 24}} />
-              <VerticalLine color="#F08080" />
-              <CircleView color="#F08080" bgcolor={'#F08080'} />
+              {transit1.mode !== 'TRANSIT' ? (
+                <>
+                  <CircleView color="#F08080" bgcolor={'#FFFFFF'} />
+                  <VerticalLine color="#F08080" height={24} />
+                  <Image source={icon1} style={{width: 24, height: 24}} />
+                  <VerticalLine color="#F08080" height={24} />
+                  <Image source={icon2} style={{width: 24, height: 24}} />
+                  <VerticalLine_dash color="#F08080" height={72} />
+                  <CircleView color="#F08080" bgcolor={'#F08080'} />
+                </>
+              ) : (
+                <>
+                  <CircleView color="#F08080" bgcolor={'#FFFFFF'} />
+                  <VerticalLine color="#F08080" height={48} />
+                  <Image source={icon1} style={{width: 24, height: 24}} />
+                  <VerticalLine color="#F08080" height={48} />
+                  <Image source={icon2} style={{width: 24, height: 24}} />
+                  <VerticalLine_dash color="#F08080" height={36} />
+                  <CircleView color="#F08080" bgcolor={'#F08080'} />
+                </>
+              )}
             </View>
             <View style={styles.addressColumn}>
-              <AddressView
+              <AddressView_
                 title="Home"
                 subtitle="Eastbourne Terrace, London W2, UK"
               />
@@ -309,7 +365,7 @@ const DistanceCard = ({
                         textAlign: 'center',
                         color: '#1E1D20',
                       }}>
-                      {transit1.num_stops}
+                      {`${transit1.num_stops} bus stops`}
                     </Text>
                   </View>
                   <Text
@@ -338,6 +394,7 @@ const DistanceCard = ({
                       flexDirection: 'column',
                       justifyContent: 'flex-start',
                       alignItems: 'flex-start',
+                      gap: 24,
                     }}>
                     <Text
                       style={{
@@ -357,13 +414,13 @@ const DistanceCard = ({
                         textAlign: 'center',
                         color: '#1E1D20',
                       }}>
-                      {transit2.num_stops}
+                      {`${transit2.num_stops} bus stops`}
                     </Text>
                   </View>
                 </>
               )}
 
-              <AddressView
+              <AddressView_
                 title={route.params.locationaddress.location}
                 subtitle={route.params.locationaddress.address}
               />
@@ -397,6 +454,7 @@ const DistanceCard = ({
                     }}
                     onPress={() => {
                       setVisibletransit(true);
+
                       if (transit.travel_mode == 'TRANSIT') {
                         setTransit1({
                           mode: transit.travel_mode,
@@ -561,7 +619,6 @@ const styles = StyleSheet.create({
   },
   verticalLine: {
     width: 0,
-    height: 84,
     borderLeftWidth: 2,
     borderStyle: 'dashed',
   },
@@ -591,6 +648,13 @@ const styles = StyleSheet.create({
     lineHeight: 21.79,
     color: '#1E1D2080',
   },
+  addressSubtitle_: {
+    fontSize: 14,
+    lineHeight: 19.07,
+    color: '#000',
+    fontWeight: '600',
+    textAlign: 'center',
+  },
   routebuttonstyle: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -619,49 +683,20 @@ const styles = StyleSheet.create({
 });
 export default DistanceCard;
 
-const r = [
-  {
-    distance: {text: '89 m', value: 89},
-    duration: {text: '1 min', value: 75},
-    end_location: {lat: 51.5171338, lng: -0.1793783},
-    html_instructions: 'Walk to Paddington Stn Eastbourne Terrace (Stop D)',
-    polyline: {points: 'qylyHnza@AGc@r@FNILEFa@p@_@n@'},
-    start_location: {lat: 51.51656759999999, lng: -0.1784764},
-    steps: [[Object]],
-    travel_mode: 'WALKING',
+const i = {
+  locationaddress: {
+    address: '41 Welbeck St, London W1G 8DW, UK',
+    location: '41',
+    location_info: {lat: 51.5183821, lng: -0.150062},
   },
-  {
-    distance: {text: '1.5 km', value: 1496},
-    duration: {text: '5 mins', value: 322},
-    end_location: {lat: 51.522861, lng: -0.194528},
-    html_instructions: "Bus towards Queen's Park",
-    polyline: {
-      points:
-        '}|lyHb`b@BDuBrIIDD\\VhBHh@Fp@Lp@Jf@BPZdBZfBRpAFVFE@HLlUIDiPxGEGEVAFKt@CNCLIXELENEJCHMXCHIPKTQ`@GLCFEJGJ]p@KPCBA@GB[h@c@t@EDCDWd@QXGL_@l@UZQX[d@U\\QRURGFOLg@`@KJOJEFCBCBABQXEFWj@GRFF',
-    },
-    start_location: {lat: 51.5171128, lng: -0.1793835},
-    transit_details: {
-      arrival_stop: [Object],
-      arrival_time: [Object],
-      departure_stop: [Object],
-      departure_time: [Object],
-      headsign: "Queen's Park",
-      line: [Object],
-      num_stops: 6,
-    },
-    travel_mode: 'TRANSIT',
+  mode: 'WALKING',
+};
+
+const u = {
+  locationaddress: {
+    address: '41 Welbeck St, London W1G 8DW, UK',
+    location: '41',
+    location_info: {lat: 51.5183821, lng: -0.150062},
   },
-  {
-    distance: {text: '0.8 km', value: 829},
-    duration: {text: '11 mins', value: 679},
-    end_location: {lat: 51.526542, lng: -0.1885068},
-    html_instructions: 'Walk to 48 Castellain Rd, London W9 1HA, UK',
-    polyline: {
-      points:
-        'u`nyH`_e@FSVg@BGs@RITEOA@ONC@YkAQ_@o@cCESCEMg@YiAE_@K_@AEMW]sAEa@I_@EIISIYEYa@yAa@aBABCCOWCEHOW]m@}BEc@CKK[WeAKUy@cDCi@CDKXmAlBCBKJ?Lo@fBAB',
-    },
-    start_location: {lat: 51.5228255, lng: -0.1945667},
-    steps: [[Object], [Object], [Object], [Object], [Object]],
-    travel_mode: 'WALKING',
-  },
-];
+  mode: 'DRIVING',
+};

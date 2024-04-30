@@ -11,6 +11,8 @@ const initialState = {
   message: '',
   up_message: '',
   transitInfo: [],
+  multitransitInfo: [],
+  geomtrytInfo: [],
 };
 
 const slice = createSlice({
@@ -30,47 +32,79 @@ const slice = createSlice({
       state.isloading = true;
       state.transitInfo = action.payload;
     },
+    GetMultitransitdatail(state, action) {
+      state.isloading = true;
+      state.multitransitInfo = action.payload;
+    },
+    GetGeometrydatail(state, action) {
+      state.isloading = true;
+      state.geomtrytInfo = action.payload;
+    },
   },
 });
 
 export default slice.reducer;
 
-export const {GetTransitdatail} = slice.actions;
+export const {GetTransitdatail, GetMultitransitdatail, GetGeometrydatail} =
+  slice.actions;
 
 export const GetTransit = (coordinates, mode) => async dispatch => {
   try {
-    let response = null;
-    fetch(
-      `https://maps.googleapis.com/maps/api/directions/json?origin=${coordinates[0].latitude},${coordinates[0].longitude}&destination=${coordinates[1].latitude},${coordinates[1].longitude}&mode=transit&transit_mode=${mode}&key=${GOOGLE_API_KEY_ANDROID___}`,
-    )
-      .then(response => response.json())
-      .then(data => {
-        if (data) {
-          response = data;
-          dispatch(GetTransitdatail(response));
-          // console.log('^^^^^^^AAA^^^^^^^^^^^^', data.routes[0].legs[0].steps);
-        }
-      })
-      .catch(err => console.log(err));
+    let URL = '';
+    console.log('mode ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~', mode);
+    if (mode)
+      URL = `https://maps.googleapis.com/maps/api/directions/json?origin=${coordinates[0].latitude},${coordinates[0].longitude}&destination=${coordinates[2].latitude},${coordinates[2].longitude}&mode=transit&transit_mode=${mode}&key=${GOOGLE_API_KEY_ANDROID___}`;
 
-    // Assuming getAudioTextSuccess is an action that handles the successful transcription
+    const response = await axiosInstance.get(URL);
+    const data = response.data;
 
-    return response;
+    if (data) {
+      dispatch(GetTransitdatail(data));
+    }
+
+    return data;
   } catch (error) {
     console.error('Error during transcription:', error);
-    if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
-      console.log(error.response.data);
-      console.log(error.response.status);
-      console.log(error.response.headers);
-    } else if (error.request) {
-      // The request was made but no response was received
-      console.log(error.request);
-    } else {
-      // Something happened in setting up the request that triggered an Error
-      console.log('Error', error.message);
+    dispatch(slice.actions.hasError(error));
+  }
+};
+
+export const GetMultitransit = (coordinates, mode) => async dispatch => {
+  try {
+    const URL = `https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=${
+      coordinates[0].latitude
+    },${coordinates[0].longitude}&destinations=${coordinates[2].latitude},${
+      coordinates[2].longitude
+    }&mode=${mode.toLowerCase()}&key=${GOOGLE_API_KEY_ANDROID___}`;
+
+    const response = await axiosInstance.get(URL);
+    const data = response.data;
+
+    if (data) {
+      dispatch(GetMultitransitdatail(data));
     }
+
+    return data;
+  } catch (error) {
+    console.error('Error during transcription:', error);
+    dispatch(slice.actions.hasError(error));
+  }
+};
+
+export const GetGeometry = placeId => async dispatch => {
+  try {
+    const URL = `https://maps.googleapis.com/maps/api/place/details/json?placeid=${placeId}&key=${GOOGLE_API_KEY_ANDROID___}`;
+
+    const response = await axiosInstance.get(URL);
+    const data = response.data;
+
+    if (data) {
+      dispatch(GetGeometrydatail(data));
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error during transcription:', error);
     dispatch(slice.actions.hasError(error));
   }
 };

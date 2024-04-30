@@ -1,4 +1,5 @@
 import 'react-native-gesture-handler';
+import {GOOGLE_API_KEY_ANDROID___} from '@env';
 import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
@@ -12,6 +13,8 @@ import {
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import StreetView from 'react-native-streetview';
+import Geocoder from 'react-native-geocoding';
+import {getRhumbLineBearing, computeDestinationPoint} from 'geolib';
 import LinearGradient from 'react-native-linear-gradient';
 import {BlurView} from '@react-native-community/blur';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -25,19 +28,25 @@ import {
   str_icon,
   tuto_2,
 } from '../../constants/images';
+import DirectionBox from '../../components/turnBox';
+import ModalContainer from '../../components/modalContainer';
+import StepBox from '../../components/stepBox';
+import {stepData} from '../../constants/data';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
+Geocoder.init(GOOGLE_API_KEY_ANDROID___);
 
 const FloatingActionButtonGroup = () => {
   const navigation = useNavigation();
+  const route = useRoute();
   return (
     <View style={styles.fab_container}>
       <TouchableOpacity
         key={'route_view_map'}
         style={[styles.fabButton, {backgroundColor: '#FFFFFF'}]}
         // onPress={() => {
-        //   navigation.navigate('RoutepageTutorial');
+        //   navigation.navigate('Mainpage');
         // }}
       >
         <Image source={fab_1} style={styles.fab_image} />
@@ -46,7 +55,11 @@ const FloatingActionButtonGroup = () => {
       <TouchableOpacity
         style={[styles.fabButton, {backgroundColor: '#FFFFFF'}]}
         onPress={() => {
-          navigation.navigate('RoutepageTutorial');
+          console.log(route.params, '!!!!!!!!!!!!!!!BBBB!!!!!!!!!!!!!!!!');
+          navigation.navigate('Routeview', {
+            locationaddress: route.params.locationaddress,
+            mode: route.params.mode,
+          });
         }}>
         <Image source={fab_5} style={styles.fab_image} />
       </TouchableOpacity>
@@ -60,7 +73,7 @@ const Streetview = routedata => {
   //modal
   const [step_7, setStep_7] = useState(false);
   const [step_8, setStep_8] = useState(false);
-  const [showImage, setShowImage] = useState(2);
+  const [showImage, setShowImage] = useState(0);
   const slideAnim = useRef(new Animated.Value(0)).current;
   const [modalVisible, setModalVisible] = useState(false);
   //
@@ -69,21 +82,62 @@ const Streetview = routedata => {
     longitude: -0.1784764,
   });
 
+  const [coordinates, setCoordinates] = useState([
+    {
+      latitude: 51.51656759999999,
+      longitude: -0.1784764,
+    },
+    {
+      latitude: 51.52656759999999,
+      longitude: -0.1884764,
+    },
+    {
+      latitude: route.params.locationaddress.location_info.lat,
+      longitude: route.params.locationaddress.location_info.lng,
+    },
+  ]);
+  const [streetName, setStreetName] = useState('');
+  const [newPoint, setNewPoint] = useState(null);
+
   useEffect(() => {
-    AsyncStorage.getItem('hasSeenTutorial').then(value => {
-      if (value === null) {
-        let timer;
+    if (coordinates[0] && coordinates[1]) {
+      const bearing = getRhumbLineBearing(coordinates[0], coordinates[1]);
+      const newPoint = computeDestinationPoint(coordinates[0], 10, bearing);
+      setNewPoint(newPoint);
+      console.log('NEW POINT', bearing, coordinates[1], newPoint);
+    }
+  }, [coordinates]);
 
-        timer = setTimeout(() => {
-          setStep_7(true);
-          timer = setTimeout(() => {
-            setShowImage(true);
-          }, 800);
-        }, 1000);
+  useEffect(() => {
+    if (newPoint) {
+      Geocoder.from(newPoint.latitude, newPoint.longitude)
+        .then(json => {
+          const addressComponent =
+            json.results[0].formatted_address.split(',')[0];
 
-        return () => clearTimeout(timer);
-      }
-    });
+          const street = addressComponent ? addressComponent : '';
+
+          setStreetName(street);
+          console.log('STREET NAME', street);
+        })
+        .catch(error => console.warn(error));
+    }
+  }, [newPoint]);
+
+  useEffect(() => {
+    console.log(route.name, '<><><><><><><><><><><');
+    // AsyncStorage.getItem('hasSeenTutorial').then(value => {
+    //   if (value === null) {
+    let timer;
+    timer = setTimeout(() => {
+      setStep_7(true);
+      timer = setTimeout(() => {
+        setShowImage(1);
+      }, 800);
+    }, 1000);
+    return () => clearTimeout(timer);
+    //   }
+    // });
   }, []);
 
   useEffect(() => {
@@ -110,43 +164,15 @@ const Streetview = routedata => {
         }}
       />
 
-      <View style={[styles.centeredView_]}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            gap: 16,
-          }}>
-          <View
-            style={{
-              borderRadius: 8.25,
-              padding: 6.6,
-              backgroundColor: '#F08080',
-            }}>
-            <Image
-              source={right_arrow}
-              style={{width: 52.8, height: 52.8}}
-              resizeMode="cover"
-            />
-          </View>
-
-          <View
-            style={{
-              flexDirection: 'col',
-              justifyContent: 'flex-start',
-              alignItems: 'flex-start',
-            }}>
-            <Text style={styles.sheetText_top}>Turn Left in 10m</Text>
-            <Text style={styles.sheetText_top_}>123 Street Name</Text>
-          </View>
-        </View>
-      </View>
+      {streetName && (
+        <DirectionBox streetName={streetName} image={right_arrow} />
+      )}
 
       <Image
         source={str_icon}
-        style={{width: 543, height: 315, position: 'absolute', bottom: 0}}
+        style={{width: 543, height: 315, position: 'absolute', bottom: 80}}
       />
+
       <View style={[styles.centeredView]}>
         <View
           style={{
@@ -163,7 +189,10 @@ const Streetview = routedata => {
               alignItems: 'center',
             }}>
             <Text style={styles.sheetText}>Distance</Text>
-            <Text style={styles.sheetText_}>0.9 km</Text>
+            <Text
+              style={
+                styles.sheetText_
+              }>{`${route.params.result_dur_dis.distance} km`}</Text>
           </View>
           <View
             style={{
@@ -172,7 +201,10 @@ const Streetview = routedata => {
               alignItems: 'center',
             }}>
             <Text style={styles.sheetText}>Time</Text>
-            <Text style={styles.sheetText_}>10 min</Text>
+            <Text
+              style={
+                styles.sheetText_
+              }>{`${route.params.result_dur_dis.duration} min`}</Text>
           </View>
         </View>
         <TouchableOpacity
@@ -199,173 +231,93 @@ const Streetview = routedata => {
 
       <FloatingActionButtonGroup />
 
-      <Modal
-        animationType="fade"
-        transparent={true}
+      <ModalContainer
         visible={step_7}
         onRequestClose={() => setStep_7(!step_7)}>
-        <LinearGradient
-          style={{flex: 1}}
-          colors={['rgba(0, 0, 0, 0.2)', 'rgba(255, 218, 185, 0.4)']}
-          start={{x: 0, y: 0}}
-          end={{x: 1, y: 0}}>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: 'rgba(224, 208, 193, 0.5)',
-            }}>
-            <View style={{position: 'absolute', top: 0, left: 16}}>
-              <View style={{position: 'absolute', top: 70, left: 0, zIndex: 0}}>
-                <Animated.View // Special animatable View
-                  style={{
-                    transform: [
-                      {translateY: slideAnim}, // Bind translateY to animated value
-                    ],
-                  }}>
-                  <View
-                    style={{
-                      backgroundColor: 'white',
-                      borderRadius: 5,
-                      paddingTop: 32,
-                      paddingBottom: 12,
-                      paddingHorizontal: 10,
-                    }}>
-                    <TouchableOpacity
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-around',
-                        alignItems: 'center',
-                        height: 52,
-                        borderRadius: 26,
-                        backgroundColor: '#F08080',
-                        paddingVertical: 10,
-                        paddingHorizontal: 24,
-                        gap: 4,
-                      }}
-                      onPress={() => {
-                        console.log('ROUTEDATA', route.params.routedata);
-                        setLocation({
-                          latitude: route.params.routedata.latitude,
-                          longitude: route.params.routedata.longitude,
-                        });
-                        setStep_7(false);
-
-                        let timer;
-
-                        timer = setTimeout(() => {
-                          setStep_8(true);
-                          timer = setTimeout(() => {
-                            setShowImage(2);
-                          }, 800);
-                        }, 1000);
-                      }}>
-                      <Text
-                        style={{
-                          color: 'white',
-                          fontWeight: '600',
-                          fontSize: 21,
-                          lineHeight: 28.6,
-                        }}>
-                        Next
-                      </Text>
-                      <Image
-                        source={arrow_up}
-                        style={{width: 32, height: 32}}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                </Animated.View>
-                {showImage && (
-                  <Image
-                    source={hand_ico}
-                    style={{
-                      position: 'relative',
-                      top: 40,
-                      left: 40,
-                    }}
-                  />
-                )}
-              </View>
-              <View style={[styles.centeredView_]}>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'rgba(224, 208, 193, 0.5)',
+          }}>
+          <View style={{position: 'absolute', top: 0, left: 16}}>
+            <View style={{position: 'absolute', top: 70, left: 0, zIndex: 0}}>
+              <Animated.View
+                style={{
+                  transform: [{translateY: slideAnim}],
+                }}>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    gap: 16,
+                    backgroundColor: 'white',
+                    borderRadius: 5,
+                    paddingTop: 32,
+                    paddingBottom: 12,
+                    paddingHorizontal: 10,
                   }}>
-                  <TouchableOpacity style={{}} onPress={() => {}}>
-                    <View
-                      style={{
-                        borderRadius: 8.25,
-                        padding: 6.6,
-                        backgroundColor: '#F08080',
-                      }}>
-                      <Image
-                        source={right_arrow}
-                        style={{width: 52.8, height: 52.8}}
-                        resizeMode="cover"
-                      />
-                    </View>
-                  </TouchableOpacity>
-                  <View
+                  <TouchableOpacity
                     style={{
-                      flexDirection: 'col',
-                      justifyContent: 'flex-start',
-                      alignItems: 'flex-start',
+                      flexDirection: 'row',
+                      justifyContent: 'space-around',
+                      alignItems: 'center',
+                      height: 52,
+                      borderRadius: 26,
+                      backgroundColor: '#F08080',
+                      paddingVertical: 10,
+                      paddingHorizontal: 24,
+                      gap: 4,
+                    }}
+                    onPress={() => {
+                      console.log('ROUTEDATA', route.params.routedata);
+                      setLocation({
+                        latitude: route.params.routedata.latitude,
+                        longitude: route.params.routedata.longitude,
+                      });
+                      setStep_7(false);
+
+                      let timer;
+
+                      timer = setTimeout(() => {
+                        setStep_8(true);
+                        timer = setTimeout(() => {
+                          setShowImage(2);
+                        }, 800);
+                      }, 1000);
                     }}>
-                    <Text style={styles.sheetText_top}>Turn Left in 10m</Text>
-                    <Text style={styles.sheetText_top_}>123 Street Name</Text>
-                  </View>
+                    <Text
+                      style={{
+                        color: 'white',
+                        fontWeight: '600',
+                        fontSize: 21,
+                        lineHeight: 28.6,
+                      }}>
+                      Next
+                    </Text>
+                    <Image source={arrow_up} style={{width: 32, height: 32}} />
+                  </TouchableOpacity>
                 </View>
-              </View>
+              </Animated.View>
+
+              {showImage === 1 && (
+                <Image
+                  source={hand_ico}
+                  style={{
+                    position: 'relative',
+                    bottom: -40,
+                    right: -40,
+                  }}
+                />
+              )}
             </View>
 
-            <View
-              style={{
-                backgroundColor: 'white',
-                borderRadius: 10,
-                width: 360,
-                height: 102,
-                paddingTop: 4,
-                paddingBottom: 12,
-                paddingHorizontal: 12,
-              }}>
-              <Text
-                style={{
-                  fontWeight: '700',
-                  fontSize: 10,
-                  lineHeight: 13.62,
-                  color: '#1E1D20',
-                }}>
-                7/8
-              </Text>
-              <Text
-                style={{
-                  fontWeight: '400',
-                  fontSize: 18,
-                  lineHeight: 24.51,
-                  color: '#1E1D20',
-                }}>
-                To begin, tap on the search bar to{'\n'}start finding your
-                desired location.
-              </Text>
-              <Text
-                style={{
-                  fontWeight: '600',
-                  fontSize: 16,
-                  lineHeight: 21.79,
-                  color: '#1E1D2080',
-                  textAlign: 'right',
-                }}>
-                Skip
-              </Text>
-            </View>
+            {streetName && (
+              <DirectionBox streetName={streetName} image={right_arrow} />
+            )}
           </View>
-        </LinearGradient>
-      </Modal>
+
+          <StepBox step={'7'} description={stepData.step7} />
+        </View>
+      </ModalContainer>
 
       <Modal
         animationType="fade"
@@ -441,7 +393,10 @@ const Streetview = routedata => {
                     alignItems: 'center',
                   }}>
                   <Text style={styles.sheetText}>Distance</Text>
-                  <Text style={styles.sheetText_}>0.9 km</Text>
+                  <Text
+                    style={
+                      styles.sheetText_
+                    }>{`${route.params.result_dur_dis.distance} km`}</Text>
                 </View>
                 <View
                   style={{
@@ -450,7 +405,10 @@ const Streetview = routedata => {
                     alignItems: 'center',
                   }}>
                   <Text style={styles.sheetText}>Time</Text>
-                  <Text style={styles.sheetText_}>10 min</Text>
+                  <Text
+                    style={
+                      styles.sheetText_
+                    }>{`${route.params.result_dur_dis.duration} min`}</Text>
                 </View>
               </View>
               <TouchableOpacity
@@ -474,18 +432,17 @@ const Streetview = routedata => {
                   <Text style={styles.button_textStyle}>End</Text>
                 </View>
               </TouchableOpacity>
+              {showImage === 2 && (
+                <Image
+                  source={hand_ico}
+                  style={{
+                    position: 'absolute',
+                    bottom: -40,
+                    right: 20,
+                  }}
+                />
+              )}
             </View>
-
-            {showImage === 2 && (
-              <Image
-                source={hand_ico}
-                style={{
-                  position: 'absolute',
-                  bottom: -10,
-                  right: 30,
-                }}
-              />
-            )}
           </View>
         </LinearGradient>
       </Modal>
@@ -639,7 +596,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     position: 'absolute',
-    bottom: 32,
+    bottom: 120,
     width: screenWidth - 32,
     gap: 20,
     // borderRadius: 56,

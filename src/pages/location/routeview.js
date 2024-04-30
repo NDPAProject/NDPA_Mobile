@@ -36,7 +36,7 @@ const screenHeight = Dimensions.get('window').height;
 
 Geocoder.init(GOOGLE_API_KEY_ANDROID___);
 
-const FloatingActionButtonGroup = ({routedata, showImage}) => {
+const FloatingActionButtonGroup = ({routedata, result_dur_dis, showImage}) => {
   const navigation = useNavigation();
   const route = useRoute();
   const [locationaddress, setLocationaddress] = useState({
@@ -67,7 +67,12 @@ const FloatingActionButtonGroup = ({routedata, showImage}) => {
         <TouchableOpacity
           style={[styles.fabButton, {backgroundColor: '#FFFFFF'}]}
           onPress={() => {
-            navigation.navigate('Streetview', {routedata: routedata});
+            navigation.navigate('Streetview', {
+              routedata: routedata,
+              mode: route.params.mode,
+              result_dur_dis: result_dur_dis,
+              locationaddress: route.params.locationaddress,
+            });
           }}>
           <Image source={fab_4} style={styles.fab_image} />
         </TouchableOpacity>
@@ -80,7 +85,6 @@ const Routeview = () => {
   const navigation = useNavigation();
   const route = useRoute();
   //modal
-  const [step_6, setStep_6] = useState(false);
   const [showImage, setShowImage] = useState(false);
   //
   const [coordinates, setCoordinates] = useState([
@@ -109,20 +113,6 @@ const Routeview = () => {
         longitudeDelta: 0.0421,
       });
     }
-
-    // AsyncStorage.getItem('hasSeenTutorial').then(value => {
-    //   if (value === null) {
-    //     let timer;
-
-    //     timer = setTimeout(() => {
-    //       setStep_6(true);
-    //       timer = setTimeout(() => {
-    //         setShowImage(true);
-    //       }, 800);
-    //     }, 1000);
-    //     return () => clearTimeout(timer);
-    //   }
-    // });
   }, []);
 
   //street name
@@ -199,24 +189,18 @@ const Routeview = () => {
         {coordinates.length >= 2 && (
           <MapViewDirections
             origin={coordinates[0]}
-            waypoints={
-              coordinates.length > 2 ? coordinates.slice(1, -1) : undefined
-            }
-            destination={coordinates[coordinates.length - 1]}
+            destination={coordinates[1]}
             apikey={GOOGLE_API_KEY_ANDROID___}
             strokeWidth={10}
             strokeColor="#F08080"
-            mode="WALKING"
-            optimizeWaypoints
+            mode={route.params.mode}
+            optimizeWaypoints={true}
             onStart={params => {
               console.log(
                 `Started routing between "${params.origin}" and "${params.destination}"`,
               );
             }}
             onReady={result => {
-              console.log(`Distance: ${result.distance} km`);
-              console.log(`Duration: ${result.duration} min.`);
-
               setResult_dur_dis({
                 duration: Math.round(result.duration * 10) / 10,
                 distance: Math.round(result.distance * 10) / 10,
@@ -291,33 +275,9 @@ const Routeview = () => {
           longitude: route.params.locationaddress.location_info.lng,
           streetname: streetName,
         }}
+        result_dur_dis={result_dur_dis}
         showImage={showImage}
       />
-
-      {/* <ModalContainer
-        visible={step_6}
-        onRequestClose={() => setStep_6(!step_6)}>
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: 'rgba(224, 208, 193, 0.5)',
-          }}>
-          <StepBox
-            style={{flex: 1, position: 'absolute', bottom: 500}}
-            step={'6'}
-            description={stepData.step6}
-          />
-          <FloatingActionButtonGroup
-            routedata={{
-              latitude: route.params.locationaddress.location_info.lat,
-              longitude: route.params.locationaddress.location_info.lng,
-            }}
-            showImage={showImage}
-          />
-        </View>
-      </ModalContainer> */}
     </View>
   );
 };

@@ -36,7 +36,7 @@ const screenHeight = Dimensions.get('window').height;
 
 Geocoder.init(GOOGLE_API_KEY_ANDROID___);
 
-const FloatingActionButtonGroup = ({routedata, showImage}) => {
+const FloatingActionButtonGroup = ({routedata, result_dur_dis, showImage}) => {
   const navigation = useNavigation();
   const route = useRoute();
   const [locationaddress, setLocationaddress] = useState({
@@ -52,22 +52,34 @@ const FloatingActionButtonGroup = ({routedata, showImage}) => {
   }, []);
   return (
     <View style={styles.fab_container}>
-      <TouchableOpacity
-        key={'route_view_map'}
-        style={[styles.fabButton, {backgroundColor: '#FFFFFF'}]}
-        // onPress={() => {
-        //   navigation.navigate('RoutepageTutorial', {
-        //     locationaddress: locationaddress,
-        //   });
-        // }}
-      >
-        <Image source={fab_1} style={styles.fab_image} />
-      </TouchableOpacity>
-      <View>
+      <View style={{}}>
+        <TouchableOpacity
+          key={'route_view_map'}
+          style={[styles.fabButton, {backgroundColor: '#FFFFFF'}]}
+          // onPress={() => {
+          // navigation.navigate('Routepage', {
+          //   locationaddress: locationaddress,
+          // });
+          // }}
+        >
+          <Image source={fab_1} style={styles.fab_image} />
+        </TouchableOpacity>
+      </View>
+      <View style={{}}>
         <TouchableOpacity
           style={[styles.fabButton, {backgroundColor: '#FFFFFF'}]}
           onPress={() => {
-            navigation.navigate('StreetviewTutorial', {routedata: routedata});
+            navigation.navigate(
+              route.name.includes('Tutorial')
+                ? 'StreetviewTutorial'
+                : 'Streetview',
+              {
+                routedata: routedata,
+                mode: route.params.mode,
+                result_dur_dis: result_dur_dis,
+                locationaddress: route.params.locationaddress,
+              },
+            );
           }}>
           <Image source={fab_4} style={styles.fab_image} />
         </TouchableOpacity>
@@ -108,7 +120,7 @@ const Routeview = () => {
     duration: 0,
     distance: 0,
   });
-
+  console.log('<><><><><><><><<<>', route.params.mode);
   //origin screen center
   useEffect(() => {
     if (mapView.current) {
@@ -120,19 +132,19 @@ const Routeview = () => {
       });
     }
 
-    AsyncStorage.getItem('hasSeenTutorial').then(value => {
-      if (value === null) {
-        let timer;
+    // AsyncStorage.getItem('hasSeenTutorial').then(value => {
+    //   if (value === null) {
+    //     let timer;
 
-        timer = setTimeout(() => {
-          setStep_6(true);
-          timer = setTimeout(() => {
-            setShowImage(true);
-          }, 800);
-        }, 1000);
-        return () => clearTimeout(timer);
-      }
-    });
+    timer = setTimeout(() => {
+      setStep_6(true);
+      timer = setTimeout(() => {
+        setShowImage(true);
+      }, 800);
+    }, 1000);
+    return () => clearTimeout(timer);
+    //   }
+    // });
   }, []);
 
   //street name
@@ -209,15 +221,12 @@ const Routeview = () => {
         {coordinates.length >= 2 && (
           <MapViewDirections
             origin={coordinates[0]}
-            waypoints={
-              coordinates.length > 2 ? coordinates.slice(1, -1) : undefined
-            }
-            destination={coordinates[coordinates.length - 1]}
+            destination={coordinates[1]}
             apikey={GOOGLE_API_KEY_ANDROID___}
             strokeWidth={10}
             strokeColor="#F08080"
-            mode="WALKING"
-            optimizeWaypoints
+            mode={route.params.mode}
+            optimizeWaypoints={true}
             onStart={params => {
               console.log(
                 `Started routing between "${params.origin}" and "${params.destination}"`,
@@ -299,7 +308,9 @@ const Routeview = () => {
         routedata={{
           latitude: route.params.locationaddress.location_info.lat,
           longitude: route.params.locationaddress.location_info.lng,
+          streetname: streetName,
         }}
+        result_dur_dis={result_dur_dis}
         showImage={showImage}
       />
 
@@ -322,7 +333,9 @@ const Routeview = () => {
             routedata={{
               latitude: route.params.locationaddress.location_info.lat,
               longitude: route.params.locationaddress.location_info.lng,
+              streetname: streetName,
             }}
+            result_dur_dis={result_dur_dis}
             showImage={showImage}
           />
         </View>
@@ -417,7 +430,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     position: 'absolute',
-    top: 200,
+    top: 290,
     right: 16,
   },
   fabButton: {
