@@ -14,10 +14,9 @@ import {
 } from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useIsFocused} from '@react-navigation/native';
+import {useDispatch, useSelector} from 'react-redux';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import LinearGradient from 'react-native-linear-gradient';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 //import screens
 import {
   sb_search,
@@ -37,11 +36,9 @@ import {
 } from '../../constants/images';
 import ResourceButton from '../../components/resourceButton';
 import FabGroup from '../../components/fabGroup';
-import TutorialModal from '../../components/tutorialModal';
-import StepBox from '../../components/stepBox';
-import ModalContainer from '../../components/modalContainer';
 import RsheetButton from '../../components/RsheetButton';
-import {mapStyle, stepData} from '../../constants/data';
+import {mapStyle} from '../../constants/data';
+import {GetGeometry} from '../../redux/slices/location';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -72,6 +69,10 @@ const Mainpage = () => {
   const ref = useRef();
   const refRBSheet = useRef();
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const {up_message, error, geomtrytInfo} = useSelector(
+    state => state.location,
+  );
 
   // State variables for location and address
   const [location, setLocation] = useState(defaultLocation);
@@ -86,13 +87,7 @@ const Mainpage = () => {
   const [focus_sb, setFocus_sb] = useState(false);
 
   // State variables for modal visibility and steps
-  const [modalVisible, setModalVisible] = useState(false);
-  const [step_1, setStep_1] = useState(false);
   const [showImage, setShowImage] = useState(0);
-  const [showstep_1, setShowstep_1] = useState(true);
-  const [showstep_2, setShowstep_2] = useState(false);
-  const [step_3, setStep_3] = useState(false);
-  const [step_4, setStep_4] = useState(false);
 
   // Other state variables
   const [tutodata, setTutodata] = useState('');
@@ -102,30 +97,31 @@ const Mainpage = () => {
   const [listViewDisplayed, setListViewDisplayed] = useState('auto');
 
   useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      setListViewDisplayed('auto');
+      setLocation(defaultLocation);
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
+  useEffect(() => {
     if (!placeId) return;
-    console.log('geometry', placeId);
-    fetch(
-      `https://maps.googleapis.com/maps/api/place/details/json?placeid=${placeId}&key=${GOOGLE_API_KEY_ANDROID__}`,
-    )
-      .then(response => response.json())
-      .then(data => {
-        if (data.result) {
-          setLocation(data.result.geometry.location);
-          setLocationaddress({
-            location: data.result.address_components[0].short_name,
-            address: data.result.formatted_address,
-            location_info: data.result.geometry.location,
-          });
-        }
-      });
+    dispatch(GetGeometry(placeId));
   }, [placeId]);
 
   useEffect(() => {
-    console.log(
-      'data_google_map_API key',
+    if (geomtrytInfo.result) {
+      setLocation(geomtrytInfo.result.geometry.location);
+      setLocationaddress({
+        location: geomtrytInfo.result.address_components[0].short_name,
+        address: geomtrytInfo.result.formatted_address,
+        location_info: geomtrytInfo.result.geometry.location,
+      });
+    }
+  }, [geomtrytInfo]);
 
-      GOOGLE_API_KEY_ANDROID___,
-    );
+  useEffect(() => {
     if (bottomSheetVisible) {
       refRBSheet.current.open();
     }
@@ -135,57 +131,33 @@ const Mainpage = () => {
     console.log('Updated location:', location);
   }, [location]);
 
-  useEffect(() => {
-    let timer;
-
-    if (step_1) {
-      timer = setTimeout(() => {
-        setStep_1(true);
-        timer = setTimeout(() => {
-          setShowImage(1);
-        }, 800);
-      }, 1000);
-    } else {
-      setStep_1(false);
-    }
-
-    return () => clearTimeout(timer); // Cleanup the timer when the component unmounts or step_1 changes
-  }, [step_1]);
-
-  useEffect(() => {
-    if (!step_3) {
-      setStep_3(false);
-      return;
-    }
-
-    let timer = setTimeout(() => {
-      setShowImage(3);
-    }, 1000);
-
-    return () => clearTimeout(timer); // Cleanup the timer when the component unmounts or step_3 changes
-  }, [step_3]);
-
   // Extract onPress and other inline functions to make code cleaner
   const handleOnPress = (data, details) => {
     if (details) {
       setLocation(details.geometry.location);
-      console.log('data', data, '\n location', details);
-
       setLocationaddress({
         location: details.address_components[0].short_name,
         address: details.formatted_address,
         location_info: details.geometry.location,
       });
       setFocus_sb(false);
+      ref.current?.clear();
       refRBSheet.current.open();
-      console.log('Rsheet open1111111');
     }
+  };
+
+  const serchFocus = () => {
+    setFocus_sb(false);
+  };
+
+  const serchClear = () => {
+    ref.current?.clear();
+    setFocus_sb(false);
   };
 
   const handleClickrowdata = () => {
     setBottomSheetVisible(true);
     setListViewDisplayed(false);
-    console.log('<><><Bottomsheetvisible');
   };
 
   const handleRenderRow = (data, i) => {
@@ -226,6 +198,7 @@ const Mainpage = () => {
 
   const handlebottomvisible = () => {
     setBottomSheetVisible(false);
+    refRBSheet.current.close();
   };
 
   // Render buttons separately
@@ -233,10 +206,7 @@ const Mainpage = () => {
     <TouchableOpacity
       key={'voice'}
       style={{flexDirection: 'row', alignItems: 'center'}}
-      onPress={() => {
-        ref.current?.clear();
-        setFocus_sb(false);
-      }}>
+      onPress={serchClear}>
       <Image
         source={focus_sb ? close : sb_voice}
         style={{width: 24, height: 24, marginRight: 16}}
@@ -248,9 +218,7 @@ const Mainpage = () => {
     <TouchableOpacity
       key={'se'}
       style={{flexDirection: 'row', alignItems: 'center'}}
-      onPress={() => {
-        setFocus_sb(false);
-      }}>
+      onPress={serchFocus}>
       <Image
         source={focus_sb ? back : sb_search}
         style={{width: 24, height: 24, marginLeft: 16}}
@@ -262,38 +230,11 @@ const Mainpage = () => {
     if (text.length > 1) {
       setAddress(text);
       if (address) setFocus_sb(true);
-      setShowstep_2(false);
-      setShowstep_1(false);
-      setTimeout(() => {
-        setStep_3(true);
-      }, 2000);
     }
   };
 
   const handleOnFocus = () => {
     setShowImage(0);
-    setShowstep_1(false);
-    setTimeout(() => {
-      setShowstep_2(true);
-    }, 800);
-    console.log('Input focused');
-  };
-
-  // Extract the onPress function for cleaner code
-  const handlePress = () => {
-    setStep_3(false);
-    setStep_1(false);
-
-    setTimeout(() => {
-      // refRBSheet.current.close();
-      setTimeout(() => {
-        setStep_4(true);
-        refRBSheet.current.open();
-        setTimeout(() => {
-          setShowImage(4);
-        }, 1000);
-      }, 1000);
-    }, 1000);
   };
 
   return (
@@ -398,17 +339,6 @@ const Mainpage = () => {
               handlebottomvisible={handlebottomvisible}
             />
           </View>
-
-          {showImage === 4 && (
-            <Image
-              source={hand_ico}
-              style={{
-                position: 'absolute',
-                bottom: 44,
-                left: 70,
-              }}
-            />
-          )}
         </View>
       </RBSheet>
     </View>

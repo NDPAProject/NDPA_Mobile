@@ -6,7 +6,8 @@ const FabButton = ({image, navigate, bgcolor}) => {
   const navigation = useNavigation();
 
   const handleNavigation = () => {
-    navigation.navigate(navigate);
+    console.log(`TO ${navigate} FABGROUP CLICKED`);
+    // navigation.navigate(navigate);
   };
 
   return (

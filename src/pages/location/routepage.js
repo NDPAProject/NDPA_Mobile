@@ -1,28 +1,14 @@
 import 'react-native-gesture-handler';
-// import * as turf from '@turf/turf';
 import {GOOGLE_API_KEY_ANDROID___} from '@env';
-
 import React, {useState, useEffect, useRef} from 'react';
-import {
-  View,
-  StyleSheet,
-  Dimensions,
-  Text,
-  TouchableOpacity,
-  Modal,
-  Image,
-} from 'react-native';
+import {View, StyleSheet, Dimensions} from 'react-native';
 import MapView, {Polyline, Marker} from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import LinearGradient from 'react-native-linear-gradient';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import {hand_ico} from '../../constants/images';
-import StepBox from '../../components/stepBox';
+import {useDispatch, useSelector} from 'react-redux';
 import {mapStyle, stepData} from '../../constants/data';
-import ModalContainer from '../../components/modalContainer';
 import DistanceCard from '../../components/distanceCard';
+
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 const {width, height} = Dimensions.get('window');
@@ -33,6 +19,7 @@ const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 const Routepage = () => {
   const navigation = useNavigation();
   const route = useRoute();
+
   //modal
   const [step_5, setStep_5] = useState(false);
   const [showImage, setShowImage] = useState(false);
@@ -85,70 +72,77 @@ const Routepage = () => {
   const [mode, setMode] = useState('WALKING');
   const [allinfo, setAllinfo] = useState([]);
 
-  console.log(
-    'locao',
-    route.params.locationaddress.location_info,
-    coordinates[1],
-  );
   const mapView = useRef(null);
 
   useEffect(() => {
-    let modes = ['DRIVING', 'BICYCLING', 'TRANSIT', 'WALKING'];
+    let modes = ['driving', 'bicycling', 'TRANSIT', 'walking'];
+    let transit_modes = ['bus', 'subway'];
     // let modes = ['bus'];
     modes.forEach(mode => {
-      fetch(
-        `https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=${
+      let URL = '';
+      if (mode != 'TRANSIT') {
+        URL = `https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=${
           coordinates[0].latitude
-        },${coordinates[0].longitude}&destinations=${coordinates[1].latitude},${
-          coordinates[1].longitude
-        }&mode=${mode.toLowerCase()}&key=${GOOGLE_API_KEY_ANDROID___}`,
-      )
-        .then(response => response.json())
-        .then(data => {
-          if (data) {
-            console.log(
-              '``````````````````',
-              mode,
-              data.rows[0].elements[0].duration.text,
-            );
-            let route = data.rows[0].elements[0];
-            console.log(
-              `The ${mode} distance is ${route.distance.text} and will take approximately ${route.duration.text}.`,
-            );
-            setAllinfo(prev => [
-              ...prev,
-              {
-                mode: mode,
-                distance: route.distance.text,
-                duration: route.duration.text,
-              },
-            ]);
-          }
-        })
+        },${coordinates[0].longitude}&destinations=${coordinates[2].latitude},${
+          coordinates[2].longitude
+        }&mode=${mode.toLowerCase()}&key=${GOOGLE_API_KEY_ANDROID___}`;
+        fetch(URL)
+          .then(response => response.json())
+          .then(data => {
+            if (data) {
+              let route = data.rows[0].elements[0];
+              setAllinfo(prev => [
+                ...prev,
+                {
+                  mode: mode,
+                  distance: route.distance.text,
+                  duration: route.duration.text,
+                },
+              ]);
+            }
+          })
 
-        .catch(err => console.log(err));
+          .catch(err => console.log(err));
+      } else {
+        transit_modes.forEach(transit => {
+          URL = `https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=${coordinates[0].latitude},${coordinates[0].longitude}&destinations=${coordinates[2].latitude},${coordinates[2].longitude}&mode=transit&transit_mode=${transit}&key=${GOOGLE_API_KEY_ANDROID___}`;
+          fetch(URL)
+            .then(response => response.json())
+            .then(data => {
+              if (data) {
+                let route = data.rows[0].elements[0];
+                setAllinfo(prev => [
+                  ...prev,
+                  {
+                    mode: transit,
+                    distance: route.distance.text,
+                    duration: route.duration.text,
+                  },
+                ]);
+              }
+            })
+
+            .catch(err => console.log(err));
+        });
+      }
     });
   }, [coordinates]);
 
   useEffect(() => {
-    console.log('Updated duration and distance:', result_dur_dis);
-  }, [result_dur_dis]);
+    console.log('Updated duration and distance:', result_dur_dis, switchroute);
+  }, [result_dur_dis, switchroute]);
 
   const onMapPress = e => {
     // setCoordinates([...coordinates, e.nativeEvent.coordinate]);
     setRoutecolor(true);
   };
 
-  useEffect(() => {
-    console.log('Updated duration and distance:', result_dur_dis);
-  }, [switchroute]);
-
   const handleclick = mode => {
     setMode(mode);
+    setSwitchroute(true);
   };
 
   const handleSwichroute = () => {
-    console.log('route changed');
     setSwitchroute(!switchroute);
   };
 
@@ -179,95 +173,184 @@ const Routepage = () => {
               </Marker>
             );
         })}
-        {coordinates.length >= 2 && (
-          <MapViewDirections
-            origin={coordinates[0]}
-            destination={coordinates[2]}
-            apikey={GOOGLE_API_KEY_ANDROID___}
-            strokeWidth={5}
-            strokeColor={
-              switchroute
-                ? mode === 'BICYCLING'
-                  ? '#23B80C'
-                  : '#F08080'
-                : '#0000004D'
-            }
-            // lineDashPattern={[0, 0]}
-            mode={mode}
-            optimizeWaypoints={true}
-            onStart={params => {
-              console.log(
-                `Started routing between "${params.origin}" and "${params.destination}"`,
-              );
-            }}
-            onReady={result => {
-              console.log(`Distance: ${result.distance} km`);
-              console.log(`Duration: ${result.duration} min.`);
+        {mode === 'WALKING' ? (
+          <>
+            {coordinates.length >= 2 && (
+              <MapViewDirections
+                origin={coordinates[0]}
+                destination={coordinates[2]}
+                apikey={GOOGLE_API_KEY_ANDROID___}
+                strokeWidth={5}
+                strokeColor={
+                  switchroute
+                    ? mode === 'BICYCLING'
+                      ? '#23B80C'
+                      : '#F08080'
+                    : '#0000004D'
+                }
+                lineDashPattern={[0, 0]}
+                mode={mode}
+                optimizeWaypoints={true}
+                onStart={params => {
+                  console.log(
+                    `Started routing between "${params.origin}" and "${params.destination}"`,
+                  );
+                }}
+                onReady={result => {
+                  setResult_dur_dis(prevState => [
+                    {
+                      duration: Math.round(result.duration * 10) / 10,
+                      distance: Math.round(result.distance * 10) / 10,
+                    },
+                    prevState[1], // keep the existing second object
+                  ]);
 
-              setResult_dur_dis(prevState => [
-                {
-                  duration: Math.round(result.duration * 10) / 10,
-                  distance: Math.round(result.distance * 10) / 10,
-                },
-                prevState[1], // keep the existing second object
-              ]);
+                  mapView.current.fitToCoordinates(result.coordinates, {
+                    edgePadding: {
+                      right: width / 20,
+                      bottom: height / 2,
+                      left: width / 20,
+                      top: height / 20,
+                    },
+                  });
+                }}
+                onError={errorMessage => {
+                  // console.log('GOT AN ERROR');
+                }}
+              />
+            )}
+            {coordinates.length >= 2 && (
+              <MapViewDirections
+                origin={coordinates[0]}
+                waypoints={
+                  coordinates.length > 2 ? coordinates.slice(1, -1) : undefined
+                }
+                destination={coordinates[coordinates.length - 1]}
+                apikey={GOOGLE_API_KEY_ANDROID___}
+                strokeWidth={5}
+                lineDashPattern={[0, 0]}
+                mode={mode}
+                optimizeWaypoints={false}
+                strokeColor={switchroute ? '#0000004D' : '#F08080'}
+                onStart={params => {
+                  console.log(
+                    `Started routing between "${params.origin}" and "${params.destination}"`,
+                  );
+                }}
+                onReady={result => {
+                  setResult_dur_dis(prevState => [
+                    prevState[0], // keep the existing first object
+                    {
+                      duration: Math.round(result.duration * 10) / 10,
+                      distance: Math.round(result.distance * 10) / 10,
+                    },
+                  ]);
+                  mapView.current.fitToCoordinates(result.coordinates, {
+                    edgePadding: {
+                      right: screenWidth / 20,
+                      bottom: screenHeight / 2,
+                      left: screenWidth / 20,
+                      top: screenHeight / 20,
+                    },
+                  });
+                }}
+                onError={errorMessage => {
+                  // console.log('GOT AN ERROR');
+                }}
+              />
+            )}
+          </>
+        ) : (
+          <>
+            {coordinates.length >= 2 && (
+              <MapViewDirections
+                origin={coordinates[0]}
+                destination={coordinates[2]}
+                apikey={GOOGLE_API_KEY_ANDROID___}
+                strokeWidth={5}
+                strokeColor={
+                  switchroute
+                    ? mode === 'BICYCLING'
+                      ? '#23B80C'
+                      : '#F08080'
+                    : '#0000004D'
+                }
+                mode={mode}
+                optimizeWaypoints={true}
+                onStart={params => {
+                  console.log(
+                    `Started routing between "${params.origin}" and "${params.destination}"`,
+                  );
+                }}
+                onReady={result => {
+                  setResult_dur_dis(prevState => [
+                    {
+                      duration: Math.round(result.duration * 10) / 10,
+                      distance: Math.round(result.distance * 10) / 10,
+                    },
+                    prevState[1], // keep the existing second object
+                  ]);
 
-              mapView.current.fitToCoordinates(result.coordinates, {
-                edgePadding: {
-                  right: width / 20,
-                  bottom: height / 2,
-                  left: width / 20,
-                  top: height / 20,
-                },
-              });
-            }}
-            onError={errorMessage => {
-              // console.log('GOT AN ERROR');
-            }}
-          />
-        )}
-        {coordinates.length >= 2 && (
-          <MapViewDirections
-            origin={coordinates[0]}
-            waypoints={
-              coordinates.length > 2 ? coordinates.slice(1, -1) : undefined
-            }
-            destination={coordinates[coordinates.length - 1]}
-            apikey={GOOGLE_API_KEY_ANDROID___}
-            strokeWidth={5}
-            lineDashPattern={[0, 0]}
-            mode={mode}
-            optimizeWaypoints={false}
-            strokeColor={switchroute ? '#0000004D' : '#F08080'}
-            onStart={params => {
-              console.log(
-                `Started routing between "${params.origin}" and "${params.destination}"`,
-              );
-            }}
-            onReady={result => {
-              console.log(`Distance: ${result.distance} km`);
-              console.log(`Duration: ${result.duration} min.`);
-
-              setResult_dur_dis(prevState => [
-                prevState[0], // keep the existing first object
-                {
-                  duration: Math.round(result.duration * 10) / 10,
-                  distance: Math.round(result.distance * 10) / 10,
-                },
-              ]);
-              mapView.current.fitToCoordinates(result.coordinates, {
-                edgePadding: {
-                  right: screenWidth / 20,
-                  bottom: screenHeight / 2,
-                  left: screenWidth / 20,
-                  top: screenHeight / 20,
-                },
-              });
-            }}
-            onError={errorMessage => {
-              // console.log('GOT AN ERROR');
-            }}
-          />
+                  mapView.current.fitToCoordinates(result.coordinates, {
+                    edgePadding: {
+                      right: width / 20,
+                      bottom: height / 2,
+                      left: width / 20,
+                      top: height / 20,
+                    },
+                  });
+                }}
+                onError={errorMessage => {
+                  // console.log('GOT AN ERROR');
+                }}
+              />
+            )}
+            {coordinates.length >= 2 && (
+              <MapViewDirections
+                origin={coordinates[0]}
+                waypoints={
+                  coordinates.length > 2 ? coordinates.slice(1, -1) : undefined
+                }
+                destination={coordinates[coordinates.length - 1]}
+                apikey={GOOGLE_API_KEY_ANDROID___}
+                strokeWidth={5}
+                mode={mode}
+                optimizeWaypoints={false}
+                strokeColor={
+                  switchroute
+                    ? '#0000004D'
+                    : mode === 'BICYCLING'
+                    ? '#23B80C'
+                    : '#F08080'
+                }
+                onStart={params => {
+                  console.log(
+                    `Started routing between "${params.origin}" and "${params.destination}"`,
+                  );
+                }}
+                onReady={result => {
+                  setResult_dur_dis(prevState => [
+                    prevState[0], // keep the existing first object
+                    {
+                      duration: Math.round(result.duration * 10) / 10,
+                      distance: Math.round(result.distance * 10) / 10,
+                    },
+                  ]);
+                  mapView.current.fitToCoordinates(result.coordinates, {
+                    edgePadding: {
+                      right: screenWidth / 20,
+                      bottom: screenHeight / 2,
+                      left: screenWidth / 20,
+                      top: screenHeight / 20,
+                    },
+                  });
+                }}
+                onError={errorMessage => {
+                  // console.log('GOT AN ERROR');
+                }}
+              />
+            )}
+          </>
         )}
       </MapView>
 

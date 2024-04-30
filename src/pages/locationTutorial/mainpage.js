@@ -53,7 +53,7 @@ const defaultLocation = {
 
 // Default query parameters for Google Places API
 const query = {
-  key: GOOGLE_API_KEY_ANDROID___,
+  key: GOOGLE_API_KEY_ANDROID__,
   language: 'en',
   types: 'address',
   components: 'country:gb',
