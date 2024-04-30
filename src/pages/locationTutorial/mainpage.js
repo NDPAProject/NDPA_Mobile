@@ -165,10 +165,10 @@ const Mainpage = () => {
   }, [step_3]);
 
   const handleClick = async () => {
-    setModalVisible(false);
-    setTimeout(() => {
-      setStep_1(true);
-    }, 1000);
+    // setModalVisible(false);
+    // setTimeout(() => {
+    //   setStep_1(true);
+    // }, 1000);
   };
 
   const handleClickSkip = async () => {

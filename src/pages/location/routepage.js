@@ -38,7 +38,7 @@ const Routepage = () => {
   const [showImage, setShowImage] = useState(false);
 
   const [routecolor, setRoutecolor] = useState(false);
-  const [switchroute, setSwitchroute] = useState(false);
+  const [switchroute, setSwitchroute] = useState(true);
 
   //modal_end
   const [coordinates, setCoordinates] = useState([
@@ -97,7 +97,11 @@ const Routepage = () => {
     // let modes = ['bus'];
     modes.forEach(mode => {
       fetch(
-        `https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=${coordinates[0].latitude},${coordinates[0].longitude}&destinations=${coordinates[1].latitude},${coordinates[1].longitude}&mode=${mode.toLowerCase()}&key=${GOOGLE_API_KEY_ANDROID___}`,
+        `https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=${
+          coordinates[0].latitude
+        },${coordinates[0].longitude}&destinations=${coordinates[1].latitude},${
+          coordinates[1].longitude
+        }&mode=${mode.toLowerCase()}&key=${GOOGLE_API_KEY_ANDROID___}`,
       )
         .then(response => response.json())
         .then(data => {
@@ -183,14 +187,10 @@ const Routepage = () => {
             strokeWidth={5}
             strokeColor={
               switchroute
-                ? mode === 'TRANSIT'
-                  ? '#F08080'
-                  : '#0000004D'
-                  ? mode === 'BICYCLING'
-                    ? '#23B80C'
-                    : ''
-                  : ''
-                : '#F08080'
+                ? mode === 'BICYCLING'
+                  ? '#23B80C'
+                  : '#F08080'
+                : '#0000004D'
             }
             // lineDashPattern={[0, 0]}
             mode={mode}
@@ -238,13 +238,7 @@ const Routepage = () => {
             lineDashPattern={[0, 0]}
             mode={mode}
             optimizeWaypoints={false}
-            strokeColor={
-              switchroute
-                ? mode === 'TRANSIT'
-                  ? '#F08080'
-                  : '#F08080'
-                : '#0000004D'
-            }
+            strokeColor={switchroute ? '#0000004D' : '#F08080'}
             onStart={params => {
               console.log(
                 `Started routing between "${params.origin}" and "${params.destination}"`,

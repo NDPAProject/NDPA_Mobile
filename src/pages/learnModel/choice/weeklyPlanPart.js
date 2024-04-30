@@ -20,6 +20,7 @@ import {useNavigation} from '@react-navigation/native';
 import Header from '../../../components/header';
 import CustomDialog from '../../../components/dialogModal';
 import RewardDialog from '../../../components/rewardModal';
+import CustomGreatModal from '../../../components/greatModal';
 
 const plan_ico = require('../../../../assets/icons/plan_ico.png');
 
@@ -30,6 +31,7 @@ const sound_ico = require('../../../../assets/icons/charm_sound-up.png');
 const message = require('../../../../assets/icons/message.png');
 const mechat_b = require('../../../../assets/icons/mechat_b.png');
 const reward_ico = require('../../../../assets/icons/main/reward.png');
+const thumb_icon = require('../../../../assets/icons/great_ico.png');
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -39,6 +41,7 @@ const WeeklyActPlanSection = ({route}) => {
   const dispatch = useDispatch();
   const {txtAudio} = useSelector(state => state.audio);
   const [modalVisible, setModalVisible] = useState(true);
+  const [showGreat, setShowGreat] = useState(false);
   const [showReward, setShowReward] = useState(false);
   const [progress, setProgress] = useState(0.125);
   const [currentStep, setCurrentStep] = useState(0);
@@ -48,12 +51,8 @@ const WeeklyActPlanSection = ({route}) => {
   const [showButton, setShowButton] = useState(false);
 
   const [selectedActivity, setSelectedActivity] = useState('');
-  const [activities, setActivities] = useState([
-    ['Drawing', 'Reading'],
-    ['Swimming', 'Play basketball'],
-    ['Watch movies', 'Reset'],
-    ['Walking'],
-  ]);
+  const [data, setData] = useState([]);
+  const [activities, setActivities] = useState([]);
 
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -61,13 +60,29 @@ const WeeklyActPlanSection = ({route}) => {
 
   console.log('-----------param------', param);
 
+  useEffect(() => {
+    if (param) {
+      const newActivities = [];
+      for (let i = 0; i < param.length; i += 2) {
+        if (i + 1 < param.length) {
+          newActivities.push([param[i], param[i + 1]]);
+        } else {
+          newActivities.push([param[i]]);
+        }
+      }
+      setActivities(newActivities);
+    }
+  }, [param]);
+
   const handlePress = label => {
     setSelectedActivity(label);
+    setData([...data, label]);
     const updatedActivities = activities.map(row =>
       row.filter(activity => activity !== label),
     );
     setActivities(updatedActivities);
     console.log('Selected Activity:', label);
+    console.log('Selected datas:', data);
     setShowButton(true);
   };
 
@@ -79,7 +94,8 @@ const WeeklyActPlanSection = ({route}) => {
       setSelectedActivity('');
       setProgress(0.125 * (currentStep + 1));
     } else {
-      setShowReward(true);
+      setShowGreat(true);
+      // setShowReward(true);
     }
   };
 
@@ -92,15 +108,24 @@ const WeeklyActPlanSection = ({route}) => {
     }
   };
 
+  const handleModalClick = () => {
+    setShowReward(true);
+  };
+
   const handleClickMove = async () => {
-    navigation.navigate('MainPage', {param: true});
+    console.log('=====selectedActivity====', data);
+    const param = {
+      data: data,
+    };
+    navigation.navigate('ReviewActSection', {param: param});
+    // navigation.navigate('MainPage', {param: true});
     // try {
-    //   const data = {
-    //     name: text,
-    //     selectedActivity: selectedActivity,
-    //     selectedActivity: selectedActivity,
-    //     selectedActivity: selectedActivity,
-    //   };
+    // const data = {
+    //   name: text,
+    //   selectedActivity: selectedActivity,
+    //   selectedActivity: selectedActivity,
+    //   selectedActivity: selectedActivity,
+    // };
     //   setStep_2(true);
     //   navigation.navigate('SpeakingSection', {param: data});
     //   // navigation.navigate('MainPage', {param: true});
@@ -617,6 +642,13 @@ const WeeklyActPlanSection = ({route}) => {
           <Text style={styles.b1_text}>Continue</Text>
         </TouchableOpacity>
       )}
+      <CustomGreatModal
+        visible={showGreat}
+        icon={thumb_icon}
+        buttonType={true}
+        handleClick={() => handleModalClick()}
+        message="Great job!"
+      />
     </View>
   );
 };

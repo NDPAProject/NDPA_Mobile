@@ -11,7 +11,7 @@ import TypingSection from './typingPart';
 import SpeakingSection from './speakingPart';
 import ReviewSection from './reviewPart';
 import StartPersonalSection from './personalIdPart';
-
+import PercentSection from './percentPersonalPart';
 import {LogBox} from 'react-native';
 
 LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
@@ -21,7 +21,7 @@ const Stack = createStackNavigator();
 
 const MainLearningSection = () => {
   return (
-    <Stack.Navigator initialRouteName="StartPersonalSection">
+    <Stack.Navigator initialRouteName="PercentSection">
       <Stack.Screen
         name="StartPersonalSection"
         component={StartPersonalSection}
@@ -41,6 +41,11 @@ const MainLearningSection = () => {
       <Stack.Screen
         name="ReviewSection"
         component={ReviewSection}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="PercentSection"
+        component={PercentSection}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

@@ -330,10 +330,10 @@ const styles = StyleSheet.create({
     // textDecorationLine: 'underline',
   },
   underline: {
-    height: 2, // Thickness of the underline
-    backgroundColor: '#F08080', // Match the color with the text or as desired
-    width: '100%', // Match the width with the text. Adjust if necessary
-    // marginTop: 1, // Adjust the spacing between the text and the underline as needed
+    height: 2,
+    backgroundColor: '#F08080',
+    width: '100%',
+    // marginTop: 1,
   },
   passwordContainer: {
     flexDirection: 'row',

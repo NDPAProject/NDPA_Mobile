@@ -210,7 +210,7 @@ const SpeakingSection = ({route}) => {
             setAudioPath(path);
           }
         }
-      }, 1000);
+      }, 50);
     } catch (error) {
       console.error('Recording error:', error);
     }

@@ -53,8 +53,6 @@ const ReviewSection = ({route}) => {
   const [modalVisible, setModalVisible] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [againModal, setAgainModal] = useState(false);
-  const [showImage, setShowImage] = useState(false);
-  const [sendClick, setSendClick] = useState(false);
   const [step_2, setStep_2] = useState(true);
   const [step_4, setStep_4] = useState(false);
   const [step_5, setStep_5] = useState(false);
@@ -66,10 +64,8 @@ const ReviewSection = ({route}) => {
   const [identifySuccess, setIdentifySuccess] = useState(0);
   const [symptomSuccess, setSymptomSuccess] = useState(0);
   const [audioPath, setAudioPath] = useState('');
-  const [errorMsg, setErrorMsg] = useState('');
   const [showButton, setShowButton] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [imageSource, setImageSource] = useState(mechat);
   const [count, setCount] = useState(0);
   const {audioTxt, txtAudio} = useSelector(state => state.audio);
 
@@ -88,42 +84,28 @@ const ReviewSection = ({route}) => {
 
   const handleClickMove = async () => {
     try {
-      navigation.navigate('MainPage', {param: true});
+      const data = {
+        param: param,
+        nameSuccess: nameSuccess,
+        ageSuccess: ageSuccess,
+        identifySuccess: identifySuccess,
+        symptomSuccess: symptomSuccess,
+      };
+      // navigation.navigate('MainPage', {param: true});
+      navigation.navigate('PercentSection', {param: data});
     } catch (error) {
       setErrorMsg((error && error.error) || 'Something went wrong.');
       // setIsLoading(false);
     }
   };
 
-  const handleContinue = async () => {
-    try {
-      if (step_2 && !step_4) {
-        setShowModal(false);
-        // setStep_4(true);
-        setStep_7(true);
-        return;
-      }
-      if (step_2 && step_4) {
-        setShowModal(false);
-        setStep_5(true);
-        setStep_2(false);
-        setStep_4(false);
-        return;
-      }
-      if (step_5 && !step_6) {
-        setShowModal(false);
-        setStep_6(true);
-        return;
-      }
-      if (step_6 && step_6) {
-        setShowModal(false);
-        setStep_7(true);
-        return;
-      }
-    } catch (error) {
-      setErrorMsg((error && error.error) || 'Something went wrong.');
-      // setIsLoading(false);
+  const handleContinue = () => {
+    if (step_5 && step_6) {
+      setShowModal(false);
+      setStep_7(true);
+      return;
     }
+    setShowModal(false);
   };
 
   const handleTry = () => {
@@ -188,7 +170,7 @@ const ReviewSection = ({route}) => {
             setAudioPath(path);
           }
         }
-      }, 1000);
+      }, 50);
     } catch (error) {
       console.error('Recording error:', error);
     }
@@ -296,7 +278,6 @@ const ReviewSection = ({route}) => {
       if (step_5 && step_6) {
         console.log('44444444444444444444444');
         if (strText === strIdentify) {
-          setStep_7(true);
           setShowButton(true);
           setIdentifySuccess(1);
           setShowModal(true);
@@ -440,6 +421,22 @@ const ReviewSection = ({route}) => {
     </>
   );
 
+  const ItemBlock = children => (
+    <View
+      style={{
+        flexDirection: 'row',
+        gap: 9,
+        position: 'absolute',
+        top: 54,
+        left: 0,
+      }}>
+      <TouchableOpacity onPress={() => handleClickSound(children)}>
+        <Image source={sound_ico} />
+      </TouchableOpacity>
+      <Image source={turtle_ico} />
+    </View>
+  );
+
   return (
     <View style={styles.container}>
       <CustomDialog
@@ -449,7 +446,6 @@ const ReviewSection = ({route}) => {
         title="Step 3. Review"
         icon={review_ico}
         hand_ico={hand_ico}
-        showImage={showImage}
       />
 
       <MoveDialog
@@ -505,18 +501,7 @@ const ReviewSection = ({route}) => {
               ]}>
               Hi! My name is {param.name}.
             </Text>
-
-            <View
-              style={{
-                flexDirection: 'row',
-                gap: 9,
-                position: 'absolute',
-                top: 54,
-                left: 0,
-              }}>
-              <Image source={sound_ico} />
-              <Image source={turtle_ico} />
-            </View>
+            <ItemBlock children={`Hi! My name is ${param.name}`} />
           </View>
           {step_4 && (
             <>
@@ -565,17 +550,7 @@ const ReviewSection = ({route}) => {
                   I'm {param.age} years old.
                 </Text>
 
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    gap: 9,
-                    position: 'absolute',
-                    top: 54,
-                    left: 0,
-                  }}>
-                  <Image source={sound_ico} />
-                  <Image source={turtle_ico} />
-                </View>
+                <ItemBlock children={`I'm ${param.age} years old.`} />
               </View>
             </>
           )}
@@ -618,18 +593,7 @@ const ReviewSection = ({route}) => {
               ]}>
               I have {param.symptom}.
             </Text>
-
-            <View
-              style={{
-                flexDirection: 'row',
-                gap: 9,
-                position: 'absolute',
-                top: 54,
-                left: 0,
-              }}>
-              <Image source={sound_ico} />
-              <Image source={turtle_ico} />
-            </View>
+            <ItemBlock children={`I have ${param.symptom}.`} />
           </View>
           {step_6 && (
             <>
@@ -676,17 +640,7 @@ const ReviewSection = ({route}) => {
                   I identify as {param.identify}.
                 </Text>
 
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    gap: 9,
-                    position: 'absolute',
-                    top: 54,
-                    left: 0,
-                  }}>
-                  <Image source={sound_ico} />
-                  <Image source={turtle_ico} />
-                </View>
+                <ItemBlock children={`I identify as ${param.identify}.`} />
               </View>
             </>
           )}
