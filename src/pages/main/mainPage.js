@@ -33,6 +33,8 @@ const worry_ico = require('../../../assets/icons/learn/worry_ico.png');
 const emotional_ico = require('../../../assets/icons/learn/emotional_ico.png');
 const peer_ico = require('../../../assets/icons/learn/peer_ico.png');
 const handle_ico = require('../../../assets/icons/hand_ico.png');
+const empathy_ico = require('../../../assets/icons/learn/empathy.png');
+const overall_ico = require('../../../assets/icons/learn/overall.png');
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 const boxData = [
@@ -64,7 +66,15 @@ const boxData = [
       nav: 'MainEmotionalSection',
     },
   ],
-  [{icon: peer_ico, text: '     Peer Difficulties', nav: 'MainPeerSection'}],
+  [
+    {icon: peer_ico, text: '     Peer Difficulties', nav: 'MainPeerSection'},
+    {
+      icon: overall_ico,
+      text: '    Overall Wellbeing',
+      nav: 'MainOverallSection',
+    },
+  ],
+  [{icon: empathy_ico, text: 'Empathy', nav: 'MainEmpathySection'}],
 ];
 
 const MainPage = ({route}) => {

@@ -7,8 +7,8 @@ import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 //
 // Import Screens
-// import ReviewActSection from './reviewPart';
 import StartLossSection from './startLossPart';
+import LossSection from './lossPart';
 
 import {LogBox} from 'react-native';
 
@@ -26,11 +26,11 @@ const MainLossSection = () => {
         options={{headerShown: false}}
         initialParams={{param: false}}
       />
-      {/* <Stack.Screen
-        name="ReviewActSection"
-        component={ReviewActSection}
+      <Stack.Screen
+        name="LossSection"
+        component={LossSection}
         options={{headerShown: false}}
-      /> */}
+      />
     </Stack.Navigator>
   );
 };

@@ -60,7 +60,7 @@ const StartLossSection = () => {
             left: (screenWidth * 2) / 3 - 80,
           },
         ]}
-        onPress={() => navigation.navigate('WeeklyActSection')}>
+        onPress={() => navigation.navigate('LossSection')}>
         <Image source={pos_ico} />
       </TouchableOpacity>
 

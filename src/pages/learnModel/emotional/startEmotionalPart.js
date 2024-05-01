@@ -49,7 +49,9 @@ const StartEmotionalSection = () => {
       </TouchableOpacity>
       <View style={styles.textBackground}>
         <Image source={intro_ico} />
-        <Text style={styles.title}>Emotional</Text>
+        <Text style={[styles.title, {marginLeft: 60}]}>
+          Emotional Outbursts
+        </Text>
       </View>
       <Image style={styles.road} source={road_ico} />
       <TouchableOpacity
@@ -60,7 +62,7 @@ const StartEmotionalSection = () => {
             left: (screenWidth * 2) / 3 - 80,
           },
         ]}
-        onPress={() => navigation.navigate('WeeklyActSection')}>
+        onPress={() => navigation.navigate('EmotionalSection')}>
         <Image source={pos_ico} />
       </TouchableOpacity>
 

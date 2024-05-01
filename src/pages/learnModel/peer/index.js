@@ -7,8 +7,10 @@ import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 //
 // Import Screens
-// import ReviewActSection from './reviewPart';
 import StartPeerSection from './startPeerPart';
+import PeerSection from './peerPart';
+import PracticePeerSection from './practicePeerPart';
+import PercentPeerSection from './percentPeerPart';
 
 import {LogBox} from 'react-native';
 
@@ -26,11 +28,21 @@ const MainPeerSection = () => {
         options={{headerShown: false}}
         initialParams={{param: false}}
       />
-      {/* <Stack.Screen
-        name="ReviewActSection"
-        component={ReviewActSection}
+      <Stack.Screen
+        name="PeerSection"
+        component={PeerSection}
         options={{headerShown: false}}
-      /> */}
+      />
+      <Stack.Screen
+        name="PracticePeerSection"
+        component={PracticePeerSection}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="PercentPeerSection"
+        component={PercentPeerSection}
+        options={{headerShown: false}}
+      />
     </Stack.Navigator>
   );
 };

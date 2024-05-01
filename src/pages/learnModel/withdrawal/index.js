@@ -7,8 +7,8 @@ import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 //
 // Import Screens
-// import ReviewActSection from './reviewPart';
 import StartWithdrawalSection from './startWithdrawalPart';
+import WithdrawalSection from './withdrawalPart';
 
 import {LogBox} from 'react-native';
 
@@ -26,11 +26,11 @@ const MainWithdrawalSection = () => {
         options={{headerShown: false}}
         initialParams={{param: false}}
       />
-      {/* <Stack.Screen
-        name="ReviewActSection"
-        component={ReviewActSection}
+      <Stack.Screen
+        name="WithdrawalSection"
+        component={WithdrawalSection}
         options={{headerShown: false}}
-      /> */}
+      />
     </Stack.Navigator>
   );
 };

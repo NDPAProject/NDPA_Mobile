@@ -9,6 +9,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 // Import Screens
 // import ReviewActSection from './reviewPart';
 import StartSadnessSection from './startSadnessPart';
+import SadnessSection from './sadnessPart';
 
 import {LogBox} from 'react-native';
 
@@ -26,11 +27,11 @@ const MainSadnessSection = () => {
         options={{headerShown: false}}
         initialParams={{param: false}}
       />
-      {/* <Stack.Screen
-        name="ReviewActSection"
-        component={ReviewActSection}
+      <Stack.Screen
+        name="SadnessSection"
+        component={SadnessSection}
         options={{headerShown: false}}
-      /> */}
+      />
     </Stack.Navigator>
   );
 };

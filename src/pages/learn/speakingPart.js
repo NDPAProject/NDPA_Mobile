@@ -63,8 +63,6 @@ const SpeakingSection = ({route}) => {
   const [modalVisible, setModalVisible] = useState(true);
   const [showImage, setShowImage] = useState(false);
 
-  const [sendClick, setSendClick] = useState(false);
-  const [showHand, setShowHand] = useState(false);
   const [step_2, setStep_2] = useState(false);
   const [step_3, setStep_3] = useState(false);
   const [step_4, setStep_4] = useState(false);

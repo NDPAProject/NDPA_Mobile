@@ -60,7 +60,7 @@ const StartSadnessSection = () => {
             left: (screenWidth * 2) / 3 - 80,
           },
         ]}
-        onPress={() => navigation.navigate('WeeklyActSection')}>
+        onPress={() => navigation.navigate('SadnessSection')}>
         <Image source={pos_ico} />
       </TouchableOpacity>
 

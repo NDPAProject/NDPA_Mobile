@@ -2,13 +2,10 @@ import 'react-native-gesture-handler';
 
 // Import React
 import React from 'react';
-// Import Navigators from React Navigation
-// import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 //
-// Import Screens
-// import ReviewActSection from './reviewPart';
 import StartSeparationSection from './startSeparationPart';
+import SeparationSection from './separationPart';
 
 import {LogBox} from 'react-native';
 
@@ -26,11 +23,11 @@ const MainSeparationSection = () => {
         options={{headerShown: false}}
         initialParams={{param: false}}
       />
-      {/* <Stack.Screen
-        name="ReviewActSection"
-        component={ReviewActSection}
+      <Stack.Screen
+        name="SeparationSection"
+        component={SeparationSection}
         options={{headerShown: false}}
-      /> */}
+      />
     </Stack.Navigator>
   );
 };

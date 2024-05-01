@@ -3,7 +3,13 @@ import 'react-native-gesture-handler';
 // Import React and Component
 import React, {useState, useEffect} from 'react';
 
-import {View, StyleSheet, Text, Dimensions} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Text,
+  Dimensions,
+  TouchableOpacity,
+} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import CircularProgress from 'react-native-circular-progress-indicator';
@@ -97,6 +103,41 @@ const PercentPersonalPage = () => {
               <View style={[styles.underline, {marginTop: 10}]} />
             </View>
           ))}
+        </View>
+        <View
+          style={{
+            marginTop: 15,
+            alignContent: 'center',
+            alignItems: 'center',
+            gap: 10,
+            marginBottom: 50,
+          }}>
+          <TouchableOpacity
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: (screenWidth * 8) / 10,
+              height: 57,
+              borderRadius: 45,
+              backgroundColor: '#F08080',
+            }}
+            onPress={() => navigation.navigate('MainPage')}>
+            <Text style={styles.b1_text}>Finish</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: (screenWidth * 8) / 10,
+              height: 57,
+              borderColor: '#F08080',
+              borderWidth: 1,
+              borderRadius: 45,
+              backgroundColor: 'white',
+            }}
+            onPress={() => navigation.navigate('StartPersonalSection')}>
+            <Text style={styles.b2_text}>Try Again</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </View>

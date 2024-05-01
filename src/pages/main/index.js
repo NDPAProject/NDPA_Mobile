@@ -18,11 +18,13 @@ import MainFriendShipSection from '../learnModel/friendShip/index';
 import MainIndependenceSection from '../learnModel/independence/index';
 import MainSeparationSection from '../learnModel/separation/index';
 import MainLossSection from '../learnModel/loss/index';
-import MainWithdrawalSection from '../learnModel/loss/index';
+import MainWithdrawalSection from '../learnModel/withdrawal/index';
 import MainSadnessSection from '../learnModel/sadness/index';
 import MainWorrySection from '../learnModel/worry/index';
 import MainEmotionalSection from '../learnModel/emotional/index';
 import MainPeerSection from '../learnModel/peer';
+import MainEmpathySection from '../learnModel/empathy';
+import MainOverallSection from '../learnModel/overall';
 import Location from '../location';
 
 import {LogBox} from 'react-native';
@@ -109,6 +111,16 @@ const Main = () => {
       <Stack.Screen
         name="MainPeerSection"
         component={MainPeerSection}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="MainEmpathySection"
+        component={MainEmpathySection}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="MainOverallSection"
+        component={MainOverallSection}
         options={{headerShown: false}}
       />
       <Stack.Screen

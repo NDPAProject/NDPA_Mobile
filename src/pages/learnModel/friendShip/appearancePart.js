@@ -1,5 +1,6 @@
 import 'react-native-gesture-handler';
-
+import Sound from 'react-native-sound';
+import RNFS from 'react-native-fs';
 // Import React and Component
 import React, {useState, useEffect} from 'react';
 
@@ -10,12 +11,26 @@ import {
   Text,
   Dimensions,
   TouchableOpacity,
+  PermissionsAndroid,
+  Platform,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
+import {
+  AudioEncoderAndroidType,
+  AudioSourceAndroidType,
+  AVEncoderAudioQualityIOSType,
+  AVEncodingOption,
+  OutputFormatAndroidType,
+} from 'react-native-audio-recorder-player';
+import AudioRecorderPlayer from 'react-native-audio-recorder-player';
+import {FFmpegKit, ReturnCode} from 'ffmpeg-kit-react-native';
 
-import Sound from 'react-native-sound';
-import RNFS from 'react-native-fs';
-import {textToSpeech} from '../../../redux/slices/audio';
+import {
+  textToSpeech,
+  transcribeAudio,
+  setStateFunc,
+  setisLoading,
+} from '../../../redux/slices/audio';
 import {useNavigation} from '@react-navigation/native';
 import Header from '../../../components/header';
 import CustomDialog from '../../../components/dialogModal';
@@ -50,15 +65,17 @@ const screenHeight = Dimensions.get('window').height;
 const AppearanceSecton = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const {txtAudio} = useSelector(state => state.audio);
+  const {audioTxt, txtAudio} = useSelector(state => state.audio);
   const [modalVisible, setModalVisible] = useState(true);
   const [showReward, setShowReward] = useState(false);
+  const [audioPath, setAudioPath] = useState('');
   const [hair, setHair] = useState('');
   const [eye, setEye] = useState('');
   const [progress, setProgress] = useState(0.125);
   const [currentStep, setCurrentStep] = useState(0);
+  const [text, setText] = useState('');
   const totalSteps = 3;
-
+  const [sound, setSound] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showButton, setShowButton] = useState(false);
 
@@ -80,8 +97,9 @@ const AppearanceSecton = () => {
     {label: 'Grey', image: grey_eye},
     {label: 'Black', image: black_eye},
   ];
-  const [text, setText] = useState('');
   const messageIcon = text ? msg_send_active : msg_send_passive;
+
+  const audioRecorderPlayer = new AudioRecorderPlayer();
 
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -95,11 +113,16 @@ const AppearanceSecton = () => {
     }
   };
 
-  const handleSend = () => {
-    try {
+  const handleSend = async type => {
+    console.log('--------type----------', type);
+    if (type === 1) {
       setShowButton(true);
-    } catch (error) {
-      setErrorMsg((error && error.error) || 'Something went wrong.');
+      return;
+    }
+    if (type === 2) {
+      setIsLoading(true);
+      await onStartRecord();
+      console.log('-------audioPath--------', audioPath);
     }
   };
 
@@ -154,7 +177,7 @@ const AppearanceSecton = () => {
       console.log('----------txt----------', txt);
       await dispatch(textToSpeech(txt));
       console.log('----------finished-----------------');
-      setIsLoading(true);
+      setSound(true);
       console.log('------------useEffect', isLoading);
       // dispatch(setStateFunc);
     } catch (error) {
@@ -163,11 +186,28 @@ const AppearanceSecton = () => {
   };
 
   useEffect(() => {
-    if (isLoading) {
+    if (audioTxt !== null) {
+      setText(audioTxt?.DisplayText);
+      setisLoading(false);
+    }
+  }, [audioTxt]);
+
+  useEffect(() => {
+    if (sound) {
       console.log('-----------audio playing--------------');
       playAudio(txtAudio);
     }
-  }, [isLoading, playAudio, txtAudio]);
+  }, [sound]);
+
+  useEffect(() => {
+    console.log('Updated audioPath:', audioPath);
+    if (audioPath) {
+      setTimeout(async () => {
+        dispatch(transcribeAudio(audioPath));
+        setAudioPath('');
+      }, 200);
+    }
+  }, [audioPath]);
 
   const playAudio = async audioBase64 => {
     console.log('---------playAudio---------');
@@ -200,6 +240,61 @@ const AppearanceSecton = () => {
         }
       });
     });
+  };
+
+  const onStartRecord = async () => {
+    const path = `${RNFS.DocumentDirectoryPath}/hello.wav`;
+    const wavFilePath = `${RNFS.DocumentDirectoryPath}/converted.wav`;
+
+    if (Platform.OS === 'android') {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+        {
+          title: 'Audio Recording Permission',
+          message: 'App needs access to your microphone to record audio.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('Recording permission denied');
+        return;
+      }
+    }
+
+    const audioSet = {
+      AudioEncoderAndroid: AudioEncoderAndroidType.AAC,
+      AudioSourceAndroid: AudioSourceAndroidType.MIC,
+      AVEncoderAudioQualityKeyIOS: AVEncoderAudioQualityIOSType.high,
+      AVNumberOfChannelsKeyIOS: 2,
+      AVFormatIDKeyIOS: AVEncodingOption.aac,
+      OutputFormatAndroid: OutputFormatAndroidType.AAC_ADTS,
+    };
+
+    try {
+      const result = await audioRecorderPlayer.startRecorder(path, audioSet);
+
+      setTimeout(async () => {
+        const res = await audioRecorderPlayer.stopRecorder();
+        RNFS.unlink(wavFilePath);
+
+        const command = `-i ${path} -vn -acodec pcm_s16le -ar 16000 -ac 1 -b:a 256k ${wavFilePath}`;
+        const session = await FFmpegKit.execute(command);
+        const returnCode = await session.getReturnCode();
+        if (ReturnCode.isSuccess(returnCode)) {
+          const exists = await RNFS.exists(wavFilePath);
+          console.log('exists ', exists);
+          if (exists) {
+            setAudioPath(wavFilePath);
+          } else {
+            setAudioPath(path);
+          }
+        }
+      }, 50);
+    } catch (error) {
+      console.error('Recording error:', error);
+    }
   };
 
   const MessageBlock = ({children}) => (
@@ -348,13 +443,15 @@ const AppearanceSecton = () => {
                 // handleInput={handleInput}
                 text={text}
                 handleChangeText={handleChangeText}
-                handleSend={handleSend}
+                handleSend={() => handleSend(1)}
                 messageIcon={messageIcon}
                 bottom={0}
                 mico={true}
               />
               <TouchableOpacity
-                style={{position: 'absolute', bottom: 60, right: 15}}>
+                style={{position: 'absolute', bottom: 60, right: 15}}
+                onPress={() => handleSend(2)}
+                disabled={isLoading}>
                 <Image source={mico_ico} />
               </TouchableOpacity>
             </>

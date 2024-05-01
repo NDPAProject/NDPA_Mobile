@@ -49,7 +49,7 @@ const StartPeerSection = () => {
       </TouchableOpacity>
       <View style={styles.textBackground}>
         <Image source={intro_ico} />
-        <Text style={styles.title}>Peer</Text>
+        <Text style={[styles.title, {marginLeft: 30}]}>Peer Difficulties</Text>
       </View>
       <Image style={styles.road} source={road_ico} />
       <TouchableOpacity
@@ -60,7 +60,7 @@ const StartPeerSection = () => {
             left: (screenWidth * 2) / 3 - 80,
           },
         ]}
-        onPress={() => navigation.navigate('WeeklyActSection')}>
+        onPress={() => navigation.navigate('PeerSection')}>
         <Image source={pos_ico} />
       </TouchableOpacity>
 

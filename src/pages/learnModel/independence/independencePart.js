@@ -35,9 +35,9 @@ const IndependenceSection = () => {
   const navigation = useNavigation();
 
   const [modalVisible, setModalVisible] = useState(true);
-  const [showModal, setShowModal] = useState(false);
   const [move, setMove] = useState(false);
   const [comment, setComment] = useState('');
+  const [content, setContent] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
   const messageIcon = comment ? msg_send_active : msg_send_passive;
@@ -45,15 +45,11 @@ const IndependenceSection = () => {
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       setMove(false);
-      setShowModal(false);
+      setModalVisible(false);
     });
 
     return unsubscribe;
   }, [navigation]);
-
-  const handleClickContinue = () => {
-    setShowModal(true);
-  };
 
   const handleContinue = () => {
     setMove(true);
@@ -70,17 +66,14 @@ const IndependenceSection = () => {
   const handleClickMove = async () => {
     try {
       console.log('-------------data--------------');
+      navigation.navigate('SetTimeSection');
     } catch (error) {
       setErrorMsg((error && error.error) || 'Something went wrong.');
     }
   };
 
   const handleSend = () => {
-    try {
-      setShowButton(true);
-    } catch (error) {
-      setErrorMsg((error && error.error) || 'Something went wrong.');
-    }
+    setContent(comment);
   };
 
   return (
@@ -115,23 +108,24 @@ const IndependenceSection = () => {
       <Text style={styles.title}>
         {'What do you want\nto do independently?'}
       </Text>
-      <View style={styles.input} />
-      {/* <TouchableOpacity
+      <View style={styles.input}>
+        <Text style={styles.text}>{content}</Text>
+      </View>
+      <TouchableOpacity
         style={{
           justifyContent: 'center',
           alignItems: 'center',
           width: (screenWidth * 9) / 10,
           height: 57,
           position: 'absolute',
-          bottom: 20,
+          bottom: 150,
           borderRadius: 45,
           backgroundColor: '#F08080',
         }}
-        onPress={handleClickContinue}>
+        onPress={() => handleContinue()}>
         <Text style={styles.b3_text}>Continue</Text>
-      </TouchableOpacity> */}
+      </TouchableOpacity>
       <ChatBox
-        // handleInput={handleInput}
         text={comment}
         handleChangeText={setComment}
         handleSend={handleSend}
@@ -142,14 +136,6 @@ const IndependenceSection = () => {
       <TouchableOpacity style={{position: 'absolute', bottom: 60, right: 15}}>
         <Image source={mico_ico} />
       </TouchableOpacity>
-      <CustomGreatModal
-        visible={showModal}
-        icon={thumb_icon}
-        handleClick={() => handleContinue()}
-        buttonType={true}
-        // onRequestClose={() => setStep_2(false)}
-        message="Great job!"
-      />
     </View>
   );
 };
@@ -181,6 +167,15 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginTop: 10,
     fontWeight: '700',
+    fontFamily: 'OpenSans-Medium',
+  },
+  text: {
+    color: 'black',
+    alignItems: 'center',
+    textAlign: 'left',
+    fontSize: 16,
+    padding: 5,
+    fontWeight: '600',
     fontFamily: 'OpenSans-Medium',
   },
   b3_text: {

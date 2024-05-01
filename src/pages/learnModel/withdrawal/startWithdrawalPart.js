@@ -60,7 +60,7 @@ const StartWithdrawalSection = () => {
             left: (screenWidth * 2) / 3 - 80,
           },
         ]}
-        onPress={() => navigation.navigate('WeeklyActSection')}>
+        onPress={() => navigation.navigate('WithdrawalSection')}>
         <Image source={pos_ico} />
       </TouchableOpacity>
 

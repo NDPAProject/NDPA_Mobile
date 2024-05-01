@@ -7,9 +7,10 @@ import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 //
 // Import Screens
-// import SetTimeSection from './setTimerPart';
+import SetTimeSection from './setTimerPart';
 import StartIndependenceSection from './startIndependencePart';
 import IndependenceSection from './independencePart';
+import TimerWorkSection from './timerWorkPart';
 import {LogBox} from 'react-native';
 
 LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
@@ -25,21 +26,21 @@ const MainIndependenceSection = () => {
         component={StartIndependenceSection}
         options={{headerShown: false}}
       />
-      {/* <Stack.Screen
+      <Stack.Screen
         name="SetTimeSection"
         component={SetTimeSection}
         options={{headerShown: false}}
-      /> */}
+      />
       <Stack.Screen
         name="IndependenceSection"
         component={IndependenceSection}
         options={{headerShown: false}}
       />
-      {/* <Stack.Screen
-        name="ReviewActSection"
-        component={ReviewActSection}
+      <Stack.Screen
+        name="TimerWorkSection"
+        component={TimerWorkSection}
         options={{headerShown: false}}
-      /> */}
+      />
     </Stack.Navigator>
   );
 };

@@ -7,9 +7,8 @@ import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 //
 // Import Screens
-// import ReviewActSection from './reviewPart';
 import StartWorrySection from './startWorryPart';
-
+import WorrySection from './worryPart';
 import {LogBox} from 'react-native';
 
 LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
@@ -26,11 +25,11 @@ const MainWorrySection = () => {
         options={{headerShown: false}}
         initialParams={{param: false}}
       />
-      {/* <Stack.Screen
-        name="ReviewActSection"
-        component={ReviewActSection}
+      <Stack.Screen
+        name="WorrySection"
+        component={WorrySection}
         options={{headerShown: false}}
-      /> */}
+      />
     </Stack.Navigator>
   );
 };
