@@ -10,6 +10,7 @@ import {
   Text,
   Dimensions,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 
 import {useNavigation, useRoute} from '@react-navigation/native';
@@ -17,27 +18,60 @@ import Header from '../../../components/header';
 import CustomDialog from '../../../components/dialogModal';
 import RewardDialog from '../../../components/rewardModal';
 
-const task_ico = require('../../../../assets/icons/infor.png');
-const overall_1 = require('../../../../assets/icons/learn/overall/overall_1.png');
-const overall_2 = require('../../../../assets/icons/learn/overall/overall_2.png');
-const overall_3 = require('../../../../assets/icons/learn/overall/overall_3.png');
-const overall_4 = require('../../../../assets/icons/learn/overall/overall_4.png');
+const task_ico = require('../../../../assets/icons/help_ico.png');
+const help_png = require('../../../../assets/icons/learn/loss/help.png');
 const reward_ico = require('../../../../assets/icons/main/reward.png');
+const drawing_ico = require('../../../../assets/icons/learn/choice/drawing.png');
+const reading_ico = require('../../../../assets/icons/learn/choice/reading.png');
+const sing_ico = require('../../../../assets/icons/learn/choice/sing.png');
+const swimming_ico = require('../../../../assets/icons/learn/choice/swimming.png');
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 const content =
   'Ronald’s mother and father, who have been married for over a decade, have recently decided to split up. Their decision comes after months of ongoing arguments and challenges in their relationship, which have gradually taken a toll on their family dynamics.';
 
-const OverallSection = () => {
+const boxData = [
+  [
+    {
+      icon: drawing_ico,
+      text: 'Drawing',
+    },
+    {
+      icon: reading_ico,
+      text: 'Reading',
+    },
+  ],
+  [
+    {
+      icon: swimming_ico,
+      text: 'Swimming',
+    },
+    {
+      icon: sing_ico,
+      text: 'Play Basketball',
+    },
+  ],
+  [
+    {
+      icon: swimming_ico,
+      text: 'Swimming',
+    },
+    {
+      icon: sing_ico,
+      text: 'Play Basketball',
+    },
+  ],
+];
+
+const HelpLossSection = () => {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(true);
   const [move, setMove] = useState(false);
-  const [progress, setProgress] = useState(0.25);
+  const [progress, setProgress] = useState(0.5);
   const [step_1, setStep_1] = useState(false);
   const [step_2, setStep_2] = useState(false);
-  const [step_3, setStep_3] = useState(false);
-  const [step_4, setStep_4] = useState(false);
+  const [selectedItems, setSelectedItems] = useState([]);
   //   useEffect(() => {
   //     const unsubscribe = navigation.addListener('focus', () => {
   //       setMove(false);
@@ -51,28 +85,15 @@ const OverallSection = () => {
     if (step_1) {
       setStep_1(false);
       setStep_2(true);
-      setProgress(0.5);
+      setProgress(1);
       return;
     }
     if (step_2) {
-      setProgress(0.75);
       setStep_2(false);
-      setStep_3(true);
-      return;
-    }
-    if (step_3) {
-      setProgress(1);
-      setStep_3(false);
-      setStep_4(true);
-      return;
-    }
-    if (step_4) {
-      setStep_4(false);
       setMove(true);
       return;
     }
   };
-
   const handleClick = async () => {
     console.log('-------------clicked--------------------');
     setModalVisible(false);
@@ -82,16 +103,75 @@ const OverallSection = () => {
 
   const handleClickMove = async () => {
     console.log('-------------data--------------');
-    navigation.navigate('PracticeOverallSection');
+    navigation.navigate('PracticeLossSection');
   };
 
-  const StepItem = ({avatar, content}) => (
-    <View style={[styles.input]}>
-      <Image source={avatar} style={styles.avatar} />
-      <Text style={[styles.text, , {textAlign: 'left', fontSize: 17}]}>
-        {content}
+  const handleClickItem = (rowIndex, itemIndex, itemText) => {
+    const index = selectedItems.findIndex(
+      item => item.row === rowIndex && item.item === itemIndex,
+    );
+
+    if (index >= 0) {
+      setSelectedItems(selectedItems.filter((_, i) => i !== index));
+    } else {
+      setSelectedItems([
+        ...selectedItems,
+        {row: rowIndex, item: itemIndex, text: itemText},
+      ]);
+    }
+  };
+
+  const isSelected = (rowIndex, itemIndex) =>
+    selectedItems.some(
+      item => item.row === rowIndex && item.item === itemIndex,
+    );
+
+  const ItemBlock = ({dash_icon, datas, title, content, type}) => (
+    <>
+      <Image source={dash_icon} style={styles.avatar} />
+
+      <Text
+        style={[
+          styles.text,
+          {textAlign: 'center', fontSize: 19, marginTop: 10},
+        ]}>
+        {title}
       </Text>
-    </View>
+      {type ? (
+        <Text style={[styles.text, , {textAlign: 'left', fontSize: 17}]}>
+          {content}
+        </Text>
+      ) : (
+        <ScrollView>
+          {datas.map((row, rowIndex) => (
+            <View key={rowIndex} style={styles.row}>
+              {row.map((item, itemIndex) => (
+                <TouchableOpacity
+                  key={itemIndex}
+                  onPress={() =>
+                    handleClickItem(rowIndex, itemIndex, item.text)
+                  }>
+                  <View
+                    style={[
+                      styles.boxBackground,
+                      {
+                        borderColor: isSelected(rowIndex, itemIndex)
+                          ? '#23B80C'
+                          : '#FBC4AB',
+                      },
+                    ]}>
+                    <Image source={item.icon} />
+                    <Text style={[styles.text, {fontSize: 17}]}>
+                      {item.text}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>
+          ))}
+        </ScrollView>
+      )}
+    </>
   );
 
   return (
@@ -101,9 +181,8 @@ const OverallSection = () => {
         setModalVisible={setModalVisible}
         handleClick={handleClick}
         icon={task_ico}
-        title="Step 1. Information"
-        description="Let’s read the information
-        about overall wellbeing"
+        title="Step 2. Help"
+        description="Let’s think how we can help in this situation"
       />
 
       <RewardDialog
@@ -118,15 +197,27 @@ const OverallSection = () => {
 
       <Header
         visible={true}
-        text={'Overall Wellbeing'}
+        text={'Help'}
         color={'#FFFBF8'}
         editalbe={false}
         progress={progress}
       />
-      {step_1 && <StepItem avatar={overall_1} content={content} />}
-      {step_2 && <StepItem avatar={overall_2} content={content} />}
-      {step_3 && <StepItem avatar={overall_3} content={content} />}
-      {step_4 && <StepItem avatar={overall_4} content={content} />}
+      {step_1 && (
+        <ItemBlock
+          dash_icon={help_png}
+          type={true}
+          title={'What Sabrina can do?'}
+          content={content}
+        />
+      )}
+      {step_2 && (
+        <ItemBlock
+          dash_icon={help_png}
+          type={false}
+          title={'What Sabrina can do?'}
+          datas={boxData}
+        />
+      )}
       <TouchableOpacity
         style={{
           justifyContent: 'center',
@@ -145,7 +236,7 @@ const OverallSection = () => {
   );
 };
 
-export default OverallSection;
+export default HelpLossSection;
 
 const styles = StyleSheet.create({
   container: {

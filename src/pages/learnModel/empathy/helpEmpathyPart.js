@@ -17,11 +17,10 @@ import Header from '../../../components/header';
 import CustomDialog from '../../../components/dialogModal';
 import RewardDialog from '../../../components/rewardModal';
 
-const task_ico = require('../../../../assets/icons/infor.png');
-const overall_1 = require('../../../../assets/icons/learn/overall/overall_1.png');
-const overall_2 = require('../../../../assets/icons/learn/overall/overall_2.png');
-const overall_3 = require('../../../../assets/icons/learn/overall/overall_3.png');
-const overall_4 = require('../../../../assets/icons/learn/overall/overall_4.png');
+const task_ico = require('../../../../assets/icons/help_ico.png');
+const help_1 = require('../../../../assets/icons/learn/empathy/help_1.png');
+const help_2 = require('../../../../assets/icons/learn/empathy/help_2.png');
+const help_3 = require('../../../../assets/icons/learn/empathy/help_3.png');
 const reward_ico = require('../../../../assets/icons/main/reward.png');
 
 const screenWidth = Dimensions.get('window').width;
@@ -29,15 +28,15 @@ const screenHeight = Dimensions.get('window').height;
 const content =
   'Ronald’s mother and father, who have been married for over a decade, have recently decided to split up. Their decision comes after months of ongoing arguments and challenges in their relationship, which have gradually taken a toll on their family dynamics.';
 
-const OverallSection = () => {
+const HelpEmpathySection = () => {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(true);
   const [move, setMove] = useState(false);
-  const [progress, setProgress] = useState(0.25);
+  const [progress, setProgress] = useState(0.35);
   const [step_1, setStep_1] = useState(false);
   const [step_2, setStep_2] = useState(false);
   const [step_3, setStep_3] = useState(false);
-  const [step_4, setStep_4] = useState(false);
+
   //   useEffect(() => {
   //     const unsubscribe = navigation.addListener('focus', () => {
   //       setMove(false);
@@ -51,23 +50,17 @@ const OverallSection = () => {
     if (step_1) {
       setStep_1(false);
       setStep_2(true);
-      setProgress(0.5);
+      setProgress(0.7);
       return;
     }
     if (step_2) {
-      setProgress(0.75);
+      setProgress(1);
       setStep_2(false);
       setStep_3(true);
       return;
     }
     if (step_3) {
-      setProgress(1);
       setStep_3(false);
-      setStep_4(true);
-      return;
-    }
-    if (step_4) {
-      setStep_4(false);
       setMove(true);
       return;
     }
@@ -82,7 +75,7 @@ const OverallSection = () => {
 
   const handleClickMove = async () => {
     console.log('-------------data--------------');
-    navigation.navigate('PracticeOverallSection');
+    navigation.navigate('PracticeEmpathySection');
   };
 
   const StepItem = ({avatar, content}) => (
@@ -101,9 +94,8 @@ const OverallSection = () => {
         setModalVisible={setModalVisible}
         handleClick={handleClick}
         icon={task_ico}
-        title="Step 1. Information"
-        description="Let’s read the information
-        about overall wellbeing"
+        title="Step 2. Help"
+        description="Let’s think how we can help in this situation"
       />
 
       <RewardDialog
@@ -118,15 +110,15 @@ const OverallSection = () => {
 
       <Header
         visible={true}
-        text={'Overall Wellbeing'}
+        text={'Help'}
         color={'#FFFBF8'}
         editalbe={false}
         progress={progress}
       />
-      {step_1 && <StepItem avatar={overall_1} content={content} />}
-      {step_2 && <StepItem avatar={overall_2} content={content} />}
-      {step_3 && <StepItem avatar={overall_3} content={content} />}
-      {step_4 && <StepItem avatar={overall_4} content={content} />}
+      {step_1 && <StepItem avatar={help_1} content={content} />}
+      {step_2 && <StepItem avatar={help_2} content={content} />}
+      {step_3 && <StepItem avatar={help_3} content={content} />}
+
       <TouchableOpacity
         style={{
           justifyContent: 'center',
@@ -145,7 +137,7 @@ const OverallSection = () => {
   );
 };
 
-export default OverallSection;
+export default HelpEmpathySection;
 
 const styles = StyleSheet.create({
   container: {

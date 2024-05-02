@@ -83,6 +83,10 @@ const SeparationSection = () => {
   }, [navigation]);
 
   const handleContinue = () => {
+    if (step) {
+      setMove(true);
+      return;
+    }
     setProgress(1);
     setStep(true);
   };
@@ -93,7 +97,7 @@ const SeparationSection = () => {
 
   const handleClickMove = async () => {
     console.log('-------------data--------------');
-    navigation.navigate('SetTimeSection');
+    navigation.navigate('HelpSeparationSection');
   };
 
   const handleClickItem = (rowIndex, itemIndex, itemText) => {

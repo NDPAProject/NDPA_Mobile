@@ -32,14 +32,14 @@ const EmotionalSection = () => {
   const [move, setMove] = useState(false);
   const [progress, setProgress] = useState(1);
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      setMove(false);
-      setModalVisible(false);
-    });
+  // useEffect(() => {
+  //   const unsubscribe = navigation.addListener('focus', () => {
+  //     setMove(false);
+  //     setModalVisible(false);
+  //   });
 
-    return unsubscribe;
-  }, [navigation]);
+  //   return unsubscribe;
+  // }, [navigation]);
 
   const handleContinue = () => {
     setMove(true);
@@ -51,7 +51,7 @@ const EmotionalSection = () => {
 
   const handleClickMove = async () => {
     console.log('-------------data--------------');
-    navigation.navigate('MainPage');
+    navigation.navigate('HelpEmotionalSection');
   };
 
   return (

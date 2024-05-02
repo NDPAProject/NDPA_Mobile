@@ -17,7 +17,6 @@ import Header from '../../../components/header';
 import CustomDialog from '../../../components/dialogModal';
 import RewardDialog from '../../../components/rewardModal';
 import CustomGreatModal from '../../../components/greatModal';
-import ChatBox from '../../../components/chatBox';
 import {ScrollView} from 'react-native-gesture-handler';
 
 const task_ico = require('../../../../assets/icons/situation.png');
@@ -85,6 +84,9 @@ const WithdrawalSection = () => {
   }, [navigation]);
 
   const handleContinue = () => {
+    if (step) {
+      setMove(true);
+    }
     setProgress(1);
     setStep(true);
   };
@@ -95,7 +97,7 @@ const WithdrawalSection = () => {
 
   const handleClickMove = async () => {
     console.log('-------------data--------------');
-    navigation.navigate('SetTimeSection');
+    navigation.navigate('HelpWithdrawalSection');
   };
 
   const handleClickItem = (rowIndex, itemIndex, itemText) => {

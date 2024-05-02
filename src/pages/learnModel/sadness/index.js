@@ -10,7 +10,8 @@ import {createStackNavigator} from '@react-navigation/stack';
 // import ReviewActSection from './reviewPart';
 import StartSadnessSection from './startSadnessPart';
 import SadnessSection from './sadnessPart';
-
+import HelpSadnessSection from './helpSadnessPart';
+import PercentSadnessSection from './percentSadnessPart';
 import {LogBox} from 'react-native';
 
 LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
@@ -30,6 +31,16 @@ const MainSadnessSection = () => {
       <Stack.Screen
         name="SadnessSection"
         component={SadnessSection}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="HelpSadnessSection"
+        component={HelpSadnessSection}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="PercentSadnessSection"
+        component={PercentSadnessSection}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

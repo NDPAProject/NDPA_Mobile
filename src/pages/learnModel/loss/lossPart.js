@@ -84,6 +84,10 @@ const LossSection = () => {
   }, [navigation]);
 
   const handleContinue = () => {
+    if (step) {
+      setMove(true);
+      return;
+    }
     setProgress(1);
     setStep(true);
   };
@@ -94,7 +98,7 @@ const LossSection = () => {
 
   const handleClickMove = async () => {
     console.log('-------------data--------------');
-    navigation.navigate('SetTimeSection');
+    navigation.navigate('HelpLossSection');
   };
 
   const handleClickItem = (rowIndex, itemIndex, itemText) => {

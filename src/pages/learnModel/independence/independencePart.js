@@ -16,7 +16,6 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import Header from '../../../components/header';
 import CustomDialog from '../../../components/dialogModal';
 import RewardDialog from '../../../components/rewardModal';
-import CustomGreatModal from '../../../components/greatModal';
 import ChatBox from '../../../components/chatBox';
 
 const task_ico = require('../../../../assets/icons/learn/task.png');

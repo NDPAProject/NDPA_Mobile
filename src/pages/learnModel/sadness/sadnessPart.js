@@ -63,7 +63,7 @@ const LossSection = () => {
 
   const handleClickMove = async () => {
     console.log('-------------data--------------');
-    navigation.navigate('SetTimeSection');
+    navigation.navigate('HelpSadnessSection');
   };
 
   const handleClickItem = (rowIndex, itemIndex, itemText) => {

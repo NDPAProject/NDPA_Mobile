@@ -9,6 +9,9 @@ import {createStackNavigator} from '@react-navigation/stack';
 // Import Screens
 import StartLossSection from './startLossPart';
 import LossSection from './lossPart';
+import HelpLossSection from './helpLossPart';
+import PracticeLossSection from './practiceLossPart';
+import PercentLossSection from './percentLossPart';
 
 import {LogBox} from 'react-native';
 
@@ -29,6 +32,21 @@ const MainLossSection = () => {
       <Stack.Screen
         name="LossSection"
         component={LossSection}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="HelpLossSection"
+        component={HelpLossSection}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="PracticeLossSection"
+        component={PracticeLossSection}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="PercentLossSection"
+        component={PercentLossSection}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

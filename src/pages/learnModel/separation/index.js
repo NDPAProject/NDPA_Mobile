@@ -6,7 +6,9 @@ import {createStackNavigator} from '@react-navigation/stack';
 //
 import StartSeparationSection from './startSeparationPart';
 import SeparationSection from './separationPart';
-
+import HelpSeparationSection from './helpSeparationPart';
+import PracticeSeparationSection from './practiceSeparationPart';
+import PercentSeparationSection from './percentSeparationPart';
 import {LogBox} from 'react-native';
 
 LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
@@ -26,6 +28,21 @@ const MainSeparationSection = () => {
       <Stack.Screen
         name="SeparationSection"
         component={SeparationSection}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="HelpSeparationSection"
+        component={HelpSeparationSection}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="PracticeSeparationSection"
+        component={PracticeSeparationSection}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="PercentSeparationSection"
+        component={PercentSeparationSection}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

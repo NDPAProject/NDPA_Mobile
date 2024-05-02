@@ -16,55 +16,18 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import Header from '../../../components/header';
 import CustomDialog from '../../../components/dialogModal';
 import RewardDialog from '../../../components/rewardModal';
-import CustomGreatModal from '../../../components/greatModal';
-import {ScrollView} from 'react-native-gesture-handler';
 
 const task_ico = require('../../../../assets/icons/infor.png');
 const thumb_icon = require('../../../../assets/icons/great_ico.png');
 const dash_icon = require('../../../../assets/icons/learn/worry/worry_1.png');
 const das_icon = require('../../../../assets/icons/learn/worry/worry_2.png');
 const reward_ico = require('../../../../assets/icons/main/reward.png');
-const drawing_ico = require('../../../../assets/icons/learn/choice/drawing.png');
-const reading_ico = require('../../../../assets/icons/learn/choice/reading.png');
-const sing_ico = require('../../../../assets/icons/learn/choice/sing.png');
-const swimming_ico = require('../../../../assets/icons/learn/choice/swimming.png');
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 const content =
   "Sabrina had a special friend, a maltipoo (half Maltese, half poodle), who brought joy and companionship into her life. Unfortunately, her furry friend developed a condition similar to heart disease and, despite efforts to help, Sabrina had to make the difficult decision to say goodbye. Losing her dog was incredibly heartbreaking for Sabrina, and she's struggling with a mix of emotions right now.";
-const boxData = [
-  [
-    {
-      icon: drawing_ico,
-      text: 'Drawing',
-    },
-    {
-      icon: reading_ico,
-      text: 'Reading',
-    },
-  ],
-  [
-    {
-      icon: swimming_ico,
-      text: 'Swimming',
-    },
-    {
-      icon: sing_ico,
-      text: 'Play Basketball',
-    },
-  ],
-  [
-    {
-      icon: swimming_ico,
-      text: 'Swimming',
-    },
-    {
-      icon: sing_ico,
-      text: 'Play Basketball',
-    },
-  ],
-];
+
 const WorrySection = () => {
   const navigation = useNavigation();
   const [step, setStep] = useState(false);
@@ -99,28 +62,8 @@ const WorrySection = () => {
 
   const handleClickMove = async () => {
     console.log('-------------data--------------');
-    navigation.navigate('MainPage', {param: true});
+    navigation.navigate('HelpWorrySection');
   };
-
-  const handleClickItem = (rowIndex, itemIndex, itemText) => {
-    const index = selectedItems.findIndex(
-      item => item.row === rowIndex && item.item === itemIndex,
-    );
-
-    if (index >= 0) {
-      setSelectedItems(selectedItems.filter((_, i) => i !== index));
-    } else {
-      setSelectedItems([
-        ...selectedItems,
-        {row: rowIndex, item: itemIndex, text: itemText},
-      ]);
-    }
-  };
-
-  const isSelected = (rowIndex, itemIndex) =>
-    selectedItems.some(
-      item => item.row === rowIndex && item.item === itemIndex,
-    );
 
   return (
     <View style={styles.container}>

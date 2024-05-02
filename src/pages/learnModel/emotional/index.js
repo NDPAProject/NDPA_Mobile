@@ -10,7 +10,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import StartEmotionalSection from './startEmotionalPart';
 import EmotionalSection from './emotionalPart';
 import PercentEmotionalSection from './percentEmotionalPart';
-
+import HelpEmotionalSection from './helpEmotionalPart';
 import {LogBox} from 'react-native';
 
 LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
@@ -35,6 +35,11 @@ const MainEmotionalSection = () => {
       <Stack.Screen
         name="PercentEmotionalSection"
         component={PercentEmotionalSection}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="HelpEmotionalSection"
+        component={HelpEmotionalSection}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

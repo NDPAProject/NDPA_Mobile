@@ -9,7 +9,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import StartEmpathySection from './startEmpathyPart';
 import EmpathySection from './empathyPart';
 import PercentEmpathySection from './percentEmpathyPart';
-import HelpEmpathySection from './helpPart';
+import HelpEmpathySection from './helpEmpathyPart';
 import PracticeEmpathySection from './practiceEmpathyPart';
 
 import {LogBox} from 'react-native';
