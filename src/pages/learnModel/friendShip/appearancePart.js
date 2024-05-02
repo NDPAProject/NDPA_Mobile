@@ -36,6 +36,7 @@ import Header from '../../../components/header';
 import CustomDialog from '../../../components/dialogModal';
 import RewardDialog from '../../../components/rewardModal';
 import ChatBox from '../../../components/chatBox';
+import {ScrollView} from 'react-native-gesture-handler';
 
 const appea_ico = require('../../../../assets/icons/appea_ico.png');
 const addcolor_ico = require('../../../../assets/icons/learn/appearance/addcolor_ico.png');
@@ -87,7 +88,16 @@ const AppearanceSecton = () => {
     {color: '#D3D3D3', label: 'Grey'},
     {color: '#FFFFFF', label: 'White'},
     {color: '#B6A88C', label: 'Auburn'},
-    {label: 'Add', image: addcolor_ico},
+    // {label: 'Add', image: addcolor_ico},
+    {color: '#008000', label: 'Green'},
+    {color: '#0000FF', label: 'Blue'},
+    {color: '#4B0082', label: 'Indigo'},
+    {color: '#FF6D00', label: 'Orange'},
+    {color: '#FEE84E', label: 'Yellow'},
+    {color: '#7F00FF', label: 'Violet'},
+    {color: '#817C24', label: 'Olive'},
+    {color: '#FFC0CB', label: 'Pink'},
+    {color: '#FF00FF', label: 'Magenta'},
   ];
   const eyes = [
     {label: 'Brown', image: brown_eye},
@@ -149,6 +159,10 @@ const AppearanceSecton = () => {
   const handleSelect = (select, type) => {
     console.log('--------selected---------', select);
     if (type === 'hair') {
+      if (select === 'Add') {
+        console.log('333');
+        return;
+      }
       setHair(select);
     }
     if (type === 'eye') {
@@ -165,6 +179,7 @@ const AppearanceSecton = () => {
         eye: eye,
       };
       setCurrentStep(1);
+      dispatch(setStateFunc(null));
       navigation.navigate('QualitiesSection', {param: data});
       // navigation.navigate('MainPage', {param: true});
     } catch (error) {
@@ -489,25 +504,27 @@ const AppearanceSecton = () => {
                 ]}>
                 Choose color
               </Text>
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  flexWrap: 'wrap',
-                  justifyContent: 'space-around',
-                  alignItems: 'flex-start',
-                  marginTop: 15,
-                }}>
-                {colors.map((color, index) => (
-                  <View key={index}>
-                    <CircleButton
-                      color={color.color}
-                      label={color.label}
-                      onPress={() => handleSelect(color.label, 'hair')}
-                    />
-                  </View>
-                ))}
-              </View>
+              <ScrollView>
+                <View
+                  style={{
+                    flex: 1,
+                    flexDirection: 'row',
+                    flexWrap: 'wrap',
+                    justifyContent: 'space-around',
+                    alignItems: 'flex-start',
+                    marginTop: 15,
+                  }}>
+                  {colors.map((color, index) => (
+                    <View key={index}>
+                      <CircleButton
+                        color={color.color}
+                        label={color.label}
+                        onPress={() => handleSelect(color.label, 'hair')}
+                      />
+                    </View>
+                  ))}
+                </View>
+              </ScrollView>
             </View>
           )}
         </>

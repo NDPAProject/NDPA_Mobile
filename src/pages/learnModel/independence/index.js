@@ -11,6 +11,7 @@ import SetTimeSection from './setTimerPart';
 import StartIndependenceSection from './startIndependencePart';
 import IndependenceSection from './independencePart';
 import TimerWorkSection from './timerWorkPart';
+import PercentIndependenceSection from './percentIndependencePart';
 import {LogBox} from 'react-native';
 
 LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
@@ -39,6 +40,11 @@ const MainIndependenceSection = () => {
       <Stack.Screen
         name="TimerWorkSection"
         component={TimerWorkSection}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="PercentIndependenceSection"
+        component={PercentIndependenceSection}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

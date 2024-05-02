@@ -21,7 +21,7 @@ import {useNavigation} from '@react-navigation/native';
 import Header from '../../../components/header';
 import CustomDialog from '../../../components/dialogModal';
 import RewardDialog from '../../../components/rewardModal';
-import ChatBox from '../../../components/chatBox';
+import CustomGreatModal from '../../../components/greatModal';
 
 const qualities_ico = require('../../../../assets/icons/qualities_ico.png');
 const addcolor_ico = require('../../../../assets/icons/learn/appearance/addcolor_ico.png');
@@ -33,7 +33,6 @@ const sound_ico = require('../../../../assets/icons/charm_sound-up.png');
 const message = require('../../../../assets/icons/tchat_b.png');
 const mechat_b = require('../../../../assets/icons/mechat_b.png');
 const reward_ico = require('../../../../assets/icons/main/reward.png');
-const mico_ico = require('../../../../assets/icons/mico.png');
 
 const diligent = require('../../../../assets/icons/learn/qualities/diligent.png');
 const tolerant = require('../../../../assets/icons/learn/qualities/tolerant.png');
@@ -41,9 +40,18 @@ const kind = require('../../../../assets/icons/learn/qualities/kind.png');
 const funny = require('../../../../assets/icons/learn/qualities/funny.png');
 const honest = require('../../../../assets/icons/learn/qualities/honest.png');
 const loyal = require('../../../../assets/icons/learn/qualities/loyal.png');
+const creative = require('../../../../assets/icons/learn/qualities/creative.png');
+const positive = require('../../../../assets/icons/learn/qualities/positive.png');
+const thumb_icon = require('../../../../assets/icons/great_ico.png');
 
-const msg_send_passive = require('../../../../assets/icons/msg_send_passive.png');
-const msg_send_active = require('../../../../assets/icons/msg_send_active.png');
+const Lazy = require('../../../../assets/icons/learn/qualities/lazy.png');
+const Stubborn = require('../../../../assets/icons/learn/qualities/stubborn.png');
+const Naughty = require('../../../../assets/icons/learn/qualities/naughty.png');
+const Negative = require('../../../../assets/icons/learn/qualities/negative.png');
+const Insecure = require('../../../../assets/icons/learn/qualities/insecure.png');
+const Rude = require('../../../../assets/icons/learn/qualities/rude.png');
+const Jealous = require('../../../../assets/icons/learn/qualities/jealous.png');
+const Selfish = require('../../../../assets/icons/learn/qualities/selfish.png');
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -54,10 +62,11 @@ const QualitiesSecton = ({route}) => {
   const {txtAudio} = useSelector(state => state.audio);
   const [modalVisible, setModalVisible] = useState(true);
   const [showReward, setShowReward] = useState(false);
-  const [hair, setHair] = useState('');
-  const [eye, setEye] = useState('');
   const [selectedLabels, setSelectedLabels] = useState([]);
-  const [progress, setProgress] = useState(0.125);
+  const [selectedDisLike, setSelectedDisLike] = useState([]);
+  const [selectedLook, setSelectedLook] = useState([]);
+  const [showGreat, setShowGreat] = useState(false);
+  const [progress, setProgress] = useState(0.35);
   const [currentStep, setCurrentStep] = useState(0);
   const totalSteps = 3;
 
@@ -69,52 +78,44 @@ const QualitiesSecton = ({route}) => {
 
   console.log('-----------param------------', param);
 
-  const qualities = [
+  const likeQualities = [
     {label: 'Kind', image: kind},
     {label: 'Tolerant', image: tolerant},
     {label: 'Funny', image: funny},
     {label: 'Loyal', image: loyal},
     {label: 'Honest', image: honest},
-    {label: 'Creative', image: diligent},
-    {label: 'Positive', image: diligent},
-    {label: 'Kind', image: kind},
-    {label: 'Tolerant', image: tolerant},
-    {label: 'Funny', image: funny},
-    {label: 'Loyal', image: loyal},
-    {label: 'Honest', image: honest},
+    {label: 'Diligent', image: diligent},
+    {label: 'Creative', image: creative},
+    {label: 'Positive', image: positive},
   ];
-  const [text, setText] = useState('');
-  const messageIcon = text ? msg_send_active : msg_send_passive;
+
+  const disLikeQualities = [
+    {label: 'Lazy', image: Lazy},
+    {label: 'Stubborn', image: Stubborn},
+    {label: 'Naughty', image: Naughty},
+    {label: 'Negative', image: Negative},
+    {label: 'Insecure', image: Insecure},
+    {label: 'Rude', image: Rude},
+    {label: 'Jealous', image: Jealous},
+    {label: 'Selfish', image: Selfish},
+  ];
 
   const [errorMsg, setErrorMsg] = useState('');
-
-  const handleChangeText = text => {
-    try {
-      if (text.length < 11) {
-        setText(text);
-      }
-    } catch (error) {
-      setErrorMsg((error && error.error) || 'Something went wrong.');
-    }
-  };
-
-  const handleSend = () => {
-    try {
-      setShowContinueButton(true);
-    } catch (error) {
-      setErrorMsg((error && error.error) || 'Something went wrong.');
-    }
-  };
 
   const handleClickContinue = () => {
     console.log('------currentStep-----', currentStep);
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
       setShowContinueButton(false);
-      setProgress(0.125 * (currentStep + 1));
+      setProgress(0.35 * (currentStep + 1));
     } else {
-      setShowReward(true);
+      setShowGreat(true);
     }
+  };
+
+  const handleClickGreat = () => {
+    setShowGreat(false);
+    setShowReward(true);
   };
 
   const handleClick = async () => {
@@ -126,9 +127,31 @@ const QualitiesSecton = ({route}) => {
     }
   };
 
-  const handleSelect = label => {
+  const handleSelectLike = label => {
     setShowSendButton(true);
     setSelectedLabels(prevSelectedLabels => {
+      if (prevSelectedLabels.includes(label)) {
+        return prevSelectedLabels.filter(l => l !== label);
+      } else {
+        return [...prevSelectedLabels, label];
+      }
+    });
+  };
+
+  const handleSelectDisLike = label => {
+    setShowSendButton(true);
+    setSelectedDisLike(prevSelectedLabels => {
+      if (prevSelectedLabels.includes(label)) {
+        return prevSelectedLabels.filter(l => l !== label);
+      } else {
+        return [...prevSelectedLabels, label];
+      }
+    });
+  };
+
+  const handleSelectLook = label => {
+    setShowSendButton(true);
+    setSelectedLook(prevSelectedLabels => {
       if (prevSelectedLabels.includes(label)) {
         return prevSelectedLabels.filter(l => l !== label);
       } else {
@@ -143,18 +166,13 @@ const QualitiesSecton = ({route}) => {
   };
 
   const handleClickMove = async () => {
-    try {
-      const data = {
-        name: text,
-        hair: hair,
-        eye: eye,
-      };
-      setCurrentStep(1);
-      navigation.navigate('SpeakingSection', {param: data});
-      // navigation.navigate('MainPage', {param: true});
-    } catch (error) {
-      setErrorMsg((error && error.error) || 'Something went wrong.');
-    }
+    const data = {
+      param: param,
+      friendLike: selectedLabels,
+      friendDislike: selectedDisLike,
+      look: selectedLook,
+    };
+    navigation.navigate('ReviewFriendSection', {param: data});
   };
 
   const handleClickSound = async txt => {
@@ -253,27 +271,6 @@ const QualitiesSecton = ({route}) => {
     );
   };
 
-  const EyeButton = ({image, label, onPress}) => {
-    return (
-      <View
-        style={{
-          width: screenWidth / 4,
-          height: 90,
-          borderRadius: 10,
-          borderColor: '#D3D3D3',
-          borderWidth: 1,
-          alignItems: 'center',
-          marginTop: 10,
-          justifyContent: 'center',
-        }}>
-        {/* <TouchableOpacity onPress={onPress} style={[styles.circleButton]}>
-          <Image source={image} />
-        </TouchableOpacity> */}
-        <Text style={styles.colorTitle}>{label}</Text>
-      </View>
-    );
-  };
-
   return (
     <View style={styles.container}>
       <CustomDialog
@@ -291,7 +288,7 @@ const QualitiesSecton = ({route}) => {
         handleClick={handleClickMove}
         title="Great job!"
         text="You've finished typing level!NN  Claim your reward."
-        buttonText="Go to Step 2"
+        buttonText="Go to Step 3"
         icon={reward_ico}
       />
 
@@ -358,12 +355,12 @@ const QualitiesSecton = ({route}) => {
                     alignItems: 'flex-start',
                     marginTop: 15,
                   }}>
-                  {qualities.map((qualitie, index) => (
+                  {likeQualities.map((qualitie, index) => (
                     <View key={index}>
                       <SelectButton
                         image={qualitie.image}
                         label={qualitie.label}
-                        onPress={() => handleSelect(qualitie.label)}
+                        onPress={() => handleSelectLike(qualitie.label)}
                         isSelected={selectedLabels.includes(qualitie.label)}
                       />
                     </View>
@@ -385,11 +382,11 @@ const QualitiesSecton = ({route}) => {
 
             <>
               <Text style={[styles.m_title]}>
-                {`${param.name} can be ${selectedLabels[0] || ''}\n${
-                  selectedLabels.length > 1
-                    ? selectedLabels.length > 4
-                      ? `${selectedLabels.slice(1, 4).join(', ')}...`
-                      : selectedLabels.slice(1).join(', ')
+                {`${param.name} can be ${selectedDisLike[0] || ''}\n${
+                  selectedDisLike.length > 1
+                    ? selectedDisLike.length > 4
+                      ? `${selectedDisLike.slice(1, 4).join(', ')}...`
+                      : selectedDisLike.slice(1).join(', ')
                     : '_______'
                 }.`}
               </Text>
@@ -397,7 +394,7 @@ const QualitiesSecton = ({route}) => {
                 <TouchableOpacity
                   onPress={() =>
                     handleClickSound(
-                      `${param.name} can be ${selectedLabels || '______'}.`,
+                      `${param.name} can be ${selectedDisLike || '______'}.`,
                     )
                   }>
                   <Image source={sound_ico} />
@@ -425,13 +422,13 @@ const QualitiesSecton = ({route}) => {
                     alignItems: 'flex-start',
                     marginTop: 15,
                   }}>
-                  {qualities.map((qualitie, index) => (
+                  {disLikeQualities.map((qualitie, index) => (
                     <View key={index}>
                       <SelectButton
                         image={qualitie.image}
                         label={qualitie.label}
-                        onPress={() => handleSelect(qualitie.label)}
-                        isSelected={selectedLabels.includes(qualitie.label)}
+                        onPress={() => handleSelectDisLike(qualitie.label)}
+                        isSelected={selectedDisLike.includes(qualitie.label)}
                       />
                     </View>
                   ))}
@@ -449,51 +446,77 @@ const QualitiesSecton = ({route}) => {
             <Image source={mechat_b} />
 
             <>
-              <Text style={styles.m_title}>
-                {`I value ${eye || '_______'}\nin a friend.`}
+              <Text style={[styles.m_title]}>
+                {`I value ${selectedLook[0] || ''}\n${
+                  selectedLook.length > 1
+                    ? selectedLook.length > 2
+                      ? `${selectedLook.slice(1, 2).join(', ')}...`
+                      : selectedLook.slice(1).join(', ')
+                    : '_______'
+                } in a friend.`}
               </Text>
               <View style={styles.buttonIcon}>
                 <TouchableOpacity
-                  onPress={() => handleClickSound(`He has ${eye}`)}>
+                  onPress={() =>
+                    handleClickSound(
+                      `I value ${selectedLook[0] || ''}\n${
+                        selectedLook.length > 1
+                          ? selectedLook.length > 3
+                            ? `${selectedLook.slice(1, 3).join(', ')}...`
+                            : selectedLook.slice(1).join(', ')
+                          : '_______'
+                      }. in a friend.`,
+                    )
+                  }>
                   <Image source={sound_ico} />
                 </TouchableOpacity>
                 <Image source={turtle_ico} />
               </View>
-              {!showContinueButton && (
-                <View style={[styles.chatBackground]}>
-                  <Text
-                    style={[
-                      styles.colorTitle,
-                      {marginTop: 1, width: (screenWidth * 9) / 10},
-                    ]}>
-                    Select several qualities
-                  </Text>
-                  <ScrollView>
-                    <View
-                      style={{
-                        flex: 1,
-                        flexDirection: 'row',
-                        flexWrap: 'wrap',
-                        justifyContent: 'space-around',
-                        alignItems: 'flex-start',
-                        marginTop: 15,
-                      }}>
-                      {qualities.map((qualitie, index) => (
-                        <View key={index}>
-                          <SelectButton
-                            image={qualitie.image}
-                            label={qualitie.label}
-                            onPress={() => handleSelect(qualitie.label)}
-                            isSelected={selectedLabels.includes(qualitie.label)}
-                          />
-                        </View>
-                      ))}
-                    </View>
-                  </ScrollView>
-                </View>
-              )}
             </>
           </View>
+          {!showContinueButton && (
+            <View style={[styles.chatBackground]}>
+              <Text
+                style={[
+                  styles.colorTitle,
+                  {marginTop: 1, width: (screenWidth * 9) / 10},
+                ]}>
+                Select several qualities
+              </Text>
+              <ScrollView>
+                <View
+                  style={{
+                    flex: 1,
+                    flexDirection: 'row',
+                    flexWrap: 'wrap',
+                    justifyContent: 'space-around',
+                    alignItems: 'flex-start',
+                    marginTop: 15,
+                  }}>
+                  {likeQualities.map((qualitie, index) => (
+                    <View key={index}>
+                      <SelectButton
+                        image={qualitie.image}
+                        label={qualitie.label}
+                        onPress={() => handleSelectLook(qualitie.label)}
+                        isSelected={selectedLook.includes(qualitie.label)}
+                      />
+                    </View>
+                  ))}
+                  {disLikeQualities.map((qualitie, index) => (
+                    <View key={index}>
+                      <SelectButton
+                        image={qualitie.image}
+                        label={qualitie.label}
+                        onPress={() => handleSelectLook(qualitie.label)}
+                        isSelected={selectedLook.includes(qualitie.label)}
+                      />
+                    </View>
+                  ))}
+                </View>
+              </ScrollView>
+            </View>
+          )}
         </>
       )}
 
@@ -512,6 +535,14 @@ const QualitiesSecton = ({route}) => {
           <Text style={styles.b1_text}>Send</Text>
         </TouchableOpacity>
       )}
+
+      <CustomGreatModal
+        visible={showGreat}
+        icon={thumb_icon}
+        buttonType={true}
+        handleClick={() => handleClickGreat()}
+        message="Great job!"
+      />
     </View>
   );
 };
@@ -537,7 +568,7 @@ const styles = StyleSheet.create({
   },
   colorTitle: {
     color: 'black',
-    fontSize: 18,
+    fontSize: 16,
     fontFamily: 'OpenSans-Medium',
   },
   m_title: {

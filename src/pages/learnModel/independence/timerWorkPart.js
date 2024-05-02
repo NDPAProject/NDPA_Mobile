@@ -11,13 +11,12 @@ import {
   Dimensions,
   TouchableOpacity,
 } from 'react-native';
-import AnimatedCircularProgress from 'react-native-circular-progress-indicator';
+import Svg, {Circle} from 'react-native-svg';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import Header from '../../../components/header';
 import CustomDialog from '../../../components/dialogModal';
 import RewardDialog from '../../../components/rewardModal';
-import DatePicker from 'react-native-date-picker';
-import FeedbackModal from '../../../components/feedbackModal';
+import RateModal from '../../../components/rateModal';
 
 const task_ico = require('../../../../assets/icons/work.png');
 const reward_ico = require('../../../../assets/icons/main/reward.png');
@@ -25,22 +24,50 @@ const reward_ico = require('../../../../assets/icons/main/reward.png');
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-const TimerWorkSection = () => {
+const TimerWorkSection = ({route}) => {
   const navigation = useNavigation();
-  const totalDuration = 2000;
   const [modalVisible, setModalVisible] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [starRating, setStarRating] = useState(0);
+  const [description, setDescription] = useState('');
+  const [success, setSuccess] = useState(false);
   const [move, setMove] = useState(false);
   const [feedback, setFeedback] = useState(false);
-  const [date, setDate] = useState(new Date());
-  const [seconds, setSeconds] = useState(totalDuration);
+  const {param} = route.params;
+  const [running, setRunning] = useState(false);
+
+  const date = new Date(param);
+
+  const [hour, setHour] = useState(date.getHours());
+  const [minutes, setMinutes] = useState(date.getMinutes());
 
   useEffect(() => {
-    if (seconds > 0) {
-      const timer = setTimeout(() => setSeconds(seconds - 1), 1000);
-      return () => clearTimeout(timer);
+    let timer;
+
+    if (running) {
+      timer = setInterval(() => {
+        if (minutes === 0) {
+          if (hour === 0) {
+            setRunning(false);
+            clearInterval(timer);
+          } else {
+            setHour(hour - 1);
+            setMinutes(59);
+          }
+        } else {
+          setMinutes(minutes - 1);
+        }
+      }, 0.01); // 1 minute interval
     }
-  }, [seconds]);
+
+    return () => clearInterval(timer);
+  }, [running, hour, minutes]);
+
+  const formattedHour = hour < 10 ? '0' + hour : hour;
+  const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+
+  const totalMinutes = hour * 60 + minutes;
+  const progressPercentage = (totalMinutes / 60) * 100;
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -51,8 +78,22 @@ const TimerWorkSection = () => {
     return unsubscribe;
   }, [navigation]);
 
+  useEffect(() => {
+    if (formattedHour === '00' && formattedMinutes === '00') {
+      console.log('0000000000000000000000000');
+      setFeedback(true);
+      setSuccess(true);
+    }
+  });
+
   const handleContinue = () => {
-    setFeedback(true);
+    // setFeedback(true);
+    if (running) {
+      setRunning(false);
+      setFeedback(true);
+      return;
+    }
+    setRunning(true);
   };
 
   const handleClick = async () => {
@@ -60,37 +101,28 @@ const TimerWorkSection = () => {
   };
 
   const handleClickMove = async () => {
-    try {
-      console.log('-------------data--------------');
-    } catch (error) {
-      setErrorMsg((error && error.error) || 'Something went wrong.');
-    }
+    navigation.navigate('PercentIndependenceSection', {param: success});
   };
-  const handleRating = rating => {
+  const handleRating = (rating, comment) => {
     setStarRating(rating);
-    setExplainModal(true);
+    setDescription(comment);
     setModalVisible(false);
-    console.log('Rating received:', rating);
+    setMove(true);
+    console.log('Rating received:', rating, comment);
   };
   const handleClickClose = async () => {
-    try {
-      setModalVisible(false);
-      setExplainModal(false);
-    } catch (error) {
-      setErrorMsg((error && error.error) || 'Something went wrong.');
-      // setIsLoading(false);
-    }
+    setModalVisible(false);
   };
-  const fill = (seconds / totalDuration) * 100;
+
   return (
     <View style={styles.container}>
-      <FeedbackModal
+      <RateModal
         modalVisible={feedback}
         setModalVisible={setModalVisible}
         handleClickClose={handleClickClose}
-        handleRating={handleRating}
-        title="Give Us Feedback"
-        description="Are you having funNN using the app?"
+        handleClick={handleRating}
+        title="Great Job!"
+        description="Rate how the task went"
       />
       <CustomDialog
         modalVisible={modalVisible}
@@ -107,7 +139,7 @@ const TimerWorkSection = () => {
         handleClick={handleClickMove}
         title="Great job!"
         text="You've finished typing level!NN  Claim your reward."
-        buttonText="Go to Step 2"
+        buttonText="Finish"
         icon={reward_ico}
       />
 
@@ -125,24 +157,40 @@ const TimerWorkSection = () => {
           gap: 30,
         }}>
         <Text style={styles.title}>{'Turn on the timer to start'}</Text>
-        <AnimatedCircularProgress
-          size={screenWidth / 3}
-          width={15}
-          fill={fill}
-          tintColor="#F08080"
-          backgroundColor="#F08080"
-          backgroundWidth={4}
-          lineCap="round"
-          rotation={0}>
-          {() => (
-            <Text style={{fontSize: 20, color: 'black'}}>
-              {/* {`${Math.floor(seconds / 60)}:${
-                seconds % 60 < 10 ? `0${seconds % 60}` : seconds % 60
-              }`} */}
-              20:00
-            </Text>
-          )}
-        </AnimatedCircularProgress>
+        <Svg height="250" width="250" viewBox="0 0 250 250">
+          <Circle
+            cx="125"
+            cy="125"
+            r="120"
+            stroke="#D3D3D3"
+            strokeWidth="4"
+            fill="transparent"
+          />
+          <Circle
+            cx="125"
+            cy="125"
+            r="120"
+            stroke="#F08080"
+            strokeWidth="4"
+            strokeDasharray={`${2 * Math.PI * 120}`}
+            strokeDashoffset={
+              ((100 - progressPercentage) / 100) * 2 * Math.PI * 120
+            }
+            fill="transparent"
+            transform={`rotate(-90 125 125)`}
+          />
+          <Text
+            style={{
+              fontSize: 56,
+              color: '#F08080',
+              position: 'absolute',
+              top: 80,
+              left: 50,
+            }}>
+            {formattedHour + ':' + formattedMinutes}
+          </Text>
+        </Svg>
+
         <TouchableOpacity
           style={{
             justifyContent: 'center',
@@ -154,7 +202,7 @@ const TimerWorkSection = () => {
             backgroundColor: '#F08080',
           }}
           onPress={() => handleContinue()}>
-          <Text style={styles.b3_text}>Start</Text>
+          <Text style={styles.b3_text}>{!running ? 'Start' : 'Finish'}</Text>
         </TouchableOpacity>
       </View>
     </View>

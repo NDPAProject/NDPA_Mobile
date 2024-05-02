@@ -137,11 +137,7 @@ const WeeklyActSection = () => {
   };
 
   const handleClick = async () => {
-    try {
-      setModalVisible(false);
-    } catch (error) {
-      setErrorMsg((error && error.error) || 'Something went wrong.');
-    }
+    setModalVisible(false);
   };
 
   const handleClickMove = async () => {

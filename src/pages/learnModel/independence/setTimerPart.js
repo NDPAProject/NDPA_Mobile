@@ -56,16 +56,9 @@ const SetTimerSection = () => {
   };
 
   const handleClickMove = async () => {
-    try {
-      console.log('-------------data--------------');
-      navigation.navigate('TimerWorkSection');
-    } catch (error) {
-      setErrorMsg((error && error.error) || 'Something went wrong.');
-    }
-  };
-
-  const handleSend = () => {
-    setContent(comment);
+    const timestamp = date.getTime();
+    console.log('-------------data--------------', timestamp);
+    navigation.navigate('TimerWorkSection', {param: timestamp});
   };
 
   return (

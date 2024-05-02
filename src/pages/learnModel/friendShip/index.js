@@ -10,6 +10,8 @@ import {createStackNavigator} from '@react-navigation/stack';
 import AppearanceSection from './appearancePart';
 import StartFriendShipSection from './startFriendShipPart';
 import QualitiesSection from './qualitiesPart';
+import ReviewFriendSection from './reviewFriendShipPart';
+import PercentFriendShipSection from './percentFriendShipPart';
 import {LogBox} from 'react-native';
 
 LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
@@ -35,11 +37,16 @@ const MainFriendShipSection = () => {
         component={QualitiesSection}
         options={{headerShown: false}}
       />
-      {/* <Stack.Screen
-        name="ReviewActSection"
-        component={ReviewActSection}
+      <Stack.Screen
+        name="ReviewFriendSection"
+        component={ReviewFriendSection}
         options={{headerShown: false}}
-      /> */}
+      />
+      <Stack.Screen
+        name="PercentFriendShipSection"
+        component={PercentFriendShipSection}
+        options={{headerShown: false}}
+      />
     </Stack.Navigator>
   );
 };
