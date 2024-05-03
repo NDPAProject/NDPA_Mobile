@@ -21,9 +21,6 @@ const Routepage = () => {
   const route = useRoute();
 
   //modal
-  const [step_5, setStep_5] = useState(false);
-  const [showImage, setShowImage] = useState(false);
-
   const [routecolor, setRoutecolor] = useState(false);
   const [switchroute, setSwitchroute] = useState(true);
 

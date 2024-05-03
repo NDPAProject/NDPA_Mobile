@@ -98,7 +98,7 @@ const FloatingActionButtonGroup = ({routedata, result_dur_dis, showImage}) => {
   );
 };
 
-const Routeview = () => {
+const RouteviewTutorial = () => {
   const navigation = useNavigation();
   const route = useRoute();
   //modal
@@ -120,7 +120,6 @@ const Routeview = () => {
     duration: 0,
     distance: 0,
   });
-  console.log('<><><><><><><><<<>', route.params.mode);
   //origin screen center
   useEffect(() => {
     if (mapView.current) {
@@ -162,7 +161,6 @@ const Routeview = () => {
       const bearing = getRhumbLineBearing(coordinates[0], coordinates[1]);
       const newPoint = computeDestinationPoint(coordinates[0], 10, bearing);
       setNewPoint(newPoint);
-      console.log('NEW POINT', bearing, coordinates[1], newPoint);
     }
   }, [coordinates]);
 
@@ -183,7 +181,6 @@ const Routeview = () => {
             longitudeDelta: 0.0421,
             title: street,
           });
-          console.log('STREET NAME', street);
         })
         .catch(error => console.warn(error));
     }
@@ -233,9 +230,6 @@ const Routeview = () => {
               );
             }}
             onReady={result => {
-              console.log(`Distance: ${result.distance} km`);
-              console.log(`Duration: ${result.duration} min.`);
-
               setResult_dur_dis({
                 duration: Math.round(result.duration * 10) / 10,
                 distance: Math.round(result.distance * 10) / 10,
@@ -476,4 +470,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Routeview;
+export default RouteviewTutorial;

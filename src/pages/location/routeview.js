@@ -1,6 +1,5 @@
 import 'react-native-gesture-handler';
 import {GOOGLE_API_KEY_ANDROID___} from '@env';
-
 import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
@@ -14,11 +13,8 @@ import {
 import MapView, {Marker, Polyline} from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import LinearGradient from 'react-native-linear-gradient';
 import Geocoder from 'react-native-geocoding';
 import {getRhumbLineBearing, computeDestinationPoint} from 'geolib';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
 import {
   fab_1,
   fab_4,
@@ -28,8 +24,6 @@ import {
 } from '../../constants/images';
 import {mapStyle, stepData} from '../../constants/data';
 import DirectionBox from '../../components/turnBox';
-import ModalContainer from '../../components/modalContainer';
-import StepBox from '../../components/stepBox';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;

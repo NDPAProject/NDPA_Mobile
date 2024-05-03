@@ -6,7 +6,7 @@ const StepBox = ({style, step, description}) => {
   const navigation = useNavigation();
 
   const handleClick = () => {
-    console.log('Redux store skip button click');
+    navigation.navigate('Location');
   };
 
   return (

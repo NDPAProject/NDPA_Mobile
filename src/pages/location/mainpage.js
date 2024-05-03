@@ -10,6 +10,7 @@ import {
   Image,
   Text,
   Modal,
+  BackHandler,
   TouchableOpacity,
 } from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
@@ -31,8 +32,6 @@ import {
   hospital,
   pharamacies,
   park,
-  tuto_1,
-  hand_ico,
 } from '../../constants/images';
 import ResourceButton from '../../components/resourceButton';
 import FabGroup from '../../components/fabGroup';
@@ -85,9 +84,6 @@ const Mainpage = () => {
 
   // State variable for search bar focus
   const [focus_sb, setFocus_sb] = useState(false);
-
-  // State variables for modal visibility and steps
-  const [showImage, setShowImage] = useState(0);
 
   // Other state variables
   const [tutodata, setTutodata] = useState('');
@@ -234,7 +230,7 @@ const Mainpage = () => {
   };
 
   const handleOnFocus = () => {
-    setShowImage(0);
+    console.log('HandleFocus');
   };
 
   return (
