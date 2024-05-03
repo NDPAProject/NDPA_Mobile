@@ -10,6 +10,7 @@ import {
   Image,
   Text,
   Modal,
+  BackHandler,
   TouchableOpacity,
 } from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
@@ -67,11 +68,11 @@ const resourcedata = [
   {image: park, text: 'Parks'},
 ];
 
-const Mainpage = () => {
+const MainpageTutorial = ({navigation}) => {
   // References
   const ref = useRef();
   const refRBSheet = useRef();
-  const navigation = useNavigation();
+  // const navigation = useNavigation();
 
   // State variables for location and address
   const [location, setLocation] = useState(defaultLocation);
@@ -86,7 +87,7 @@ const Mainpage = () => {
   const [focus_sb, setFocus_sb] = useState(false);
 
   // State variables for modal visibility and steps
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(true);
   const [step_1, setStep_1] = useState(false);
   const [showImage, setShowImage] = useState(0);
   const [showstep_1, setShowstep_1] = useState(true);
@@ -98,18 +99,18 @@ const Mainpage = () => {
   const [tutodata, setTutodata] = useState('');
   const [placeId, setPlaceId] = useState(null);
 
-  useEffect(() => {
-    AsyncStorage.removeItem('hasSeenTutorial');
-    AsyncStorage.getItem('hasSeenTutorial').then(value => {
-      if (value === null) {
-        setModalVisible(true);
-      }
-    });
+  React.useEffect(() => {
+    // AsyncStorage.removeItem('hasSeenTutorial');
+    // AsyncStorage.getItem('hasSeenTutorial').then(value => {
+    //   if (value === null) {
+    //     setModalVisible(true);
+    //   }
+    // });
   }, []);
 
   useEffect(() => {
     if (!placeId) return;
-    console.log('geometry', placeId);
+    AsyncStorage.setItem('hasSeenTutorial', true);
     fetch(
       `https://maps.googleapis.com/maps/api/place/details/json?placeid=${placeId}&key=${GOOGLE_API_KEY_ANDROID__}`,
     )
@@ -165,10 +166,10 @@ const Mainpage = () => {
   }, [step_3]);
 
   const handleClick = async () => {
-    // setModalVisible(false);
-    // setTimeout(() => {
-    //   setStep_1(true);
-    // }, 1000);
+    setModalVisible(false);
+    setTimeout(() => {
+      setStep_1(true);
+    }, 1000);
   };
 
   const handleClickSkip = async () => {
@@ -521,7 +522,7 @@ const Mainpage = () => {
   );
 };
 
-export default Mainpage;
+export default MainpageTutorial;
 
 const styles = StyleSheet.create({
   // Main Styles

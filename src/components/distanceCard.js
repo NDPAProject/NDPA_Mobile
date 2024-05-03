@@ -272,7 +272,6 @@ const DistanceCard = ({
               <CircleView color="#F08080" bgcolor={'#FFFFFF'} />
               <VerticalLine color="#F08080" height={84} />
               <Image source={location_r} style={{width: 16, height: 22.86}} />
-              {/* <CircleView color="#F08080" bgcolor={'#F08080'} /> */}
             </View>
             <View style={styles.addressColumn}>
               <AddressView
@@ -287,11 +286,6 @@ const DistanceCard = ({
           </View>
           <TouchableOpacity
             onPress={() => {
-              // if (route.name.includes('Tutorial'))
-              console.log({
-                locationaddress: route.params.locationaddress,
-                mode: mode,
-              });
               navigation.navigate(
                 route.name.includes('Tutorial')
                   ? 'RouteviewTutorial'

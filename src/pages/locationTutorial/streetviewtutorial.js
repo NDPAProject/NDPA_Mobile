@@ -55,7 +55,6 @@ const FloatingActionButtonGroup = () => {
       <TouchableOpacity
         style={[styles.fabButton, {backgroundColor: '#FFFFFF'}]}
         onPress={() => {
-          console.log(route.params, '!!!!!!!!!!!!!!!BBBB!!!!!!!!!!!!!!!!');
           navigation.navigate('Routeview', {
             locationaddress: route.params.locationaddress,
             mode: route.params.mode,
@@ -67,7 +66,7 @@ const FloatingActionButtonGroup = () => {
   );
 };
 
-const Streetview = routedata => {
+const StreetviewTutorial = routedata => {
   const navigation = useNavigation();
   const route = useRoute();
   //modal
@@ -104,7 +103,6 @@ const Streetview = routedata => {
       const bearing = getRhumbLineBearing(coordinates[0], coordinates[1]);
       const newPoint = computeDestinationPoint(coordinates[0], 10, bearing);
       setNewPoint(newPoint);
-      console.log('NEW POINT', bearing, coordinates[1], newPoint);
     }
   }, [coordinates]);
 
@@ -118,16 +116,12 @@ const Streetview = routedata => {
           const street = addressComponent ? addressComponent : '';
 
           setStreetName(street);
-          console.log('STREET NAME', street);
         })
         .catch(error => console.warn(error));
     }
   }, [newPoint]);
 
   useEffect(() => {
-    console.log(route.name, '<><><><><><><><><><><');
-    // AsyncStorage.getItem('hasSeenTutorial').then(value => {
-    //   if (value === null) {
     let timer;
     timer = setTimeout(() => {
       setStep_7(true);
@@ -136,8 +130,6 @@ const Streetview = routedata => {
       }, 800);
     }, 1000);
     return () => clearTimeout(timer);
-    //   }
-    // });
   }, []);
 
   useEffect(() => {
@@ -668,4 +660,4 @@ const styles = StyleSheet.create({
     height: 32,
   },
 });
-export default Streetview;
+export default StreetviewTutorial;

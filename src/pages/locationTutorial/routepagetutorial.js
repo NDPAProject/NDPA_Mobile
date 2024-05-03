@@ -29,7 +29,7 @@ const ASPECT_RATIO = width / height;
 const LATITUDE_DELTA = 0.0922;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
-const Routepage = () => {
+const RoutepageTutorial = () => {
   const navigation = useNavigation();
   const route = useRoute();
   //modal
@@ -84,11 +84,6 @@ const Routepage = () => {
   const [mode, setMode] = useState('WALKING');
   const [allinfo, setAllinfo] = useState([]);
 
-  console.log(
-    'locao',
-    route.params.locationaddress.location_info,
-    coordinates[1],
-  );
   const mapView = useRef(null);
 
   useEffect(() => {
@@ -123,15 +118,8 @@ const Routepage = () => {
         .then(response => response.json())
         .then(data => {
           if (data) {
-            console.log(
-              '``````````````````',
-              mode,
-              data.rows[0].elements[0].duration.text,
-            );
             let route = data.rows[0].elements[0];
-            console.log(
-              `The ${mode} distance is ${route.distance.text} and will take approximately ${route.duration.text}.`,
-            );
+
             setAllinfo(prev => [
               ...prev,
               {
@@ -165,7 +153,6 @@ const Routepage = () => {
   };
 
   const handleSwichroute = () => {
-    console.log('route changed');
     setSwitchroute(!switchroute);
   };
 
@@ -218,9 +205,6 @@ const Routepage = () => {
               );
             }}
             onReady={result => {
-              console.log(`Distance: ${result.distance} km`);
-              console.log(`Duration: ${result.duration} min.`);
-
               setResult_dur_dis(prevState => [
                 {
                   duration: Math.round(result.duration * 10) / 10,
@@ -262,9 +246,6 @@ const Routepage = () => {
               );
             }}
             onReady={result => {
-              console.log(`Distance: ${result.distance} km`);
-              console.log(`Duration: ${result.duration} min.`);
-
               setResult_dur_dis(prevState => [
                 prevState[0], // keep the existing first object
                 {
@@ -376,4 +357,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Routepage;
+export default RoutepageTutorial;

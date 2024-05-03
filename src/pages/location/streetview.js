@@ -15,19 +15,8 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import StreetView from 'react-native-streetview';
 import Geocoder from 'react-native-geocoding';
 import {getRhumbLineBearing, computeDestinationPoint} from 'geolib';
-import LinearGradient from 'react-native-linear-gradient';
-import {BlurView} from '@react-native-community/blur';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-  arrow_up,
-  fab_1,
-  fab_5,
-  hand_ico,
-  left_arrow,
-  right_arrow,
-  str_icon,
-  tuto_2,
-} from '../../constants/images';
+
+import {fab_1, fab_5, right_arrow, str_icon} from '../../constants/images';
 import DirectionBox from '../../components/turnBox';
 
 const screenWidth = Dimensions.get('window').width;
@@ -67,11 +56,7 @@ const Streetview = routedata => {
   const navigation = useNavigation();
   const route = useRoute();
   //modal
-  const [step_7, setStep_7] = useState(false);
-  const [step_8, setStep_8] = useState(false);
-  const [showImage, setShowImage] = useState(0);
   const slideAnim = useRef(new Animated.Value(0)).current;
-  const [modalVisible, setModalVisible] = useState(false);
   //
   const [location, setLocation] = useState({
     latitude: 51.51656759999999,
@@ -131,6 +116,8 @@ const Streetview = routedata => {
       <StreetView
         style={styles.streetView}
         allGesturesEnabled={true}
+        streetNamesHidden={true}
+        radius={100}
         coordinate={{
           latitude: location.latitude,
           longitude: location.longitude,
