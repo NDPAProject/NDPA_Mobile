@@ -17,14 +17,19 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import Header from '../../../components/header';
 import CustomDialog from '../../../components/dialogModal';
 import RewardDialog from '../../../components/rewardModal';
+import {separation_3} from '../../../utils/content';
+import {
+  emotion_ico,
+  seek_ico,
+  outdoor_ico,
+  positivity_ico,
+  selfcare_ico,
+  techniques_ico,
+  reward_ico,
+} from '../../../utils/image';
 
-const task_ico = require('../../../../assets/icons/help_ico.png');
+const task_ico = require('../../../../assets/icons/practice_ico.png');
 const avatar_ico = require('../../../../assets/icons/learn/choice/avatar_ico.png');
-const reward_ico = require('../../../../assets/icons/main/reward.png');
-const drawing_ico = require('../../../../assets/icons/learn/choice/drawing.png');
-const reading_ico = require('../../../../assets/icons/learn/choice/reading.png');
-const sing_ico = require('../../../../assets/icons/learn/choice/sing.png');
-const swimming_ico = require('../../../../assets/icons/learn/choice/swimming.png');
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -34,32 +39,32 @@ const content =
 const boxData = [
   [
     {
-      icon: drawing_ico,
-      text: 'Drawing',
+      icon: emotion_ico,
+      text: 'Express\nEmotions',
     },
     {
-      icon: reading_ico,
-      text: 'Reading',
-    },
-  ],
-  [
-    {
-      icon: swimming_ico,
-      text: 'Swimming',
-    },
-    {
-      icon: sing_ico,
-      text: 'Play Basketball',
+      icon: seek_ico,
+      text: 'Seek Support',
     },
   ],
   [
     {
-      icon: swimming_ico,
-      text: 'Swimming',
+      icon: outdoor_ico,
+      text: 'Spend Time\nOutdoors',
     },
     {
-      icon: sing_ico,
-      text: 'Play Basketball',
+      icon: positivity_ico,
+      text: 'Focus on Positivity',
+    },
+  ],
+  [
+    {
+      icon: selfcare_ico,
+      text: 'Practice\nSelf-Care',
+    },
+    {
+      icon: techniques_ico,
+      text: 'Relaxation Techniques',
     },
   ],
 ];
@@ -126,23 +131,29 @@ const PracticeSeparationSection = () => {
       item => item.row === rowIndex && item.item === itemIndex,
     );
 
-  const ItemBlock = ({dash_icon, datas, title, content, type}) => (
+  const ItemBlock = ({dash_icon, datas, title, contents, type}) => (
     <>
       <Image source={dash_icon} style={styles.avatar} />
 
       <Text
         style={[
-          styles.text,
+          styles.title,
           {textAlign: 'center', fontSize: 19, marginTop: 10},
         ]}>
         {title}
       </Text>
       {type ? (
-        <Text style={[styles.text, , {textAlign: 'left', fontSize: 17}]}>
-          {content}
-        </Text>
+        <View style={[styles.input]}>
+          {contents.map((content, index) => (
+            <Text
+              style={[styles.text, , {textAlign: 'left', fontSize: 17}]}
+              key={index}>
+              {content}
+            </Text>
+          ))}
+        </View>
       ) : (
-        <ScrollView>
+        <ScrollView style={{marginTop: 100, bottom: 100}}>
           {datas.map((row, rowIndex) => (
             <View key={rowIndex} style={styles.row}>
               {row.map((item, itemIndex) => (
@@ -182,7 +193,7 @@ const PracticeSeparationSection = () => {
         handleClick={handleClick}
         icon={task_ico}
         title="Step 3. Practice"
-        description="Let’s think how we can help in this situation"
+        description="If you were Ronald,what would you do?"
       />
 
       <RewardDialog
@@ -191,7 +202,7 @@ const PracticeSeparationSection = () => {
         handleClick={handleClickMove}
         title="Great job!"
         text="You've finished typing level!NN  Claim your reward."
-        buttonText="Go to Step 2"
+        buttonText="Finish"
         icon={reward_ico}
       />
 
@@ -206,15 +217,15 @@ const PracticeSeparationSection = () => {
         <ItemBlock
           dash_icon={avatar_ico}
           type={true}
-          title={'If I were Abdul, I might:'}
-          content={content}
+          title={'If I were Ronald, I might:'}
+          contents={separation_3}
         />
       )}
       {step_2 && (
         <ItemBlock
           dash_icon={avatar_ico}
           type={false}
-          title={'If I were Abdul, I might:'}
+          title={'If you were Ronald, what would you do?'}
           datas={boxData}
         />
       )}
@@ -225,7 +236,7 @@ const PracticeSeparationSection = () => {
           width: (screenWidth * 9) / 10,
           height: 57,
           position: 'absolute',
-          bottom: 100,
+          bottom: 10,
           borderRadius: 45,
           backgroundColor: '#F08080',
         }}
@@ -260,7 +271,7 @@ const styles = StyleSheet.create({
     color: 'black',
     alignItems: 'center',
     textAlign: 'center',
-    fontSize: 20,
+    fontSize: 28,
     marginTop: 10,
     fontWeight: '700',
     fontFamily: 'OpenSans-Medium',
@@ -268,6 +279,7 @@ const styles = StyleSheet.create({
   text: {
     color: 'black',
     alignItems: 'center',
+    textAlign: 'center',
     padding: 5,
     fontWeight: '600',
     fontFamily: 'OpenSans-Medium',

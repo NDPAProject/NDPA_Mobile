@@ -16,6 +16,7 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import Header from '../../../components/header';
 import CustomDialog from '../../../components/dialogModal';
 import RewardDialog from '../../../components/rewardModal';
+import {worry_1, worry_2} from '../../../utils/content';
 
 const task_ico = require('../../../../assets/icons/infor.png');
 const thumb_icon = require('../../../../assets/icons/great_ico.png');
@@ -25,8 +26,6 @@ const reward_ico = require('../../../../assets/icons/main/reward.png');
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
-const content =
-  "Sabrina had a special friend, a maltipoo (half Maltese, half poodle), who brought joy and companionship into her life. Unfortunately, her furry friend developed a condition similar to heart disease and, despite efforts to help, Sabrina had to make the difficult decision to say goodbye. Losing her dog was incredibly heartbreaking for Sabrina, and she's struggling with a mix of emotions right now.";
 
 const WorrySection = () => {
   const navigation = useNavigation();
@@ -73,7 +72,7 @@ const WorrySection = () => {
         handleClick={handleClick}
         icon={task_ico}
         title="Step 1. Information"
-        description="Let’s read the information about sadness"
+        description="Let’s read the information about worry"
       />
 
       <RewardDialog
@@ -99,7 +98,7 @@ const WorrySection = () => {
           <Image source={dash_icon} style={styles.avatar} />
           <View style={[styles.input]}>
             <Text style={[styles.text, , {textAlign: 'left', fontSize: 17}]}>
-              {content}
+              {worry_1}
             </Text>
           </View>
         </>
@@ -108,7 +107,7 @@ const WorrySection = () => {
           <Image source={das_icon} style={styles.avatar} />
           <View style={[styles.input]}>
             <Text style={[styles.text, , {textAlign: 'left', fontSize: 17}]}>
-              {content}
+              {worry_2}
             </Text>
           </View>
         </>
@@ -121,7 +120,7 @@ const WorrySection = () => {
           width: (screenWidth * 9) / 10,
           height: 57,
           position: 'absolute',
-          bottom: 100,
+          bottom: 10,
           borderRadius: 45,
           backgroundColor: '#F08080',
         }}
@@ -173,7 +172,6 @@ const styles = StyleSheet.create({
   },
   input: {
     width: (screenWidth * 9) / 10,
-    height: 270,
     margin: 12,
     padding: 10,
   },

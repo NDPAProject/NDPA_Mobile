@@ -18,49 +18,65 @@ import CustomDialog from '../../../components/dialogModal';
 import RewardDialog from '../../../components/rewardModal';
 import CustomGreatModal from '../../../components/greatModal';
 import {ScrollView} from 'react-native-gesture-handler';
+import {withdrawal_1} from '../../../utils/content';
+import {
+  loneliness_ico2,
+  sadness_ico,
+  thumb_icon,
+  reward_ico,
+  excitement_ico,
+  hurt_ico,
+  anger_ico,
+  gratitude_ico,
+  confusion_ico,
+  guit_ico,
+  try_again_ico,
+} from '../../../utils/image';
 
 const task_ico = require('../../../../assets/icons/situation.png');
-const thumb_icon = require('../../../../assets/icons/great_ico.png');
 const dash_icon = require('../../../../assets/icons/learn/withdrawal/withdrawal.png');
-const reward_ico = require('../../../../assets/icons/main/reward.png');
-const drawing_ico = require('../../../../assets/icons/learn/choice/drawing.png');
-const reading_ico = require('../../../../assets/icons/learn/choice/reading.png');
-const sing_ico = require('../../../../assets/icons/learn/choice/sing.png');
-const swimming_ico = require('../../../../assets/icons/learn/choice/swimming.png');
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
-const content =
-  "Have you ever experienced a disagreement with a friend that left you feeling upset and confused? Abdul recently found himself in such a situation with his friend Gary. They argued over a minor issue, like their favorite car, and it led to tension in their friendship.Gary's mom suggests that they should take a break from hanging out together every day. Abdul feels sad about this and finds it hard to think about changing his daily routine because of it.";
 const boxData = [
   [
     {
-      icon: drawing_ico,
-      text: 'Drawing',
+      icon: sadness_ico,
+      text: 'Sadness',
     },
     {
-      icon: reading_ico,
-      text: 'Reading',
-    },
-  ],
-  [
-    {
-      icon: swimming_ico,
-      text: 'Swimming',
-    },
-    {
-      icon: sing_ico,
-      text: 'Play Basketball',
+      icon: confusion_ico,
+      text: 'Confusion',
     },
   ],
   [
     {
-      icon: swimming_ico,
-      text: 'Swimming',
+      icon: excitement_ico,
+      text: 'Excitement',
     },
     {
-      icon: sing_ico,
-      text: 'Play Basketball',
+      icon: hurt_ico,
+      text: 'Hurt',
+    },
+  ],
+  [
+    {
+      icon: anger_ico,
+      text: 'Anger',
+    },
+    {
+      icon: gratitude_ico,
+      text: 'Gratitude',
+    },
+  ],
+  [
+    {
+      icon: loneliness_ico2,
+      text: 'Loneliness',
+    },
+    {
+      icon: guit_ico,
+      text: 'Guilt',
     },
   ],
 ];
@@ -70,7 +86,7 @@ const WithdrawalSection = () => {
   const [modalVisible, setModalVisible] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [move, setMove] = useState(false);
-  const [comment, setComment] = useState('');
+  const [buttonType, setButtonType] = useState(Boolean);
   const [progress, setProgress] = useState(0.5);
   const [selectedItems, setSelectedItems] = useState([]);
 
@@ -85,7 +101,8 @@ const WithdrawalSection = () => {
 
   const handleContinue = () => {
     if (step) {
-      setMove(true);
+      setShowModal(true);
+      return;
     }
     setProgress(1);
     setStep(true);
@@ -93,6 +110,14 @@ const WithdrawalSection = () => {
 
   const handleClick = async () => {
     setModalVisible(false);
+  };
+
+  const handleMove = async () => {
+    if (buttonType) {
+      setMove(true);
+      return;
+    }
+    setShowModal(false);
   };
 
   const handleClickMove = async () => {
@@ -105,13 +130,39 @@ const WithdrawalSection = () => {
       item => item.row === rowIndex && item.item === itemIndex,
     );
 
+    console.log('------index---', index, itemText);
+
     if (index >= 0) {
       setSelectedItems(selectedItems.filter((_, i) => i !== index));
+      if (
+        selectedItems[index].text === 'Excitement' ||
+        selectedItems[index].text === 'Gratitude'
+      ) {
+        setButtonType(false);
+      }
     } else {
       setSelectedItems([
         ...selectedItems,
         {row: rowIndex, item: itemIndex, text: itemText},
       ]);
+      if (itemText === 'Excitement' || itemText === 'Gratitude') {
+        setButtonType(false);
+      } else {
+        setButtonType(true);
+      }
+    }
+  };
+
+  const getBorderColor = (rowIndex, itemIndex, itemText) => {
+    if (
+      (isSelected(rowIndex, itemIndex) && itemText === 'Excitement') ||
+      (isSelected(rowIndex, itemIndex) && itemText === 'Gratitude')
+    ) {
+      return '#FFC700';
+    } else if (isSelected(rowIndex, itemIndex)) {
+      return '#23B80C';
+    } else {
+      return '#FBC4AB';
     }
   };
 
@@ -128,7 +179,7 @@ const WithdrawalSection = () => {
         handleClick={handleClick}
         icon={task_ico}
         title="Step 1. Situation"
-        description="Let’s consider the situation about separation"
+        description="Let’s consider the situation about withdrawal"
       />
 
       <RewardDialog
@@ -153,7 +204,7 @@ const WithdrawalSection = () => {
       {!step ? (
         <View style={[styles.input]}>
           <Text style={[styles.text, , {textAlign: 'left', fontSize: 17}]}>
-            {content}
+            {withdrawal_1}
           </Text>
         </View>
       ) : (
@@ -165,7 +216,7 @@ const WithdrawalSection = () => {
             ]}>
             How does Abdul feel?
           </Text>
-          <ScrollView>
+          <ScrollView style={{marginTop: 100, bottom: 100}}>
             {boxData.map((row, rowIndex) => (
               <View key={rowIndex} style={styles.row}>
                 {row.map((item, itemIndex) => (
@@ -178,9 +229,11 @@ const WithdrawalSection = () => {
                       style={[
                         styles.boxBackground,
                         {
-                          borderColor: isSelected(rowIndex, itemIndex)
-                            ? '#23B80C'
-                            : '#FBC4AB',
+                          borderColor: getBorderColor(
+                            rowIndex,
+                            itemIndex,
+                            item.text,
+                          ),
                         },
                       ]}>
                       <Image source={item.icon} />
@@ -203,13 +256,20 @@ const WithdrawalSection = () => {
           width: (screenWidth * 9) / 10,
           height: 57,
           position: 'absolute',
-          bottom: 100,
+          bottom: 10,
           borderRadius: 45,
           backgroundColor: '#F08080',
         }}
         onPress={() => handleContinue()}>
         <Text style={styles.b3_text}>Next</Text>
       </TouchableOpacity>
+      <CustomGreatModal
+        visible={showModal}
+        icon={buttonType ? thumb_icon : try_again_ico}
+        handleClick={() => handleMove()}
+        buttonType={buttonType}
+        message={buttonType ? 'Great job!' : "Don't give up"}
+      />
     </View>
   );
 };
@@ -255,7 +315,7 @@ const styles = StyleSheet.create({
   },
   input: {
     width: (screenWidth * 9) / 10,
-    height: 270,
+    // height: 270,
     margin: 12,
     padding: 10,
   },

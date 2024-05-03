@@ -17,49 +17,53 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import Header from '../../../components/header';
 import CustomDialog from '../../../components/dialogModal';
 import RewardDialog from '../../../components/rewardModal';
+import CustomGreatModal from '../../../components/greatModal';
+import {separation_2} from '../../../utils/content';
+import {
+  emotion_ico,
+  seek_ico,
+  outdoor_ico,
+  positivity_ico,
+  selfcare_ico,
+  techniques_ico,
+  reward_ico,
+} from '../../../utils/image';
 
 const task_ico = require('../../../../assets/icons/help_ico.png');
 const help_png = require('../../../../assets/icons/learn/separation/help.png');
-const reward_ico = require('../../../../assets/icons/main/reward.png');
-const drawing_ico = require('../../../../assets/icons/learn/choice/drawing.png');
-const reading_ico = require('../../../../assets/icons/learn/choice/reading.png');
-const sing_ico = require('../../../../assets/icons/learn/choice/sing.png');
-const swimming_ico = require('../../../../assets/icons/learn/choice/swimming.png');
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
-const content =
-  'Ronald’s mother and father, who have been married for over a decade, have recently decided to split up. Their decision comes after months of ongoing arguments and challenges in their relationship, which have gradually taken a toll on their family dynamics.';
 
 const boxData = [
   [
     {
-      icon: drawing_ico,
-      text: 'Drawing',
+      icon: emotion_ico,
+      text: 'Express\nEmotions',
     },
     {
-      icon: reading_ico,
-      text: 'Reading',
-    },
-  ],
-  [
-    {
-      icon: swimming_ico,
-      text: 'Swimming',
-    },
-    {
-      icon: sing_ico,
-      text: 'Play Basketball',
+      icon: seek_ico,
+      text: 'Seek Support',
     },
   ],
   [
     {
-      icon: swimming_ico,
-      text: 'Swimming',
+      icon: outdoor_ico,
+      text: 'Spend Time\nOutdoors',
     },
     {
-      icon: sing_ico,
-      text: 'Play Basketball',
+      icon: positivity_ico,
+      text: 'Focus on Positivity',
+    },
+  ],
+  [
+    {
+      icon: selfcare_ico,
+      text: 'Practice\nSelf-Care',
+    },
+    {
+      icon: techniques_ico,
+      text: 'Relaxation Techniques',
     },
   ],
 ];
@@ -138,11 +142,13 @@ const HelpSeparationSection = () => {
         {title}
       </Text>
       {type ? (
-        <Text style={[styles.text, , {textAlign: 'left', fontSize: 17}]}>
-          {content}
-        </Text>
+        <View style={[styles.input]}>
+          <Text style={[styles.text, , {textAlign: 'left', fontSize: 17}]}>
+            {content}
+          </Text>
+        </View>
       ) : (
-        <ScrollView>
+        <ScrollView style={{marginTop: 100, bottom: 100}}>
           {datas.map((row, rowIndex) => (
             <View key={rowIndex} style={styles.row}>
               {row.map((item, itemIndex) => (
@@ -207,17 +213,26 @@ const HelpSeparationSection = () => {
           dash_icon={help_png}
           type={true}
           title={'What Sabrina can do?'}
-          content={content}
+          content={separation_2}
         />
       )}
       {step_2 && (
         <ItemBlock
           dash_icon={help_png}
           type={false}
-          title={'What Sabrina can do?'}
+          title={
+            'Is there anything you would suggest\n to help Ronald feel better?'
+          }
           datas={boxData}
         />
       )}
+      {/* <CustomGreatModal
+        visible={showModal}
+        icon={buttonType ? thumb_icon : try_again_ico}
+        handleClick={() => handleMove()}
+        buttonType={buttonType}
+        message={buttonType ? 'Great job!' : "Don't give up"}
+      /> */}
       <TouchableOpacity
         style={{
           justifyContent: 'center',
@@ -225,7 +240,7 @@ const HelpSeparationSection = () => {
           width: (screenWidth * 9) / 10,
           height: 57,
           position: 'absolute',
-          bottom: 100,
+          bottom: 10,
           borderRadius: 45,
           backgroundColor: '#F08080',
         }}
@@ -266,6 +281,7 @@ const styles = StyleSheet.create({
   text: {
     color: 'black',
     alignItems: 'center',
+    textAlign: 'center',
     padding: 5,
     fontWeight: '600',
     fontFamily: 'OpenSans-Medium',
@@ -277,7 +293,7 @@ const styles = StyleSheet.create({
   },
   input: {
     width: (screenWidth * 9) / 10,
-    height: 270,
+    height: 300,
     margin: 12,
     padding: 10,
   },

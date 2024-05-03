@@ -17,49 +17,76 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import Header from '../../../components/header';
 import CustomDialog from '../../../components/dialogModal';
 import RewardDialog from '../../../components/rewardModal';
+import {sadness_3} from '../../../utils/content';
+import {
+  kindyourself_ico,
+  reward_ico,
+  doenjoy_ico,
+  talk_ico,
+  people_ico,
+  identify_ico,
+  alcohol_ico,
+  seek_ico,
+  exercise_ico,
+  outdoor_ico,
+  positivity_ico,
+} from '../../../utils/image';
 
 const task_ico = require('../../../../assets/icons/help_ico.png');
-const help_png = require('../../../../assets/icons/learn/separation/help.png');
-const reward_ico = require('../../../../assets/icons/main/reward.png');
-const drawing_ico = require('../../../../assets/icons/learn/choice/drawing.png');
-const reading_ico = require('../../../../assets/icons/learn/choice/reading.png');
-const sing_ico = require('../../../../assets/icons/learn/choice/sing.png');
-const swimming_ico = require('../../../../assets/icons/learn/choice/swimming.png');
+const help_png = require('../../../../assets/icons/learn/sadness/help.png');
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
-const content =
-  'Ronald’s mother and father, who have been married for over a decade, have recently decided to split up. Their decision comes after months of ongoing arguments and challenges in their relationship, which have gradually taken a toll on their family dynamics.';
 
 const boxData = [
   [
     {
-      icon: drawing_ico,
-      text: 'Drawing',
+      icon: kindyourself_ico,
+      text: 'Be Kind to Yourself',
     },
     {
-      icon: reading_ico,
-      text: 'Reading',
-    },
-  ],
-  [
-    {
-      icon: swimming_ico,
-      text: 'Swimming',
-    },
-    {
-      icon: sing_ico,
-      text: 'Play Basketball',
+      icon: doenjoy_ico,
+      text: 'Do Things You Enjoy',
     },
   ],
   [
     {
-      icon: swimming_ico,
-      text: 'Swimming',
+      icon: talk_ico,
+      text: 'Talk with Someone',
     },
     {
-      icon: sing_ico,
-      text: 'Play Basketball',
+      icon: people_ico,
+      text: 'Spend Time with Caring People',
+    },
+  ],
+  [
+    {
+      icon: identify_ico,
+      text: 'Identify Triggers and Patterns',
+    },
+    {
+      icon: alcohol_ico,
+      text: 'Avoid Alcohol and Drugs',
+    },
+  ],
+  [
+    {
+      icon: seek_ico,
+      text: 'Seek Support',
+    },
+    {
+      icon: exercise_ico,
+      text: 'Breathing Exercises',
+    },
+  ],
+  [
+    {
+      icon: outdoor_ico,
+      text: 'Spend Time Outdoors',
+    },
+    {
+      icon: positivity_ico,
+      text: 'Focus on Positivity',
     },
   ],
 ];
@@ -126,23 +153,32 @@ const HelpSadnessSection = () => {
       item => item.row === rowIndex && item.item === itemIndex,
     );
 
-  const ItemBlock = ({dash_icon, datas, title, content, type}) => (
+  const ItemBlock = ({dash_icon, datas, title, contents, type}) => (
     <>
       <Image source={dash_icon} style={styles.avatar} />
 
       <Text
         style={[
-          styles.text,
+          styles.title,
           {textAlign: 'center', fontSize: 19, marginTop: 10},
         ]}>
         {title}
       </Text>
       {type ? (
-        <Text style={[styles.text, , {textAlign: 'left', fontSize: 17}]}>
-          {content}
-        </Text>
+        <ScrollView style={{marginTop: 100, bottom: 100}}>
+          <View style={[styles.input]}>
+            {contents.map((content, index) => (
+              <View key={index}>
+                <Text
+                  style={[styles.text, , {textAlign: 'left', fontSize: 17}]}>
+                  • {content}
+                </Text>
+              </View>
+            ))}
+          </View>
+        </ScrollView>
       ) : (
-        <ScrollView>
+        <ScrollView style={{marginTop: 100, bottom: 100}}>
           {datas.map((row, rowIndex) => (
             <View key={rowIndex} style={styles.row}>
               {row.map((item, itemIndex) => (
@@ -206,18 +242,25 @@ const HelpSadnessSection = () => {
         <ItemBlock
           dash_icon={help_png}
           type={true}
-          content={'How can you help yourself?'}
-          title={content}
+          title={'Other things you could do are:'}
+          contents={sadness_3}
         />
       )}
       {step_2 && (
         <ItemBlock
           dash_icon={help_png}
           type={false}
-          content={'Key advice for anxiety includes:'}
+          title={'Other things you could do are:'}
           datas={boxData}
         />
       )}
+      {/* <CustomGreatModal
+        visible={showModal}
+        icon={buttonType ? thumb_icon : try_again_ico}
+        handleClick={() => handleMove()}
+        buttonType={buttonType}
+        message={buttonType ? 'Great job!' : "Don't give up"}
+      /> */}
       <TouchableOpacity
         style={{
           justifyContent: 'center',
@@ -225,7 +268,7 @@ const HelpSadnessSection = () => {
           width: (screenWidth * 9) / 10,
           height: 57,
           position: 'absolute',
-          bottom: 100,
+          bottom: 10,
           borderRadius: 45,
           backgroundColor: '#F08080',
         }}
@@ -277,7 +320,6 @@ const styles = StyleSheet.create({
   },
   input: {
     width: (screenWidth * 9) / 10,
-    height: 270,
     margin: 12,
     padding: 10,
   },

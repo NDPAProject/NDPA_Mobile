@@ -16,6 +16,8 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import Header from '../../../components/header';
 import CustomDialog from '../../../components/dialogModal';
 import RewardDialog from '../../../components/rewardModal';
+import {emotion_ico} from '../../../utils/image';
+import {emotional_1} from '../../../utils/content';
 
 const task_ico = require('../../../../assets/icons/infor.png');
 const dash_icon = require('../../../../assets/icons/learn/emotional/emotional.png');
@@ -23,8 +25,6 @@ const reward_ico = require('../../../../assets/icons/main/reward.png');
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
-const content =
-  'Ronald’s mother and father, who have been married for over a decade, have recently decided to split up. Their decision comes after months of ongoing arguments and challenges in their relationship, which have gradually taken a toll on their family dynamics.';
 
 const EmotionalSection = () => {
   const navigation = useNavigation();
@@ -87,7 +87,7 @@ const EmotionalSection = () => {
 
       <View style={[styles.input]}>
         <Text style={[styles.text, , {textAlign: 'left', fontSize: 17}]}>
-          {content}
+          {emotional_1}
         </Text>
       </View>
 
@@ -98,7 +98,7 @@ const EmotionalSection = () => {
           width: (screenWidth * 9) / 10,
           height: 57,
           position: 'absolute',
-          bottom: 100,
+          bottom: 10,
           borderRadius: 45,
           backgroundColor: '#F08080',
         }}
@@ -150,7 +150,6 @@ const styles = StyleSheet.create({
   },
   input: {
     width: (screenWidth * 9) / 10,
-    height: 270,
     margin: 12,
     padding: 10,
   },

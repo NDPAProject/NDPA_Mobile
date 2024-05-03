@@ -17,49 +17,52 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import Header from '../../../components/header';
 import CustomDialog from '../../../components/dialogModal';
 import RewardDialog from '../../../components/rewardModal';
+import {lossContent_2} from '../../../utils/content';
+import {
+  emotion_ico,
+  seek_ico,
+  outdoor_ico,
+  positivity_ico,
+  exercise_ico,
+  techniques_ico,
+  reward_ico,
+} from '../../../utils/image';
 
 const task_ico = require('../../../../assets/icons/help_ico.png');
 const help_png = require('../../../../assets/icons/learn/loss/help.png');
-const reward_ico = require('../../../../assets/icons/main/reward.png');
-const drawing_ico = require('../../../../assets/icons/learn/choice/drawing.png');
-const reading_ico = require('../../../../assets/icons/learn/choice/reading.png');
-const sing_ico = require('../../../../assets/icons/learn/choice/sing.png');
-const swimming_ico = require('../../../../assets/icons/learn/choice/swimming.png');
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
-const content =
-  'Ronald’s mother and father, who have been married for over a decade, have recently decided to split up. Their decision comes after months of ongoing arguments and challenges in their relationship, which have gradually taken a toll on their family dynamics.';
 
 const boxData = [
   [
     {
-      icon: drawing_ico,
-      text: 'Drawing',
+      icon: emotion_ico,
+      text: ' Express\nEmotions',
     },
     {
-      icon: reading_ico,
-      text: 'Reading',
-    },
-  ],
-  [
-    {
-      icon: swimming_ico,
-      text: 'Swimming',
-    },
-    {
-      icon: sing_ico,
-      text: 'Play Basketball',
+      icon: seek_ico,
+      text: 'Seek Support',
     },
   ],
   [
     {
-      icon: swimming_ico,
-      text: 'Swimming',
+      icon: outdoor_ico,
+      text: 'Spend Time\nOutdoors',
     },
     {
-      icon: sing_ico,
-      text: 'Play Basketball',
+      icon: positivity_ico,
+      text: 'Focus on Positivity',
+    },
+  ],
+  [
+    {
+      icon: exercise_ico,
+      text: 'Breathing\nExercises',
+    },
+    {
+      icon: techniques_ico,
+      text: 'Relaxation Techniques',
     },
   ],
 ];
@@ -72,14 +75,14 @@ const HelpLossSection = () => {
   const [step_1, setStep_1] = useState(false);
   const [step_2, setStep_2] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
-  //   useEffect(() => {
-  //     const unsubscribe = navigation.addListener('focus', () => {
-  //       setMove(false);
-  //       setModalVisible(false);
-  //     });
+  // useEffect(() => {
+  //   const unsubscribe = navigation.addListener('focus', () => {
+  //     setMove(false);
+  //     setModalVisible(false);
+  //   });
 
-  //     return unsubscribe;
-  //   }, [navigation]);
+  //   return unsubscribe;
+  // }, [navigation]);
 
   const handleContinue = () => {
     if (step_1) {
@@ -103,6 +106,7 @@ const HelpLossSection = () => {
 
   const handleClickMove = async () => {
     console.log('-------------data--------------');
+    setModalVisible(true);
     navigation.navigate('PracticeLossSection');
   };
 
@@ -126,7 +130,7 @@ const HelpLossSection = () => {
       item => item.row === rowIndex && item.item === itemIndex,
     );
 
-  const ItemBlock = ({dash_icon, datas, title, content, type}) => (
+  const ItemBlock = ({dash_icon, datas, title, contents, type}) => (
     <>
       <Image source={dash_icon} style={styles.avatar} />
 
@@ -138,11 +142,20 @@ const HelpLossSection = () => {
         {title}
       </Text>
       {type ? (
-        <Text style={[styles.text, , {textAlign: 'left', fontSize: 17}]}>
-          {content}
-        </Text>
+        <View style={[styles.input]}>
+          {/* <Text style={[styles.text, , {textAlign: 'left', fontSize: 17}]}>
+            {content}
+          </Text> */}
+          {contents.map((content, index) => (
+            <View key={index}>
+              <Text style={[styles.text, , {textAlign: 'left', fontSize: 17}]}>
+                • {content}
+              </Text>
+            </View>
+          ))}
+        </View>
       ) : (
-        <ScrollView>
+        <ScrollView style={{marginTop: 100, bottom: 100}}>
           {datas.map((row, rowIndex) => (
             <View key={rowIndex} style={styles.row}>
               {row.map((item, itemIndex) => (
@@ -191,7 +204,7 @@ const HelpLossSection = () => {
         handleClick={handleClickMove}
         title="Great job!"
         text="You've finished typing level!NN  Claim your reward."
-        buttonText="Go to Step 2"
+        buttonText="Go to Step 3"
         icon={reward_ico}
       />
 
@@ -207,7 +220,7 @@ const HelpLossSection = () => {
           dash_icon={help_png}
           type={true}
           title={'What Sabrina can do?'}
-          content={content}
+          contents={lossContent_2}
         />
       )}
       {step_2 && (
@@ -225,7 +238,7 @@ const HelpLossSection = () => {
           width: (screenWidth * 9) / 10,
           height: 57,
           position: 'absolute',
-          bottom: 100,
+          bottom: 10,
           borderRadius: 45,
           backgroundColor: '#F08080',
         }}
@@ -245,6 +258,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFBF8',
     height: screenHeight,
     width: screenWidth,
+  },
+  input: {
+    width: (screenWidth * 9) / 10,
+    height: 300,
+    margin: 12,
+    padding: 10,
   },
   container_s: {
     padding: 10,
@@ -266,6 +285,7 @@ const styles = StyleSheet.create({
   text: {
     color: 'black',
     alignItems: 'center',
+    textAlign: 'center',
     padding: 5,
     fontWeight: '600',
     fontFamily: 'OpenSans-Medium',
@@ -275,12 +295,7 @@ const styles = StyleSheet.create({
     fontSize: 19,
     fontFamily: 'OpenSans-Bold',
   },
-  input: {
-    width: (screenWidth * 9) / 10,
-    height: 270,
-    margin: 12,
-    padding: 10,
-  },
+
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',

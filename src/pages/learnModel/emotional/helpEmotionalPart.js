@@ -17,50 +17,68 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import Header from '../../../components/header';
 import CustomDialog from '../../../components/dialogModal';
 import RewardDialog from '../../../components/rewardModal';
+import {emotional_2} from '../../../utils/content';
+import {
+  identify_ico,
+  calm_ico,
+  avoid_ico,
+  scream_ico,
+  selfcare_ico,
+  journal_ico,
+  seek_ico,
+  positivity_ico,
+} from '../../../utils/image';
 
 const task_ico = require('../../../../assets/icons/help_ico.png');
 const help_1 = require('../../../../assets/icons/learn/emotional/help_1.png');
 const help_2 = require('../../../../assets/icons/learn/emotional/help_2.png');
 const reward_ico = require('../../../../assets/icons/main/reward.png');
-const drawing_ico = require('../../../../assets/icons/learn/choice/drawing.png');
 const reading_ico = require('../../../../assets/icons/learn/choice/reading.png');
 const sing_ico = require('../../../../assets/icons/learn/choice/sing.png');
 const swimming_ico = require('../../../../assets/icons/learn/choice/swimming.png');
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
-const content =
-  'Ronald’s mother and father, who have been married for over a decade, have recently decided to split up. Their decision comes after months of ongoing arguments and challenges in their relationship, which have gradually taken a toll on their family dynamics.';
 
 const boxData = [
   [
     {
-      icon: drawing_ico,
-      text: 'Drawing',
+      icon: identify_ico,
+      text: 'Identify Triggers and Patterns',
     },
     {
-      icon: reading_ico,
-      text: 'Reading',
-    },
-  ],
-  [
-    {
-      icon: swimming_ico,
-      text: 'Swimming',
-    },
-    {
-      icon: sing_ico,
-      text: 'Play Basketball',
+      icon: calm_ico,
+      text: 'Calm Yourself',
     },
   ],
   [
     {
-      icon: swimming_ico,
-      text: 'Swimming',
+      icon: avoid_ico,
+      text: 'Avoid Triggers',
     },
     {
-      icon: sing_ico,
-      text: 'Play Basketball',
+      icon: scream_ico,
+      text: 'Scream and Shout',
+    },
+  ],
+  [
+    {
+      icon: selfcare_ico,
+      text: 'Practice\nSelf-Care',
+    },
+    {
+      icon: journal_ico,
+      text: 'Keep a Journal',
+    },
+  ],
+  [
+    {
+      icon: seek_ico,
+      text: 'Seek Support',
+    },
+    {
+      icon: positivity_ico,
+      text: 'Focus on Positivity',
     },
   ],
 ];
@@ -69,7 +87,7 @@ const HelpEmotionalSection = () => {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(true);
   const [move, setMove] = useState(false);
-  const [progress, setProgress] = useState(0.35);
+  const [progress, setProgress] = useState(0.5);
   const [step_1, setStep_1] = useState(false);
   const [step_2, setStep_2] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
@@ -86,7 +104,7 @@ const HelpEmotionalSection = () => {
     if (step_1) {
       setStep_1(false);
       setStep_2(true);
-      setProgress(0.7);
+      setProgress(1);
       return;
     }
     if (step_2) {
@@ -128,42 +146,73 @@ const HelpEmotionalSection = () => {
       item => item.row === rowIndex && item.item === itemIndex,
     );
 
-  const ItemBlock = ({dash_icon, datas, content}) => (
+  const getBorderColor = (rowIndex, itemIndex, itemText) => {
+    if (isSelected(rowIndex, itemIndex) && itemText === 'Scream and Shout') {
+      return '#FFC700';
+    } else if (isSelected(rowIndex, itemIndex)) {
+      return '#23B80C';
+    } else {
+      return '#FBC4AB';
+    }
+  };
+
+  const ItemBlock = ({dash_icon, datas, content, title, type}) => (
     <>
       <Image source={dash_icon} style={styles.avatar} />
 
       <Text
         style={[
-          styles.text,
+          styles.title,
           {textAlign: 'center', fontSize: 19, marginTop: 10},
         ]}>
-        {content}
+        {title}
       </Text>
 
-      <ScrollView>
-        {datas.map((row, rowIndex) => (
-          <View key={rowIndex} style={styles.row}>
-            {row.map((item, itemIndex) => (
-              <TouchableOpacity
-                key={itemIndex}
-                onPress={() => handleClickItem(rowIndex, itemIndex, item.text)}>
-                <View
-                  style={[
-                    styles.boxBackground,
-                    {
-                      borderColor: isSelected(rowIndex, itemIndex)
-                        ? '#23B80C'
-                        : '#FBC4AB',
-                    },
-                  ]}>
-                  <Image source={item.icon} />
-                  <Text style={[styles.text, {fontSize: 17}]}>{item.text}</Text>
-                </View>
-              </TouchableOpacity>
+      {type ? (
+        <ScrollView style={{marginTop: 100, bottom: 100}}>
+          <View style={[styles.input]}>
+            {content.map((item, index) => (
+              <View key={index}>
+                <Text
+                  style={[styles.text, , {textAlign: 'left', fontSize: 17}]}>
+                  {index + 1}. {item}
+                </Text>
+              </View>
             ))}
           </View>
-        ))}
-      </ScrollView>
+        </ScrollView>
+      ) : (
+        <ScrollView style={{marginTop: 100, bottom: 100}}>
+          {datas.map((row, rowIndex) => (
+            <View key={rowIndex} style={styles.row}>
+              {row.map((item, itemIndex) => (
+                <TouchableOpacity
+                  key={itemIndex}
+                  onPress={() =>
+                    handleClickItem(rowIndex, itemIndex, item.text)
+                  }>
+                  <View
+                    style={[
+                      styles.boxBackground,
+                      {
+                        borderColor: getBorderColor(
+                          rowIndex,
+                          itemIndex,
+                          item.text,
+                        ),
+                      },
+                    ]}>
+                    <Image source={item.icon} />
+                    <Text style={[styles.text, {fontSize: 17}]}>
+                      {item.text}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>
+          ))}
+        </ScrollView>
+      )}
     </>
   );
 
@@ -198,15 +247,17 @@ const HelpEmotionalSection = () => {
       {step_1 && (
         <ItemBlock
           dash_icon={help_1}
-          datas={boxData}
-          content={'How to control the potential of having these breakdowns?'}
+          type={true}
+          title={'How to control the potential of\n having these breakdowns?'}
+          content={emotional_2}
         />
       )}
       {step_2 && (
         <ItemBlock
           dash_icon={help_2}
           datas={boxData}
-          content={'How to control the potential of having these breakdowns?'}
+          type={false}
+          title={'How to control the potential of\n having these breakdowns?'}
         />
       )}
 
@@ -217,7 +268,7 @@ const HelpEmotionalSection = () => {
           width: (screenWidth * 9) / 10,
           height: 57,
           position: 'absolute',
-          bottom: 100,
+          bottom: 10,
           borderRadius: 45,
           backgroundColor: '#F08080',
         }}
@@ -258,6 +309,7 @@ const styles = StyleSheet.create({
   text: {
     color: 'black',
     alignItems: 'center',
+    textAlign: 'center',
     padding: 5,
     fontWeight: '600',
     fontFamily: 'OpenSans-Medium',
@@ -269,7 +321,6 @@ const styles = StyleSheet.create({
   },
   input: {
     width: (screenWidth * 9) / 10,
-    height: 270,
     margin: 12,
     padding: 10,
   },

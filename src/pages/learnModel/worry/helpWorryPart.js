@@ -17,6 +17,7 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import Header from '../../../components/header';
 import CustomDialog from '../../../components/dialogModal';
 import RewardDialog from '../../../components/rewardModal';
+import {worry_3, worry_4} from '../../../utils/content';
 
 const task_ico = require('../../../../assets/icons/help_ico.png');
 const help_1 = require('../../../../assets/icons/learn/worry/help_1.png');
@@ -30,8 +31,6 @@ const swimming_ico = require('../../../../assets/icons/learn/choice/swimming.png
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
-const content =
-  'Ronald’s mother and father, who have been married for over a decade, have recently decided to split up. Their decision comes after months of ongoing arguments and challenges in their relationship, which have gradually taken a toll on their family dynamics.';
 
 const boxData = [
   [
@@ -135,22 +134,48 @@ const HelpWorrySection = () => {
       item => item.row === rowIndex && item.item === itemIndex,
     );
 
-  const ItemBlock = ({dash_icon, datas, title, content, type}) => (
+  const ItemBlock = ({
+    dash_icon,
+    datas,
+    title,
+    contents,
+    step_1,
+    step_2,
+    step_3,
+  }) => (
     <>
       <Image source={dash_icon} style={styles.avatar} />
 
       <Text
         style={[
-          styles.text,
+          styles.title,
           {textAlign: 'center', fontSize: 19, marginTop: 10},
         ]}>
         {title}
       </Text>
-      {type ? (
-        <Text style={[styles.text, , {textAlign: 'left', fontSize: 17}]}>
-          {content}
-        </Text>
-      ) : (
+      {step_1 && (
+        <View style={[styles.input]}>
+          <Text style={[styles.text, , {textAlign: 'left', fontSize: 17}]}>
+            {contents}
+          </Text>
+        </View>
+      )}
+      {step_2 && (
+        <View style={[styles.input]}>
+          <ScrollView>
+            {contents.map((content, index) => (
+              <View key={index}>
+                <Text
+                  style={[styles.text, , {textAlign: 'left', fontSize: 17}]}>
+                  {index + 1}. {content}
+                </Text>
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+      )}
+
+      {step_3 && (
         <ScrollView>
           {datas.map((row, rowIndex) => (
             <View key={rowIndex} style={styles.row}>
@@ -214,23 +239,23 @@ const HelpWorrySection = () => {
       {step_1 && (
         <ItemBlock
           dash_icon={help_1}
-          type={true}
-          content={'How can you help yourself?'}
-          title={content}
+          step_1={step_1}
+          title={'How can you help yourself?'}
+          contents={worry_3}
         />
       )}
       {step_2 && (
         <ItemBlock
           dash_icon={help_2}
-          type={true}
-          content={'Key advice for anxiety includes:'}
-          title={content}
+          step_2={step_2}
+          title={'Key advice for anxiety includes:'}
+          contents={worry_4}
         />
       )}
       {step_3 && (
         <ItemBlock
           dash_icon={help_3}
-          type={false}
+          step_3={step_3}
           datas={boxData}
           title={'How can you help yourself?'}
         />
@@ -242,7 +267,7 @@ const HelpWorrySection = () => {
           width: (screenWidth * 9) / 10,
           height: 57,
           position: 'absolute',
-          bottom: 100,
+          bottom: 10,
           borderRadius: 45,
           backgroundColor: '#F08080',
         }}

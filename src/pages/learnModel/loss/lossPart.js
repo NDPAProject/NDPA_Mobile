@@ -18,49 +18,65 @@ import CustomDialog from '../../../components/dialogModal';
 import RewardDialog from '../../../components/rewardModal';
 import CustomGreatModal from '../../../components/greatModal';
 import {ScrollView} from 'react-native-gesture-handler';
-
-const task_ico = require('../../../../assets/icons/situation.png');
-const thumb_icon = require('../../../../assets/icons/great_ico.png');
-const dash_icon = require('../../../../assets/icons/learn/loss/loss.png');
-const reward_ico = require('../../../../assets/icons/main/reward.png');
-const drawing_ico = require('../../../../assets/icons/learn/choice/drawing.png');
-const reading_ico = require('../../../../assets/icons/learn/choice/reading.png');
-const sing_ico = require('../../../../assets/icons/learn/choice/sing.png');
-const swimming_ico = require('../../../../assets/icons/learn/choice/swimming.png');
+import {lossContent_1} from '../../../utils/content';
+import {
+  task_ico,
+  thumb_icon,
+  dash_icon,
+  reward_ico,
+  sadness_ico,
+  misery_ico,
+  happiness_ico,
+  sorrow_ico,
+  anguish_ico,
+  gratitude_ico,
+  woe_ico,
+  dejection_ico,
+  try_again_ico,
+} from '../../../utils/image';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
-const content =
-  "Sabrina had a special friend, a maltipoo (half Maltese, half poodle), who brought joy and companionship into her life. Unfortunately, her furry friend developed a condition similar to heart disease and, despite efforts to help, Sabrina had to make the difficult decision to say goodbye. Losing her dog was incredibly heartbreaking for Sabrina, and she's struggling with a mix of emotions right now.";
+
 const boxData = [
   [
     {
-      icon: drawing_ico,
-      text: 'Drawing',
+      icon: sadness_ico,
+      text: 'Desolation',
     },
     {
-      icon: reading_ico,
-      text: 'Reading',
-    },
-  ],
-  [
-    {
-      icon: swimming_ico,
-      text: 'Swimming',
-    },
-    {
-      icon: sing_ico,
-      text: 'Play Basketball',
+      icon: misery_ico,
+      text: 'Misery',
     },
   ],
   [
     {
-      icon: swimming_ico,
-      text: 'Swimming',
+      icon: happiness_ico,
+      text: 'Happiness',
     },
     {
-      icon: sing_ico,
-      text: 'Play Basketball',
+      icon: sorrow_ico,
+      text: 'Sorrow',
+    },
+  ],
+  [
+    {
+      icon: anguish_ico,
+      text: 'Anguish',
+    },
+    {
+      icon: gratitude_ico,
+      text: 'Gratitude',
+    },
+  ],
+  [
+    {
+      icon: woe_ico,
+      text: 'Woe',
+    },
+    {
+      icon: dejection_ico,
+      text: 'Dejection',
     },
   ],
 ];
@@ -70,7 +86,7 @@ const LossSection = () => {
   const [modalVisible, setModalVisible] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [move, setMove] = useState(false);
-  const [comment, setComment] = useState('');
+  const [buttonType, setButtonType] = useState(Boolean);
   const [progress, setProgress] = useState(0.5);
   const [selectedItems, setSelectedItems] = useState([]);
 
@@ -85,7 +101,7 @@ const LossSection = () => {
 
   const handleContinue = () => {
     if (step) {
-      setMove(true);
+      setShowModal(true);
       return;
     }
     setProgress(1);
@@ -94,6 +110,14 @@ const LossSection = () => {
 
   const handleClick = async () => {
     setModalVisible(false);
+  };
+
+  const handleMove = async () => {
+    if (buttonType) {
+      setMove(true);
+      return;
+    }
+    setShowModal(false);
   };
 
   const handleClickMove = async () => {
@@ -106,13 +130,26 @@ const LossSection = () => {
       item => item.row === rowIndex && item.item === itemIndex,
     );
 
+    console.log('------index---', index, itemText);
+
     if (index >= 0) {
       setSelectedItems(selectedItems.filter((_, i) => i !== index));
+      if (
+        selectedItems[index].text === 'Happiness' ||
+        selectedItems[index].text === 'Gratitude'
+      ) {
+        setButtonType(true);
+      }
     } else {
       setSelectedItems([
         ...selectedItems,
         {row: rowIndex, item: itemIndex, text: itemText},
       ]);
+      if (itemText === 'Happiness' || itemText === 'Gratitude') {
+        setButtonType(false);
+      } else {
+        setButtonType(true);
+      }
     }
   };
 
@@ -120,6 +157,19 @@ const LossSection = () => {
     selectedItems.some(
       item => item.row === rowIndex && item.item === itemIndex,
     );
+
+  const getBorderColor = (rowIndex, itemIndex, itemText) => {
+    if (
+      (isSelected(rowIndex, itemIndex) && itemText === 'Happiness') ||
+      (isSelected(rowIndex, itemIndex) && itemText === 'Gratitude')
+    ) {
+      return '#FFC700';
+    } else if (isSelected(rowIndex, itemIndex)) {
+      return '#23B80C';
+    } else {
+      return '#FBC4AB';
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -154,7 +204,7 @@ const LossSection = () => {
       {!step ? (
         <View style={[styles.input]}>
           <Text style={[styles.text, , {textAlign: 'left', fontSize: 17}]}>
-            {content}
+            {lossContent_1}
           </Text>
         </View>
       ) : (
@@ -166,7 +216,7 @@ const LossSection = () => {
             ]}>
             How does Sabrina feel?
           </Text>
-          <ScrollView>
+          <ScrollView style={{marginTop: 100, bottom: 100}}>
             {boxData.map((row, rowIndex) => (
               <View key={rowIndex} style={styles.row}>
                 {row.map((item, itemIndex) => (
@@ -179,9 +229,11 @@ const LossSection = () => {
                       style={[
                         styles.boxBackground,
                         {
-                          borderColor: isSelected(rowIndex, itemIndex)
-                            ? '#23B80C'
-                            : '#FBC4AB',
+                          borderColor: getBorderColor(
+                            rowIndex,
+                            itemIndex,
+                            item.text,
+                          ),
                         },
                       ]}>
                       <Image source={item.icon} />
@@ -204,13 +256,20 @@ const LossSection = () => {
           width: (screenWidth * 9) / 10,
           height: 57,
           position: 'absolute',
-          bottom: 100,
+          bottom: 10,
           borderRadius: 45,
           backgroundColor: '#F08080',
         }}
         onPress={() => handleContinue()}>
-        <Text style={styles.b3_text}>Next</Text>
+        <Text style={styles.b3_text}>Continue</Text>
       </TouchableOpacity>
+      <CustomGreatModal
+        visible={showModal}
+        icon={buttonType ? thumb_icon : try_again_ico}
+        handleClick={() => handleMove()}
+        buttonType={buttonType}
+        message={buttonType ? 'Great job!' : "Don't give up"}
+      />
     </View>
   );
 };
@@ -256,7 +315,7 @@ const styles = StyleSheet.create({
   },
   input: {
     width: (screenWidth * 9) / 10,
-    height: 270,
+    height: 300,
     margin: 12,
     padding: 10,
   },

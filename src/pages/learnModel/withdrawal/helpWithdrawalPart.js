@@ -12,54 +12,68 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-
+import {withdrawal_2} from '../../../utils/content';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import Header from '../../../components/header';
 import CustomDialog from '../../../components/dialogModal';
 import RewardDialog from '../../../components/rewardModal';
+import {
+  reward_ico,
+  emotion_ico,
+  techniques_ico,
+  journal_ico,
+  friend_ico,
+  run_ico,
+  exercise_ico,
+  positivity_ico,
+  scream_ico,
+} from '../../../utils/image';
 
 const task_ico = require('../../../../assets/icons/help_ico.png');
 const help_png = require('../../../../assets/icons/learn/withdrawal/help.png');
-const reward_ico = require('../../../../assets/icons/main/reward.png');
-const drawing_ico = require('../../../../assets/icons/learn/choice/drawing.png');
-const reading_ico = require('../../../../assets/icons/learn/choice/reading.png');
-const sing_ico = require('../../../../assets/icons/learn/choice/sing.png');
-const swimming_ico = require('../../../../assets/icons/learn/choice/swimming.png');
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
-const content =
-  'Ronald’s mother and father, who have been married for over a decade, have recently decided to split up. Their decision comes after months of ongoing arguments and challenges in their relationship, which have gradually taken a toll on their family dynamics.';
 
 const boxData = [
   [
     {
-      icon: drawing_ico,
-      text: 'Drawing',
+      icon: techniques_ico,
+      text: 'Relaxation Techniques',
     },
     {
-      icon: reading_ico,
-      text: 'Reading',
-    },
-  ],
-  [
-    {
-      icon: swimming_ico,
-      text: 'Swimming',
-    },
-    {
-      icon: sing_ico,
-      text: 'Play Basketball',
+      icon: exercise_ico,
+      text: 'Breathing Exercises',
     },
   ],
   [
     {
-      icon: swimming_ico,
-      text: 'Swimming',
+      icon: journal_ico,
+      text: 'Keep a Journal',
     },
     {
-      icon: sing_ico,
-      text: 'Play Basketball',
+      icon: friend_ico,
+      text: 'Make New Friends',
+    },
+  ],
+  [
+    {
+      icon: positivity_ico,
+      text: 'Focus on Positivity',
+    },
+    {
+      icon: emotion_ico,
+      text: 'Express Emotions',
+    },
+  ],
+  [
+    {
+      icon: run_ico,
+      text: 'Go for a Run',
+    },
+    {
+      icon: scream_ico,
+      text: 'Scream and Shout',
     },
   ],
 ];
@@ -126,7 +140,7 @@ const HelpWithdrawalSection = () => {
       item => item.row === rowIndex && item.item === itemIndex,
     );
 
-  const ItemBlock = ({dash_icon, datas, title, content, type}) => (
+  const ItemBlock = ({dash_icon, datas, title, contents, type}) => (
     <>
       <Image source={dash_icon} style={styles.avatar} />
 
@@ -138,9 +152,15 @@ const HelpWithdrawalSection = () => {
         {title}
       </Text>
       {type ? (
-        <Text style={[styles.text, , {textAlign: 'left', fontSize: 17}]}>
-          {content}
-        </Text>
+        <View style={[styles.input]}>
+          {contents.map((content, index) => (
+            <View key={index}>
+              <Text style={[styles.text, , {textAlign: 'left', fontSize: 17}]}>
+                • {content}
+              </Text>
+            </View>
+          ))}
+        </View>
       ) : (
         <ScrollView>
           {datas.map((row, rowIndex) => (
@@ -191,7 +211,7 @@ const HelpWithdrawalSection = () => {
         handleClick={handleClickMove}
         title="Great job!"
         text="You've finished typing level!NN  Claim your reward."
-        buttonText="Go to Step 2"
+        buttonText="Go to Step 3"
         icon={reward_ico}
       />
 
@@ -207,7 +227,7 @@ const HelpWithdrawalSection = () => {
           dash_icon={help_png}
           type={true}
           title={'What can Abdul do to cope with this situation?'}
-          content={content}
+          contents={withdrawal_2}
         />
       )}
       {step_2 && (
@@ -225,7 +245,7 @@ const HelpWithdrawalSection = () => {
           width: (screenWidth * 9) / 10,
           height: 57,
           position: 'absolute',
-          bottom: 100,
+          bottom: 10,
           borderRadius: 45,
           backgroundColor: '#F08080',
         }}

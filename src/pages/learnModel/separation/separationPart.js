@@ -16,50 +16,55 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import Header from '../../../components/header';
 import CustomDialog from '../../../components/dialogModal';
 import RewardDialog from '../../../components/rewardModal';
+import CustomGreatModal from '../../../components/greatModal';
 import {ScrollView} from 'react-native-gesture-handler';
+import {separation_1} from '../../../utils/content';
+import {
+  sadness_ico2,
+  loneliness_ico,
+  regret_ico,
+  excitement_ico,
+  joy_ico,
+  despair_ico,
+  thumb_icon,
+  try_again_ico,
+  reward_ico,
+} from '../../../utils/image';
 
 const task_ico = require('../../../../assets/icons/situation.png');
-const thumb_icon = require('../../../../assets/icons/great_ico.png');
 const dash_icon = require('../../../../assets/icons/learn/separation/separation.png');
-const reward_ico = require('../../../../assets/icons/main/reward.png');
-const drawing_ico = require('../../../../assets/icons/learn/choice/drawing.png');
-const reading_ico = require('../../../../assets/icons/learn/choice/reading.png');
-const sing_ico = require('../../../../assets/icons/learn/choice/sing.png');
-const swimming_ico = require('../../../../assets/icons/learn/choice/swimming.png');
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
-const content =
-  'Ronald’s mother and father, who have been married for over a decade, have recently decided to split up. Their decision comes after months of ongoing arguments and challenges in their relationship, which have gradually taken a toll on their family dynamics.';
 const boxData = [
   [
     {
-      icon: drawing_ico,
-      text: 'Drawing',
+      icon: sadness_ico2,
+      text: 'Sadness',
     },
     {
-      icon: reading_ico,
-      text: 'Reading',
-    },
-  ],
-  [
-    {
-      icon: swimming_ico,
-      text: 'Swimming',
-    },
-    {
-      icon: sing_ico,
-      text: 'Play Basketball',
+      icon: loneliness_ico,
+      text: 'Loneliness',
     },
   ],
   [
     {
-      icon: swimming_ico,
-      text: 'Swimming',
+      icon: regret_ico,
+      text: 'Regret',
     },
     {
-      icon: sing_ico,
-      text: 'Play Basketball',
+      icon: excitement_ico,
+      text: 'Excitement',
+    },
+  ],
+  [
+    {
+      icon: joy_ico,
+      text: 'Joy',
+    },
+    {
+      icon: despair_ico,
+      text: 'Despair',
     },
   ],
 ];
@@ -69,7 +74,7 @@ const SeparationSection = () => {
   const [modalVisible, setModalVisible] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [move, setMove] = useState(false);
-  const [comment, setComment] = useState('');
+  const [buttonType, setButtonType] = useState(Boolean);
   const [progress, setProgress] = useState(0.5);
   const [selectedItems, setSelectedItems] = useState([]);
 
@@ -84,7 +89,7 @@ const SeparationSection = () => {
 
   const handleContinue = () => {
     if (step) {
-      setMove(true);
+      setShowModal(true);
       return;
     }
     setProgress(1);
@@ -93,6 +98,14 @@ const SeparationSection = () => {
 
   const handleClick = async () => {
     setModalVisible(false);
+  };
+
+  const handleMove = async () => {
+    if (buttonType) {
+      setMove(true);
+      return;
+    }
+    setShowModal(false);
   };
 
   const handleClickMove = async () => {
@@ -105,13 +118,26 @@ const SeparationSection = () => {
       item => item.row === rowIndex && item.item === itemIndex,
     );
 
+    console.log('------index---', index, itemText);
+
     if (index >= 0) {
       setSelectedItems(selectedItems.filter((_, i) => i !== index));
+      if (
+        selectedItems[index].text === 'Excitement' ||
+        selectedItems[index].text === 'Joy'
+      ) {
+        setButtonType(false);
+      }
     } else {
       setSelectedItems([
         ...selectedItems,
         {row: rowIndex, item: itemIndex, text: itemText},
       ]);
+      if (itemText === 'Excitement' || itemText === 'Joy') {
+        setButtonType(false);
+      } else {
+        setButtonType(true);
+      }
     }
   };
 
@@ -119,6 +145,19 @@ const SeparationSection = () => {
     selectedItems.some(
       item => item.row === rowIndex && item.item === itemIndex,
     );
+
+  const getBorderColor = (rowIndex, itemIndex, itemText) => {
+    if (
+      (isSelected(rowIndex, itemIndex) && itemText === 'Excitement') ||
+      (isSelected(rowIndex, itemIndex) && itemText === 'Joy')
+    ) {
+      return '#FFC700';
+    } else if (isSelected(rowIndex, itemIndex)) {
+      return '#23B80C';
+    } else {
+      return '#FBC4AB';
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -153,7 +192,7 @@ const SeparationSection = () => {
       {!step ? (
         <View style={[styles.input]}>
           <Text style={[styles.text, , {textAlign: 'left', fontSize: 17}]}>
-            {content}
+            {separation_1}
           </Text>
         </View>
       ) : (
@@ -165,7 +204,7 @@ const SeparationSection = () => {
             ]}>
             How does Ronald feel?
           </Text>
-          <ScrollView>
+          <ScrollView style={{marginTop: 100, bottom: 100}}>
             {boxData.map((row, rowIndex) => (
               <View key={rowIndex} style={styles.row}>
                 {row.map((item, itemIndex) => (
@@ -178,9 +217,11 @@ const SeparationSection = () => {
                       style={[
                         styles.boxBackground,
                         {
-                          borderColor: isSelected(rowIndex, itemIndex)
-                            ? '#23B80C'
-                            : '#FBC4AB',
+                          borderColor: getBorderColor(
+                            rowIndex,
+                            itemIndex,
+                            item.text,
+                          ),
                         },
                       ]}>
                       <Image source={item.icon} />
@@ -195,7 +236,13 @@ const SeparationSection = () => {
           </ScrollView>
         </>
       )}
-
+      <CustomGreatModal
+        visible={showModal}
+        icon={buttonType ? thumb_icon : try_again_ico}
+        handleClick={() => handleMove()}
+        buttonType={buttonType}
+        message={buttonType ? 'Great job!' : "Don't give up"}
+      />
       <TouchableOpacity
         style={{
           justifyContent: 'center',
@@ -203,7 +250,7 @@ const SeparationSection = () => {
           width: (screenWidth * 9) / 10,
           height: 57,
           position: 'absolute',
-          bottom: 100,
+          bottom: 10,
           borderRadius: 45,
           backgroundColor: '#F08080',
         }}
@@ -240,6 +287,7 @@ const styles = StyleSheet.create({
   text: {
     color: 'black',
     alignItems: 'center',
+    textAlign: 'center',
     padding: 5,
     fontWeight: '600',
     fontFamily: 'OpenSans-Medium',

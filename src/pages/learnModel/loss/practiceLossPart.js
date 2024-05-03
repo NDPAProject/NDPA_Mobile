@@ -21,17 +21,22 @@ import Header from '../../../components/header';
 import CustomDialog from '../../../components/dialogModal';
 import RewardDialog from '../../../components/rewardModal';
 import CustomGreatModal from '../../../components/greatModal';
+import {
+  try_again_ico,
+  reward_ico,
+  thumb_icon,
+  turtle_ico,
+  sound_ico,
+} from '../../../utils/image';
 
 const plan_ico = require('../../../../assets/icons/plan_ico.png');
 
 const sabrina_ico = require('../../../../assets/icons/sabrina.png');
 const me_icon = require('../../../../assets/icons/me.png');
-const turtle_ico = require('../../../../assets/icons/turtle_ico.png');
-const sound_ico = require('../../../../assets/icons/charm_sound-up.png');
 const message = require('../../../../assets/icons/message.png');
-const mechat_b = require('../../../../assets/icons/mechat_b.png');
-const reward_ico = require('../../../../assets/icons/main/reward.png');
-const thumb_icon = require('../../../../assets/icons/great_ico.png');
+const mechat_m = require('../../../../assets/icons/mechat_m.png');
+const wrong_ico = require('../../../../assets/icons/wrong_msg_m.png');
+const verify_msg = require('../../../../assets/icons/verify_msg_m.png');
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -43,8 +48,10 @@ const PracticeLossSection = ({route}) => {
   const [modalVisible, setModalVisible] = useState(true);
   const [showGreat, setShowGreat] = useState(false);
   const [showReward, setShowReward] = useState(false);
-  const [progress, setProgress] = useState(0.125);
+  const [progress, setProgress] = useState(0.35);
   const [currentStep, setCurrentStep] = useState(0);
+  const [buttonType, setButtonType] = useState(true);
+  const [imageSoruce, setImageSoruce] = useState(mechat_m);
   const totalSteps = 3;
 
   const [isLoading, setIsLoading] = useState(false);
@@ -57,6 +64,13 @@ const PracticeLossSection = ({route}) => {
   const [errorMsg, setErrorMsg] = useState('');
 
   const handlePress = label => {
+    if (label === 'No' || label === 'Happy' || label === 'Stay isolated') {
+      setButtonType(false);
+      setImageSoruce(wrong_ico);
+    } else {
+      setButtonType(true);
+      setImageSoruce(verify_msg);
+    }
     setSelectedActivity(label);
     setData([...data, label]);
     const updatedActivities = activities.map(row =>
@@ -65,20 +79,27 @@ const PracticeLossSection = ({route}) => {
     setActivities(updatedActivities);
     console.log('Selected Activity:', label);
     console.log('Selected datas:', data);
-    setShowButton(true);
+    // setShowButton(true);
+    setShowGreat(true);
   };
 
   const handleClickContinue = () => {
     console.log('------currentStep-----', currentStep);
-    if (currentStep < totalSteps) {
-      setCurrentStep(currentStep + 1);
-      setShowButton(false);
-      setSelectedActivity('');
-      setProgress(0.125 * (currentStep + 1));
-    } else {
-      setShowGreat(true);
-      // setShowReward(true);
+    if (buttonType) {
+      if (currentStep < totalSteps) {
+        setCurrentStep(currentStep + 1);
+        // setShowButton(false);
+        setImageSoruce(mechat_m);
+        setShowGreat(false);
+        setSelectedActivity('');
+        setProgress(0.35 * (currentStep + 1));
+      } else {
+        // setShowGreat(true);
+        setShowReward(true);
+      }
+      return;
     }
+    setShowGreat(false);
   };
 
   const handleClick = async () => {
@@ -116,6 +137,7 @@ const PracticeLossSection = ({route}) => {
   };
 
   useEffect(() => {
+    setImageSoruce(mechat_m);
     if (isLoading) {
       console.log('-----------audio playing--------------');
       playAudio(txtAudio);
@@ -200,7 +222,7 @@ const PracticeLossSection = ({route}) => {
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 gap: 15,
-                marginTop: index === 0 ? 0 : 18,
+                marginTop: 18,
                 width: (screenWidth * 9) / 10,
               }}
               key={index}>
@@ -235,7 +257,7 @@ const PracticeLossSection = ({route}) => {
         handleClick={handleClickMove}
         title="Great job!"
         text="You've finished typing level!NN  Claim your reward."
-        buttonText="Go to Step 2"
+        buttonText="Finish"
         icon={reward_ico}
       />
 
@@ -261,7 +283,7 @@ const PracticeLossSection = ({route}) => {
           <MessageBlock children={'Hi,can we talk?'} />
 
           <View style={styles.me_imageContainer}>
-            <Image source={mechat_b} />
+            <Image source={imageSoruce} />
             <>
               <Text style={styles.m_title}>
                 {`Hello.${selectedActivity || '____________ .'}`}
@@ -285,7 +307,7 @@ const PracticeLossSection = ({route}) => {
           <MessageBlock children={'My dog passed away,\nI feel strange?'} />
 
           <View style={styles.me_imageContainer}>
-            <Image source={mechat_b} />
+            <Image source={imageSoruce} />
 
             <>
               <Text style={styles.m_title}>
@@ -312,17 +334,17 @@ const PracticeLossSection = ({route}) => {
           <MessageBlock children={'How can I deal\nwith this?'} />
 
           <View style={styles.me_imageContainer}>
-            <Image source={mechat_b} />
+            <Image source={imageSoruce} />
 
             <>
               <Text style={styles.m_title}>
-                {`Try ${selectedActivity || '____________ .'}`}
+                {`Try ${
+                  selectedActivity.substring(0, 20) || '____________ .'
+                }\n ${selectedActivity.substring(20)}`}
               </Text>
               <View style={styles.buttonIcon}>
                 <TouchableOpacity
-                  onPress={() =>
-                    handleClickSound(`I have ${selectedActivity}`)
-                  }>
+                  onPress={() => handleClickSound(`Try ${selectedActivity}`)}>
                   <Image source={sound_ico} />
                 </TouchableOpacity>
                 <Image source={turtle_ico} />
@@ -356,12 +378,19 @@ const PracticeLossSection = ({route}) => {
           <Text style={styles.b1_text}>Continue</Text>
         </TouchableOpacity>
       )}
-      <CustomGreatModal
+      {/* <CustomGreatModal
         visible={showGreat}
         icon={thumb_icon}
-        buttonType={true}
+        buttonType={buttonType}
         handleClick={() => handleModalClick()}
         message="Great job!"
+      /> */}
+      <CustomGreatModal
+        visible={showGreat}
+        icon={buttonType ? thumb_icon : try_again_ico}
+        handleClick={() => handleClickContinue()}
+        buttonType={buttonType}
+        message={buttonType ? 'Great job!' : "Don't give up"}
       />
     </View>
   );
@@ -391,7 +420,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: 'OpenSans-Medium',
     position: 'relative',
-    top: -67,
+    top: -47,
     right: 10,
     // textAlign: 'left',
   },

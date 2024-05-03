@@ -18,6 +18,7 @@ import CustomDialog from '../../../components/dialogModal';
 import RewardDialog from '../../../components/rewardModal';
 import CustomGreatModal from '../../../components/greatModal';
 import {ScrollView} from 'react-native-gesture-handler';
+import {sadness_1, sadness_2} from '../../../utils/content';
 
 const task_ico = require('../../../../assets/icons/infor.png');
 const dash_icon = require('../../../../assets/icons/learn/sadness/sadness_1.png');
@@ -119,9 +120,13 @@ const LossSection = () => {
         <>
           <Image source={dash_icon} style={styles.avatar} />
           <View style={[styles.input]}>
-            <Text style={[styles.text, , {textAlign: 'left', fontSize: 17}]}>
-              {content}
-            </Text>
+            {sadness_1.map((content, index) => (
+              <Text
+                style={[styles.text, , {textAlign: 'left', fontSize: 17}]}
+                key={index}>
+                {content}
+              </Text>
+            ))}
           </View>
         </>
       ) : (
@@ -129,7 +134,7 @@ const LossSection = () => {
           <Image source={das_icon} style={styles.avatar} />
           <View style={[styles.input]}>
             <Text style={[styles.text, , {textAlign: 'left', fontSize: 17}]}>
-              {content}
+              {sadness_2}
             </Text>
           </View>
         </>
